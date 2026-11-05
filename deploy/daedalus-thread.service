@@ -1,0 +1,21 @@
+[Unit]
+Description=Daedalus Thread (art atlas server)
+After=network.target
+
+[Service]
+User=daedalus
+Group=daedalus
+WorkingDirectory=/opt/daedalus-thread
+EnvironmentFile=/etc/daedalus-thread.env
+ExecStart=/usr/bin/python3 server/app.py --host 127.0.0.1 --port 8000
+Restart=always
+RestartSec=3
+# hardening: read-only system, no privilege escalation
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/opt/daedalus-thread
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

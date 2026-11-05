@@ -1,0 +1,15 @@
+# Caddy terminates HTTPS (automatic Let's Encrypt certificates) and proxies to the app on localhost.
+daedalus-thread.com, www.daedalus-thread.com {
+	encode zstd gzip
+	reverse_proxy 127.0.0.1:8000
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Frame-Options "DENY"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}
+
+# Plain HTTP on the server's IP address, for testing before DNS points here.
+:80 {
+	reverse_proxy 127.0.0.1:8000
+}

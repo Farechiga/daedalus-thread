@@ -12,8 +12,10 @@ Endpoints (GET, all JSON):
 Filters: node (repeatable, AND), century, creator, type, source, code (Iconclass, incl. descendants), q (title text), repro=1
 """
 import argparse
+import base64
 import collections
 import gzip
+import hmac
 import json
 import mimetypes
 import os
@@ -30,6 +32,36 @@ from queries import BadRequest, Queries  # noqa: E402
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 WEB = os.path.join(ROOT, "web")
 CACHE_SIZE = 2048
+# Optional protection, configured by environment (e.g. /etc/daedalus-thread.env on the server):
+#   SITE_USER / SITE_PASSWORD  -> every request needs HTTP Basic auth (the browser shows a login prompt)
+#   RATE_PER_MIN (default 240) -> API requests per visitor per minute before answering 429
+#   TRUST_PROXY=1               -> take the visitor IP from X-Forwarded-For (set when behind Caddy on localhost)
+SITE_USER = os.environ.get("SITE_USER", "")
+SITE_PASSWORD = os.environ.get("SITE_PASSWORD", "")
+RATE_PER_MIN = int(os.environ.get("RATE_PER_MIN", "240"))
+TRUST_PROXY = os.environ.get("TRUST_PROXY") == "1"
+
+
+class RateLimiter:
+    """Token bucket per client IP: RATE_PER_MIN requests per minute, bursts up to a third of that."""
+
+    def __init__(self, per_min):
+        self.rate, self.burst = per_min / 60.0, max(10, per_min // 3)
+        self.buckets, self.lock = {}, threading.Lock()
+
+    def allow(self, ip):
+        now = time.time()
+        with self.lock:
+            tokens, last = self.buckets.get(ip, (self.burst, now))
+            tokens = min(self.burst, tokens + (now - last) * self.rate)
+            ok = tokens >= 1
+            self.buckets[ip] = (tokens - 1 if ok else tokens, now)
+            if len(self.buckets) > 50000:  # forget idle visitors
+                self.buckets = {k: v for k, v in self.buckets.items() if now - v[1] < 600}
+            return ok
+
+
+LIMITER = RateLimiter(RATE_PER_MIN)
 
 
 class LRU:
@@ -109,9 +141,39 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_GET(self):
         url = urlparse(self.path)
+        if url.path == "/healthz":  # for uptime checks; no data, no auth
+            return self.send_bytes(200, b"ok", "text/plain")
+        if SITE_PASSWORD and not self.authorized():
+            self.send_response(401)
+            self.send_header("WWW-Authenticate", 'Basic realm="Daedalus Thread", charset="UTF-8"')
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.send_header("Content-Length", "21")
+            self.end_headers()
+            self.wfile.write(b"Password required.\r\n\r\n"[:21])
+            return
         if url.path.startswith("/api/"):
+            if not LIMITER.allow(self.client_ip()):
+                return self.send_bytes(429, b'{"error":"too many requests, slow down"}', "application/json",
+                                       cache="no-store", extra={"Retry-After": "10"})
             return self.handle_api(url)
         return self.handle_static(url.path)
+
+    def authorized(self):
+        header = self.headers.get("Authorization") or ""
+        if not header.startswith("Basic "):
+            return False
+        try:
+            user, _, pw = base64.b64decode(header[6:]).decode("utf-8").partition(":")
+        except Exception:
+            return False
+        return hmac.compare_digest(user, SITE_USER) and hmac.compare_digest(pw, SITE_PASSWORD)
+
+    def client_ip(self):
+        if TRUST_PROXY:
+            fwd = (self.headers.get("X-Forwarded-For") or "").split(",")[0].strip()
+            if fwd:
+                return fwd
+        return self.client_address[0]
 
     def handle_api(self, url):
         key = url.path + "?" + url.query
@@ -148,7 +210,7 @@ class Handler(BaseHTTPRequestHandler):
         with open(full, "rb") as fh:
             self.send_bytes(200, fh.read(), ctype, cache="no-cache")
 
-    def send_bytes(self, status, body, ctype, cache=None):
+    def send_bytes(self, status, body, ctype, cache=None, extra=None):
         if len(body) > 1024 and "gzip" in (self.headers.get("Accept-Encoding") or ""):
             body = gzip.compress(body, 5)
             encoding = "gzip"
@@ -162,7 +224,9 @@ class Handler(BaseHTTPRequestHandler):
             self.send_header("Content-Encoding", encoding)
             self.send_header("Vary", "Accept-Encoding")
         if cache:
-            self.send_header("Cache-Control", cache)
+            self.send_header("Cache-Control", "private, " + cache if SITE_PASSWORD and "max-age" in cache else cache)
+        for k, v in (extra or {}).items():
+            self.send_header(k, v)
         self.end_headers()
         self.wfile.write(body)
 
