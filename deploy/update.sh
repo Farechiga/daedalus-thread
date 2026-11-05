@@ -10,4 +10,4 @@ install -m 644 deploy/Caddyfile /etc/caddy/Caddyfile
 systemctl daemon-reload
 systemctl restart daedalus-thread
 systemctl reload caddy
-echo "updated to $(git log -1 --format='%h %s')"
+echo "updated to $(sudo -u daedalus git log -1 --format='%h %s')"
