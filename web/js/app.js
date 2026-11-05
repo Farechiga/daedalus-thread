@@ -1,4 +1,4 @@
-import { artCentres, centuryLabel, choropleth, countryScale, fmt, heatmap, pct, prism, rankedBars, timeline, treemap } from "./charts.js";
+import { artCentres, centuryLabel, choropleth, countryScale, fmt, pct, prism, rankedBars, themeHeatmap, timeline, treemap } from "./charts.js";
 
 const $ = (s) => document.querySelector(s);
 const PARAMS = ["node", "century", "creator", "type", "source", "country", "code", "q", "repro", "nat"];
@@ -6,6 +6,7 @@ const FLAGS = ["repro", "nat"]; // display preferences that change the measure; 
 const state = { node: [], century: null, creator: null, type: null, source: null, country: null, code: null, q: null, repro: false, nat: false };
 const labels = {}; // remembered display labels for chips: "creator:123" -> "Albrecht Dürer"
 let meta = null, view = null, basemap = null, resultsOffset = 0, requestId = 0;
+let heatSort = (() => { try { return localStorage.getItem("dt.heatSort") || "size"; } catch { return "size"; } })();
 let mapMode = (() => { try { return localStorage.getItem("dt.mapMode") || "countries"; } catch { return "countries"; } })();
 
 // ---------- URL <-> state ----------
@@ -82,7 +83,6 @@ function render() {
   renderTimeline();
   renderArtists();
   renderTreemap();
-  renderHeatmap();
   renderSubjects();
   renderTypes();
   renderSources();
@@ -163,17 +163,44 @@ function card(id, nText, content, note) {
 }
 const empty = (text) => h("p", { class: "empty" }, text);
 
+// The top card: themes across the centuries when the focus has sub-themes, otherwise the century bars.
 function renderTimeline() {
   const t = view.timeline;
+  const hm = view.heatmap;
+  const useHeat = hm && hm.n > 0 && hm.rows.filter((r) => r.n > 0).length >= 2;
+  $("#when-h").textContent = useHeat ? "Themes across the centuries" : "When";
+  const sortCtl = $("#heat-sort");
+  sortCtl.hidden = !useHeat;
+  for (const b of sortCtl.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.sort === heatSort));
+  const pickCentury = (c) => navigate({ century: state.century === c ? null : c });
   const notes = [];
-  if (t.spanning) notes.push(`${fmt.format(t.spanning)} span more than one century (shown pale when the span is ≤ 50 years)`);
+  if (t.spanning) notes.push(`${fmt.format(t.spanning)} span more than one century (pale when the span is ≤ 50 years)`);
   if (t.unknown) notes.push(`${fmt.format(t.unknown)} undated`);
   if (t.excluded_reproductions) notes.push(`${fmt.format(t.excluded_reproductions)} documentary photographs excluded`);
   const lowCov = t.eligible && t.n / t.eligible < 0.4;
-  card("#c-timeline", t.eligible ? nline(t.n, t.eligible, " dated to a single century") : "",
+  const nText = t.eligible ? nline(t.n, t.eligible, " dated to a single century") : "";
+  if (useHeat) {
+    const svg = themeHeatmap(hm.rows, hm.cells, { timeline: t, selected: state.century, sort: heatSort, width: widthOf("#c-timeline"),
+      onCol: pickCentury,
+      onRow: (r) => navigate({ node: [r.id, ...state.node.slice(1)] }),
+      onCell: (d) => navigate({ node: [d.id, ...state.node.slice(1)], century: d.century }) });
+    const extra = [];
+    if (svg.hiddenRows) extra.push(`${svg.hiddenRows} smaller theme${svg.hiddenRows > 1 ? "s" : ""} not shown`);
+    card("#c-timeline", nText, svg, { text: "Each row is shaded relative to its own peak, to show when each theme was most popular. The bars on top count all artworks in the selection, and the column on the right is each theme's size. Click a century to filter, a cell to open that theme in that century, or a name to open the theme. " +
+      [...extra, ...notes].join(" · ") + (notes.length || extra.length ? "." : ""), warn: lowCov });
+    return;
+  }
+  card("#c-timeline", nText,
     t.n || t.mid_extra.length ? timeline(t.by_century, { width: widthOf("#c-timeline"), height: widthOf("#c-timeline") < 600 ? 180 : 210, extra: t.mid_extra, selected: state.century,
-      onPick: (r) => navigate({ century: state.century === r.c ? null : r.c }) }) : empty("No dated artworks in this selection."),
+      onPick: (r) => pickCentury(r.c) }) : empty("No dated artworks in this selection."),
     notes.length ? { text: (lowCov ? "Low date coverage. " : "") + notes.join(" · ") + ".", warn: lowCov } : null);
+}
+for (const b of document.querySelectorAll("#heat-sort button")) {
+  b.addEventListener("click", () => {
+    heatSort = b.dataset.sort;
+    try { localStorage.setItem("dt.heatSort", heatSort); } catch { /* private mode */ }
+    renderTimeline();
+  });
 }
 
 function renderArtists() {
@@ -194,14 +221,6 @@ function renderTreemap() {
   card("#c-treemap", sum ? `annotation-based · ${fmt.format(sum)} theme memberships (artworks can sit in several)` : "",
     items.length ? treemap(items, { width: widthOf("#c-treemap"), height: 300, onPick: (d) => d.id && navigate({ node: [d.id, ...state.node.slice(1)] }) })
       : empty("No sub-themes at this level."));
-}
-
-function renderHeatmap() {
-  const hm = view.heatmap;
-  card("#c-heatmap", hm && hm.n ? `n = ${fmt.format(hm.n)} theme-century memberships, 1000s–2000s, single-century dates only` : "",
-    hm && hm.n ? heatmap(hm.rows, hm.cells, { width: widthOf("#c-heatmap"), onPick: (d) => navigate({ node: [d.id, ...state.node.slice(1)], century: d.century }) })
-      : empty("Drill into a segment or theme with sub-themes to compare them across centuries."),
-    hm && hm.n ? { text: "Each row is shaded relative to its own peak, to show when each theme was most popular." } : null);
 }
 
 function renderSubjects() {

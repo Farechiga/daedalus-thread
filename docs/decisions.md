@@ -11,6 +11,8 @@ Newest first. Each entry records what was decided, why, and where it is implemen
 | D14 | **Map frame: Europe and the Mediterranean.** 99.3% of located artist credits fall inside it. The rest appear in a "Beyond the map" list. The projection is Lambert azimuthal equal-area centred at 12°E 50°N. | `etl/geo.py: Viewport`, `scripts/build_basemap.py` |
 | D15 | **Three map views.** *Countries*: national areas filled with a classed log scale, in decade classes (1–9, 10–99, …) so a 60:1 spread still reads. *Raised*: the same filled countries extruded into prisms with height ∝ artworks (linear, so the comparison stays honest), drawn back-to-front on a tilted map, with only viewer-facing walls in a per-country gradient. *Art centres*: proportional circles at birth cities, auto-framed to the area holding 97% of the selection's artworks. The Dorling cartogram was tried first and then replaced at the owner's request. | `web/js/charts.js: countryScale(), choropleth(), prism(), artCentres()` |
 
+| D16 | **The top chart is "Themes across the centuries"** whenever the current level has sub-themes, and becomes the century bars for a single theme. Row-relative shading answers *when* each theme peaked, so margins keep the volume: a top histogram of all artworks per century (clickable to filter) and each row's size on the right. The chart ignores its own century filter and outlines the selected century in gold instead, so the context stays visible. Rows can be sorted by size or by peak century. | `web/js/charts.js: themeHeatmap()`, `server/queries.py: view()` |
+
 Coverage after enrichment (artist credits, person and master creators):
 
 - 65.0% located by birthplace

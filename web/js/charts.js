@@ -82,33 +82,65 @@ export function timeline(data, { extra = [], selected, onPick, width = 980, heig
   return svg;
 }
 
-/** Rows (themes) x columns (centuries) heatmap. rows: [{id,label}], cells: [[rowId, century, n]] */
-export function heatmap(rows, cells, { onPick, width = 980 } = {}) {
-  const cents = [...new Set(cells.map((c) => c[1]))].sort((a, b) => a - b);
-  const byRow = new Map(rows.map((r) => [r.id, 0]));
-  for (const [r, , n] of cells) byRow.set(r, (byRow.get(r) || 0) + n);
-  const shown = rows.filter((r) => byRow.get(r.id) > 0).sort((a, b) => byRow.get(b.id) - byRow.get(a.id)).slice(0, 14);
-  const labelW = Math.min(230, width * 0.34), cellH = 22, headH = 22;
-  const svg = el("svg", { viewBox: `0 0 ${width} ${headH + shown.length * cellH + 4}`, role: "img" });
-  if (!shown.length || !cents.length) return svg;
-  const cw = (width - labelW) / cents.length;
+/** Themes × centuries heatmap with marginals.
+ *  rows: [{id, label, n}]; cells: [[rowId, century, n]]; timeline: {by_century, mid_extra} for the top histogram.
+ *  Cells are shaded relative to each row's own peak (when a theme peaked); the right margin shows each row's
+ *  size and the top margin shows all artworks per century, so volume is never lost. */
+export function themeHeatmap(rows, cells, { timeline: tl, selected, onCell, onCol, onRow, sort = "size", width = 980, maxRows = 14 } = {}) {
+  const tlStrict = new Map((tl?.by_century || []).filter(([c]) => c >= 1000));
+  const tlMid = new Map((tl?.mid_extra || []).filter(([c]) => c >= 1000));
+  const cents = [...new Set([...cells.map((c) => c[1]), ...tlStrict.keys()])].filter((c) => c >= 1000 && c <= 2000).sort((a, b) => a - b);
   const lookup = new Map(cells.map(([r, c, n]) => [`${r}|${c}`, n]));
-  // Each row is normalised to its own maximum, so the chart shows *when* each theme peaks.
+  const live = rows.filter((r) => r.n > 0).map((r) => {
+    const vals = cents.map((c) => lookup.get(`${r.id}|${c}`) || 0);
+    const peak = Math.max(...vals);
+    return { ...r, vals, peak, peakAt: cents[vals.indexOf(peak)] };
+  });
+  live.sort(sort === "peak" ? (a, b) => a.peakAt - b.peakAt || b.n - a.n : (a, b) => b.n - a.n);
+  const shown = live.slice(0, maxRows);
+  const labelW = Math.min(230, width * 0.28), totW = Math.min(118, width * 0.17), histH = 52, headH = 20, cellH = 24;
+  const gridW = width - labelW - totW, cw = cents.length ? gridW / cents.length : 0;
+  const top = histH + headH, height = top + shown.length * cellH + 6;
+  const svg = el("svg", { viewBox: `0 0 ${width} ${height}`, role: "img", class: "heatmap-chart" });
+  svg.hidden = !shown.length;
+  if (!shown.length || !cents.length) return Object.assign(svg, { hiddenRows: 0 });
+  // top margin: all artworks in the selection per century (unique artworks; pale = approximate spans)
+  const histMax = Math.max(1, ...cents.map((c) => (tlStrict.get(c) || 0) + (tlMid.get(c) || 0)));
+  const hist = el("g", { class: "hist" }, svg);
   cents.forEach((c, j) => {
-    el("text", { x: labelW + j * cw + cw / 2, y: 14, "text-anchor": "middle", class: "muted" }, svg).textContent = cw < 40 ? String(c / 100 + 1) : centuryLabel(c);
+    const x = labelW + j * cw, n = tlStrict.get(c) || 0, m = tlMid.get(c) || 0;
+    const g = hit(hist, `${centuryLabel(c)}: ${fmt.format(n)} artworks${m ? ` (+${fmt.format(m)} approximate)` : ""}. Click to filter.`, onCol, c);
+    el("rect", { x, y: 0, width: cw, height: histH + headH, fill: "transparent" }, g);
+    const hN = ((histH - 6) * n) / histMax, hM = ((histH - 6) * m) / histMax;
+    el("rect", { class: "bar" + (c === selected ? " sel" : ""), x: x + cw * 0.16, y: histH - hN, width: cw * 0.68, height: hN, rx: 1.5 }, g);
+    if (m) el("rect", { class: "bar soft", x: x + cw * 0.16, y: histH - hN - hM, width: cw * 0.68, height: hM, rx: 1.5 }, g);
+    el("text", { x: x + cw / 2, y: histH + 14, "text-anchor": "middle", class: "muted" + (c === selected ? " selcol" : "") }, g).textContent =
+      cw < 44 ? String(c / 100 + 1) : centuryLabel(c);
   });
+  el("text", { x: labelW - 8, y: histH - 4, "text-anchor": "end", class: "muted" }, svg).textContent = "all artworks";
+  el("text", { x: width - totW + 6, y: histH + 14, class: "muted" }, svg).textContent = "artworks";
+  // rows
+  const totMax = Math.max(1, ...shown.map((r) => r.n));
   shown.forEach((r, i) => {
-    const y = headH + i * cellH;
-    const rowMax = Math.max(1, ...cents.map((c) => lookup.get(`${r.id}|${c}`) || 0));
-    el("text", { x: labelW - 8, y: y + cellH / 2 + 4, "text-anchor": "end" }, svg).textContent = truncate(r.label, Math.floor(labelW / 7));
+    const y = top + i * cellH;
+    const lab = hit(svg, `${r.label}: open this theme`, onRow, r);
+    el("rect", { x: 0, y, width: labelW, height: cellH, fill: "transparent" }, lab);
+    el("text", { x: labelW - 8, y: y + cellH / 2 + 4, "text-anchor": "end", class: "rowlabel" }, lab).textContent = truncate(r.label, Math.floor(labelW / 7));
     const g = el("g", { class: "heat" }, svg);
-    cents.forEach((c, j) => {
-      const n = lookup.get(`${r.id}|${c}`) || 0;
-      const cell = hit(g, `${r.label}, ${centuryLabel(c)}: ${fmt.format(n)}`, n ? onPick : null, { id: r.id, century: c });
-      el("rect", { x: labelW + j * cw, y, width: cw, height: cellH, fill: mix(n / rowMax) }, cell);
+    r.vals.forEach((n, j) => {
+      const c = cents[j];
+      const cell = hit(g, `${r.label}, ${centuryLabel(c)}: ${fmt.format(n)} artworks`, n ? onCell : null, { id: r.id, century: c });
+      el("rect", { x: labelW + j * cw, y, width: cw, height: cellH, fill: mix(n / (r.peak || 1)) }, cell);
     });
+    const tw = ((totW - 52) * r.n) / totMax;
+    el("rect", { class: "bar", x: width - totW + 6, y: y + 8, width: Math.max(1, tw), height: cellH - 16, rx: 1.5 }, svg);
+    el("text", { x: width - totW + 12 + tw, y: y + cellH / 2 + 4, class: "muted" }, svg).textContent = fmt.format(r.n);
   });
-  return svg;
+  if (selected !== null && selected !== undefined && cents.includes(selected)) {
+    const j = cents.indexOf(selected);
+    el("rect", { class: "colsel", x: labelW + j * cw, y: top - 2, width: cw, height: shown.length * cellH + 4, rx: 2 }, svg);
+  }
+  return Object.assign(svg, { hiddenRows: live.length - shown.length });
 }
 
 function mix(t) {

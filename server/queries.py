@@ -47,6 +47,11 @@ class Filters:
     def proxies(self):
         return ("birthplace", "nationality") if self.nat else ("birthplace",)
 
+    def without_century(self):
+        clone = object.__new__(Filters)
+        clone.__dict__.update(self.__dict__, century=None)
+        return clone
+
     def as_dict(self):
         return {k: v for k, v in vars(self).items() if v not in (None, [], False)}
 
@@ -177,11 +182,16 @@ class Queries:
                "path": self.path(focus) if focus else [],
                "focus": self._node_json(focus) if focus else None}
         out["tree"] = self.tree(f, focus, where, args)
-        out["timeline"] = self.timeline(f, where, args, n)
+        # The top "when" chart keeps century context: it ignores the century filter and marks the selection instead.
+        fc = f.without_century()
+        cwhere, cargs = fc.where("a")
+        cn = n if f.century is None else self.db.execute(f"SELECT count(*) FROM artwork a WHERE {cwhere}", cargs).fetchone()[0]
+        out["timeline"] = self.timeline(fc, cwhere, cargs, cn)
+        out["timeline"]["selected"] = f.century
         out["artists"] = self.artists(f, where, args, n)
         out["types"] = self.group_counts("object_type", where, args, self.types, 1)
         out["sources"] = self.group_counts("source_id", where, args, self.sources, 1)
-        out["heatmap"] = self.heatmap(f, focus, where, args)
+        out["heatmap"] = self.heatmap(fc, focus, cwhere, cargs)
         out["subjects"] = self.top_subjects(where, args, n)
         out["coverage"] = self.coverage(where, args, n)
         out["geo"] = self.geo(f, where, args, n)
@@ -302,7 +312,10 @@ class Queries:
             f"SELECT n.node_id, a.century, count(*) FROM artwork_node n JOIN artwork a ON a.rid = n.artwork_rid "
             f"WHERE n.node_id IN ({marks}) AND a.century BETWEEN ? AND ? AND {where}{obj} GROUP BY 1, 2",
             kids + list(CENTURY_RANGE) + args).fetchall()
-        return {"rows": [{"id": k, "label": self.nodes[k][5]} for k in kids],
+        totals = {}
+        for node, _, k in cells:
+            totals[node] = totals.get(node, 0) + k
+        return {"rows": [{"id": k, "label": self.nodes[k][5], "n": totals.get(k, 0), "n_total": self.nodes[k][8]} for k in kids],
                 "cells": cells, "n": sum(c[2] for c in cells)}
 
     def top_subjects(self, where, args, n, limit=12):

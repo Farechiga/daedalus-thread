@@ -50,7 +50,17 @@
       </div>
 
       <div class="grid">
-        <article class="card chart wide" id="c-timeline"><header><h3>When</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart wide" id="c-timeline">
+          <header>
+            <h3 id="when-h">When</h3>
+            <div class="seg" id="heat-sort" role="group" aria-label="Sort themes" hidden>
+              <button type="button" data-sort="size" aria-pressed="true">By size</button>
+              <button type="button" data-sort="peak" aria-pressed="false">By peak century</button>
+            </div>
+            <p class="n"></p>
+          </header>
+          <div class="body"></div>
+        </article>
         <article class="card chart wide" id="c-map">
           <header>
             <h3>Where the artists were born</h3>
@@ -68,7 +78,6 @@
         </article>
         <article class="card chart" id="c-artists"><header><h3>Most frequent artists</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-treemap"><header><h3>Theme proportions</h3><p class="n"></p></header><div class="body"></div></article>
-        <article class="card chart wide" id="c-heatmap"><header><h3>Themes across the centuries</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-subjects"><header><h3>Most frequent Iconclass subjects</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-types"><header><h3>Kinds of object</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-sources"><header><h3>Source collections</h3><p class="n"></p></header><div class="body"></div></article>

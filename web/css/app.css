@@ -141,12 +141,19 @@ svg .tm rect { stroke: var(--surface); stroke-width: 2; }
 svg .tm .hit:hover rect, svg .tm.hit:hover rect { filter: brightness(1.25); }
 svg .tm text { fill: var(--surface); font-size: 12px; pointer-events: none; }
 svg .heat rect { stroke: var(--surface); stroke-width: 1; }
+svg.heatmap-chart .rowlabel { font-size: 12.5px; }
+svg.heatmap-chart .hit:hover .rowlabel { fill: var(--accent); text-decoration: underline; }
+svg.heatmap-chart text.selcol { fill: var(--gold-ink); font-weight: 600; }
+svg.heatmap-chart .colsel { fill: none; stroke: var(--gold); stroke-width: 2.5; pointer-events: none; }
+#c-timeline header { align-items: center; }
+#c-timeline header .n { flex-basis: 100%; }
 svg .heat .hit:hover rect { stroke: var(--gold); stroke-width: 2; }
 
 /* ---------- map ---------- */
 .map-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; flex: 1; justify-content: flex-end; }
 #c-map header { align-items: center; }
 #c-map header .n { flex-basis: 100%; }
+.seg[hidden] { display: none; }
 .seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; }
 .seg button { border: 0; background: none; border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer; color: var(--muted); }
 .seg button[aria-pressed="true"] { background: var(--navy); color: var(--surface); }
