@@ -22,8 +22,10 @@ monthly price means traffic can never run up per-query costs, which is why Fly.i
   `daedalus` user, source data and the database build.
 - `deploy/daedalus-thread.service` runs the app on 127.0.0.1:8000. Caddy (`deploy/Caddyfile`) serves HTTPS with a Let's
   Encrypt certificate, renewed automatically.
-- The site is password-protected: `SITE_PASSWORD` in `/etc/daedalus-thread.env` on the server, never in git. Visitors leave
-  the username blank. `RATE_PER_MIN` limits requests per client.
+- The site is password-protected: `SITE_PASSWORD` in `/etc/daedalus-thread.env` on the server, never in git. Visitors see
+  a password-only sign-in page that sets a signed, HttpOnly session cookie for 30 days. Changing the password signs everyone
+  out. Scripts can still use `curl -u :PASSWORD`. Sign-in attempts are limited to 10 per minute per client, and
+  `RATE_PER_MIN` limits API requests.
 - Ship changes by pushing to `main` and then running `deploy/update.sh` on the server. It pulls, rebuilds the database and
   restarts the app, in about 2 minutes.
 

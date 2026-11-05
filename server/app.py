@@ -15,7 +15,9 @@ import argparse
 import base64
 import collections
 import gzip
+import hashlib
 import hmac
+import html
 import json
 import mimetypes
 import os
@@ -33,8 +35,9 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 WEB = os.path.join(ROOT, "web")
 CACHE_SIZE = 2048
 # Optional protection, configured by environment (e.g. /etc/daedalus-thread.env on the server):
-#   SITE_PASSWORD [SITE_USER]  -> every request needs HTTP Basic auth (the browser shows a login prompt);
-#                                 without SITE_USER the username box can be left empty
+#   SITE_PASSWORD [SITE_USER]  -> every request needs the password: a password-only sign-in page sets a signed
+#                                 session cookie (30 days). HTTP Basic auth is still accepted for scripts
+#                                 (curl -u :password); without SITE_USER any username is accepted there
 #   RATE_PER_MIN (default 240) -> API requests per visitor per minute before answering 429
 #   TRUST_PROXY=1               -> take the visitor IP from X-Forwarded-For (set when behind Caddy on localhost)
 SITE_USER = os.environ.get("SITE_USER", "")
@@ -63,6 +66,50 @@ class RateLimiter:
 
 
 LIMITER = RateLimiter(RATE_PER_MIN)
+LOGIN_LIMITER = RateLimiter(10)  # sign-in attempts per visitor per minute
+
+# Session cookie: "<expiry>.<hmac>", keyed by the password, so changing SITE_PASSWORD signs everyone out.
+SESSION_COOKIE, SESSION_DAYS = "dt_session", 30
+SESSION_KEY = hashlib.sha256(b"daedalus-thread-session:" + SITE_PASSWORD.encode("utf-8")).digest()
+PUBLIC_PATHS = {"/healthz", "/assets/logo-96.png", "/assets/logo-192.png", "/assets/favicon-32.png", "/assets/apple-touch-icon.png"}
+
+
+def session_token(expiry):
+    return f"{expiry}.{hmac.new(SESSION_KEY, str(expiry).encode(), hashlib.sha256).hexdigest()}"
+
+
+def session_valid(token):
+    expiry, _, _ = (token or "").partition(".")
+    return expiry.isdigit() and int(expiry) > time.time() and hmac.compare_digest(token, session_token(int(expiry)))
+
+
+LOGIN_PAGE = """<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daedalus Thread</title><link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<meta name="robots" content="noindex"><style>
+:root { --bg: #f5f3ee; --surface: #fffefb; --ink: #14232a; --muted: #5b686d; --line: #e1ded5; --navy: #022e3a; --gold: #cf9203; --danger: #b3261e; }
+@media (prefers-color-scheme: dark) { :root { --bg: #0a171c; --surface: #10222a; --ink: #e8ecea; --muted: #9fb0b4; --line: #21363e; --navy: #cfe3e8; --gold: #e3a828; --danger: #ff8a80; } }
+* { box-sizing: border-box; }
+body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: var(--bg); color: var(--ink);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; padding: 16px; }
+main { width: min(380px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 32px 28px 28px; text-align: center; }
+img { width: 72px; height: 72px; border-radius: 50%; background: #f5f3ee; }
+h1 { font: 600 26px "Iowan Old Style", Palatino, Georgia, serif; color: var(--navy); margin: 12px 0 4px; }
+h1 em { font-weight: 500; }
+.thread { width: 48px; height: 2px; background: var(--gold); margin: 12px auto 18px; border: 0; }
+p { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+input { width: 100%; padding: 11px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--ink); font: inherit; }
+input:focus { outline: 2px solid var(--navy); outline-offset: 1px; }
+button { margin-top: 12px; width: 100%; padding: 11px 16px; border: 0; border-radius: 999px; background: var(--navy); color: var(--surface); font: 600 15px inherit; cursor: pointer; }
+.err { color: var(--danger); font-weight: 600; margin: 12px 0 0; }
+</style></head><body><main>
+<img src="/assets/logo-192.png" alt="">
+<h1>Daedalus <em>Thread</em></h1><hr class="thread">
+<p>This preview is private. Enter the password to continue.</p>
+<form method="post" action="/login"><input type="hidden" name="next" value="{next}">
+<label for="pw" style="position:absolute;left:-9999px">Password</label>
+<input id="pw" name="password" type="password" autocomplete="current-password" placeholder="Password" required autofocus>
+<button type="submit">Enter</button>{error}</form></main></body></html>"""
 
 
 class LRU:
@@ -144,14 +191,10 @@ class Handler(BaseHTTPRequestHandler):
         url = urlparse(self.path)
         if url.path == "/healthz":  # for uptime checks; no data, no auth
             return self.send_bytes(200, b"ok", "text/plain")
-        if SITE_PASSWORD and not self.authorized():
-            self.send_response(401)
-            self.send_header("WWW-Authenticate", 'Basic realm="Daedalus Thread", charset="UTF-8"')
-            self.send_header("Content-Type", "text/plain; charset=utf-8")
-            self.send_header("Content-Length", "21")
-            self.end_headers()
-            self.wfile.write(b"Password required.\r\n\r\n"[:21])
-            return
+        if SITE_PASSWORD and not self.authorized() and url.path not in PUBLIC_PATHS:
+            if url.path.startswith("/api/"):  # no WWW-Authenticate header, so browsers never show their own prompt
+                return self.send_bytes(401, b'{"error":"sign in required"}', "application/json", cache="no-store")
+            return self.login_page(self.path)
         if url.path.startswith("/api/"):
             if not LIMITER.allow(self.client_ip()):
                 return self.send_bytes(429, b'{"error":"too many requests, slow down"}', "application/json",
@@ -159,7 +202,37 @@ class Handler(BaseHTTPRequestHandler):
             return self.handle_api(url)
         return self.handle_static(url.path)
 
+    def do_POST(self):
+        url = urlparse(self.path)
+        if url.path != "/login" or not SITE_PASSWORD:
+            return self.send_bytes(404, b"not found", "text/plain")
+        if not LOGIN_LIMITER.allow(self.client_ip()):
+            return self.send_bytes(429, b"Too many attempts. Wait a minute and try again.", "text/plain; charset=utf-8",
+                                   extra={"Retry-After": "60"})
+        length = min(int(self.headers.get("Content-Length") or 0), 4096)
+        form = parse_qs(self.rfile.read(length).decode("utf-8", "replace"))
+        nxt = (form.get("next") or ["/"])[0]
+        if not nxt.startswith("/") or nxt.startswith("//") or "\\" in nxt:  # same-site paths only
+            nxt = "/"
+        if not hmac.compare_digest((form.get("password") or [""])[0], SITE_PASSWORD):
+            time.sleep(0.6)  # slows guessing further
+            return self.login_page(nxt, error=True)
+        expiry = int(time.time()) + SESSION_DAYS * 86400
+        cookie = (f"{SESSION_COOKIE}={session_token(expiry)}; Max-Age={SESSION_DAYS * 86400}; Path=/; HttpOnly; SameSite=Lax"
+                  + ("; Secure" if TRUST_PROXY else ""))
+        self.send_bytes(303, b"", "text/plain", cache="no-store", extra={"Location": nxt, "Set-Cookie": cookie})
+
+    def login_page(self, nxt, error=False):
+        body = LOGIN_PAGE.replace("{next}", html.escape(nxt, quote=True)).replace(
+            "{error}", '<p class="err" role="alert">That password is not right.</p>' if error else "")
+        self.send_bytes(401, body.encode("utf-8"), "text/html; charset=utf-8", cache="no-store",
+                        extra={"X-Frame-Options": "DENY"})
+
     def authorized(self):
+        for part in (self.headers.get("Cookie") or "").split(";"):
+            name, _, value = part.strip().partition("=")
+            if name == SESSION_COOKIE and session_valid(value):
+                return True
         header = self.headers.get("Authorization") or ""
         if not header.startswith("Basic "):
             return False

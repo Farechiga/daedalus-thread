@@ -12,6 +12,7 @@
   --gold: #cf9203;
   --gold-soft: #f7ebcc;
   --gold-ink: #6e4e00;        /* gold-family text that still reads (AA) */
+  --chip: #6f5487; --chip-ink: #ffffff;  /* active filter chips: solid muted purple */
   --bar: #138f80;             /* data colour: bars, heatmap, map */
   --bar-hi: #0c6c61;
   --bar-muted: #d2ebe6;
@@ -35,7 +36,7 @@
   :root:not([data-theme="light"]) {
     --bg: #0a171c; --surface: #10222a; --ink: #e8ecea; --muted: #9fb0b4; --line: #21363e;
     --navy: #cfe3e8; --accent: #6fd6c8; --accent-soft: #14332f;
-    --gold: #e3a828; --gold-soft: #3a2f12; --gold-ink: #f0c76a;
+    --gold: #e3a828; --gold-soft: #3a2f12; --gold-ink: #f0c76a; --chip: #a48dbc; --chip-ink: #160f1c;
     --bar: #2fb8a6; --bar-hi: #7fdccf; --bar-muted: #1d3d39;
     --stack-0: #9ae6da; --stack-1: #5cc8b8; --stack-2: #36a091; --stack-3: #25766c; --stack-4: #1d544e; --stack-other: #22363c; --heat-0: #12262d; --heat-mid: #1f6f66; --heat-1: #2fb8a6; --sea: color-mix(in oklab, #0a171c 70%, #14332f); --focus: #6fd6c8; --warn: #e6bd5a; --danger: #ff8a80; color-scheme: dark;
     --ramp-1: #173a36; --ramp-2: #1f5c54; --ramp-3: #2a8677; --ramp-4: #3fb3a1; --ramp-5: #8de6d6;
@@ -45,7 +46,7 @@
 :root[data-theme="dark"] {
   --bg: #0a171c; --surface: #10222a; --ink: #e8ecea; --muted: #9fb0b4; --line: #21363e;
   --navy: #cfe3e8; --accent: #6fd6c8; --accent-soft: #14332f;
-  --gold: #e3a828; --gold-soft: #3a2f12; --gold-ink: #f0c76a;
+  --gold: #e3a828; --gold-soft: #3a2f12; --gold-ink: #f0c76a; --chip: #a48dbc; --chip-ink: #160f1c;
   --bar: #2fb8a6; --bar-hi: #7fdccf; --bar-muted: #1d3d39;
   --stack-0: #9ae6da; --stack-1: #5cc8b8; --stack-2: #36a091; --stack-3: #25766c; --stack-4: #1d544e; --stack-other: #22363c; --heat-0: #12262d; --heat-mid: #1f6f66; --heat-1: #2fb8a6; --sea: color-mix(in oklab, #0a171c 70%, #14332f); --focus: #6fd6c8; --warn: #e6bd5a; --danger: #ff8a80; color-scheme: dark;
     --ramp-1: #173a36; --ramp-2: #1f5c54; --ramp-3: #2a8677; --ramp-4: #3fb3a1; --ramp-5: #8de6d6;
@@ -63,21 +64,21 @@ button, select, input { font: inherit; color: inherit; }
 .skip { position: absolute; left: -999px; } .skip:focus { left: 16px; top: 8px; z-index: 50; background: var(--surface); padding: 6px 10px; }
 
 /* ---------- header ---------- */
-.top { display: flex; align-items: center; gap: 18px; padding: 12px 24px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 20; }
+.top { display: flex; align-items: center; gap: 18px; justify-content: space-between; padding: 12px 24px; border-bottom: 1px solid var(--line); background: var(--surface); position: sticky; top: 0; z-index: 20; }
 .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--navy); white-space: nowrap; }
 .brand .logo { width: 44px; height: 44px; display: block; border-radius: 50%; }
 .wordmark { font: 600 22px/1 var(--serif); letter-spacing: .01em; }
 .wordmark em { font-weight: 500; }
 :root[data-theme="dark"] .brand .logo { background: #f5f3ee; padding: 2px; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand .logo { background: #f5f3ee; padding: 2px; } }
-.search { position: relative; flex: 1 1 320px; max-width: 560px; }
-/* the filter chain rides in the sticky header, top right: Back · Reset · chips · count */
-.chain { flex: 0 1 auto; min-width: 0; max-width: 54%; margin-left: auto; display: flex; align-items: center; gap: 8px; }
-.chain .chips { flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none; min-width: 0; }
-.chain .chips::-webkit-scrollbar { display: none; }
-.chain .chip { flex: 0 0 auto; white-space: nowrap; padding-top: 2px; padding-bottom: 2px; }
-.chain .chain-n { font: 600 15px var(--serif); color: var(--navy); white-space: nowrap; font-variant-numeric: lining-nums tabular-nums; padding-left: 2px; }
-.chain .ghost.small { white-space: nowrap; }
+.search { position: relative; flex: 1; max-width: 640px; }
+/* the filter chain heads the sticky theme sidebar: count, chips (solid, wrapping), Back / Reset */
+.chain { margin: -2px 0 14px; padding-bottom: 14px; border-bottom: 1px solid var(--line); display: grid; gap: 8px; }
+.chain-top { display: flex; justify-content: space-between; align-items: baseline; }
+.chain-top .seg-label { padding-left: 0; }
+.chain .chain-n { font: 600 16px var(--serif); color: var(--navy); font-variant-numeric: lining-nums tabular-nums; }
+.chain .chips:empty { display: none; }
+.chain-actions { display: flex; gap: 6px; }
 .search input { width: 100%; padding: 10px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); }
 .search input:focus { border-color: var(--accent); outline: none; box-shadow: 0 0 0 3px var(--accent-soft); }
 .suggest { position: absolute; left: 0; right: 0; top: calc(100% + 6px); background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: 0 12px 32px rgb(2 46 58 / .16); max-height: 70vh; overflow: auto; padding: 6px 0; }
@@ -137,7 +138,10 @@ button, select, input { font: inherit; color: inherit; }
 .info-options { margin: 4px 0 14px; padding: 10px 12px; background: var(--bg); border-radius: 8px; }
 .filters { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .chips { display: flex; flex-wrap: wrap; gap: 6px; }
-.chip { display: inline-flex; align-items: center; gap: 6px; background: var(--gold-soft); color: var(--gold-ink); border: 1px solid color-mix(in oklab, var(--gold) 45%, transparent); border-radius: 999px; padding: 3px 6px 3px 12px; font-size: 13px; }
+.chip { display: inline-flex; align-items: center; gap: 4px; background: var(--chip); color: var(--chip-ink); border-radius: 999px; padding: 4px 4px 4px 12px; font-size: 13px; font-weight: 500; max-width: 100%; }
+.chip > span, .chip { overflow-wrap: anywhere; }
+.chip button { border-radius: 50%; width: 20px; height: 20px; display: inline-grid; place-items: center; flex: none; }
+.chip button:hover { background: rgb(255 255 255 / .2); }
 .chip button { border: 0; background: none; cursor: pointer; font-size: 15px; line-height: 1; padding: 0 4px; color: inherit; }
 .summary { font-size: 14px; color: var(--muted); }
 .summary strong { font: 600 23px var(--serif); color: var(--navy); margin-right: 6px; font-variant-numeric: lining-nums; }
@@ -359,7 +363,6 @@ dialog td.num, dialog th.num { text-align: right; font-variant-numeric: tabular-
   .brand .logo { width: 38px; height: 38px; }
   .wordmark { font-size: 20px; }
   .search { order: 3; flex-basis: 100%; max-width: none; }
-  .chain { order: 4; flex-basis: 100%; max-width: none; margin-left: 0; }
   .toprow { flex-direction: column; align-items: stretch; padding: 8px 16px 0; }
   .statusbar { align-items: flex-start; text-align: left; max-width: none; flex-basis: auto; padding: 4px 0 0; }
   .statusbar .status-controls { justify-content: flex-start; }

@@ -39,6 +39,7 @@ window.addEventListener("popstate", () => { fromQuery(location.search); load(); 
 
 async function api(path, params = "") {
   const r = await fetch(`/api/${path}${params ? "?" + params : ""}`);
+  if (r.status === 401) { location.reload(); return new Promise(() => {}); }  // session expired: show the sign-in page
   if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || r.statusText);
   return r.json();
 }
@@ -158,7 +159,6 @@ function renderStatus() {
   if (state.repro) add("Documentary photos included", { repro: false });
   $("#chips").replaceChildren(...chips);
   $("#chain-n").textContent = `${fmt.format(view.n)} ${view.n === 1 ? "work" : "works"}`;
-  $("#chips").lastElementChild?.scrollIntoView?.({ block: "nearest", inline: "end" });
   const c = view.coverage;
   $("#summary").replaceChildren(...[h("strong", {}, fmt.format(view.n)), `artworks`,
     view.focus ? ` in ${view.focus.label}` : " in the collection",

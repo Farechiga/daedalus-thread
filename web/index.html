@@ -26,12 +26,6 @@
              role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list">
       <div id="suggest" class="suggest" role="listbox" hidden></div>
     </div>
-    <div class="chain" id="chain" role="group" aria-label="Active filters">
-      <button class="ghost small" id="back-btn" title="Previous view">← Back</button>
-      <button class="ghost small" id="reset-btn" title="Clear all filters">Reset</button>
-      <div class="chips" id="chips" aria-live="polite"></div>
-      <span class="chain-n" id="chain-n" aria-live="polite"></span>
-    </div>
     <button class="ghost" id="info-btn" aria-haspopup="dialog">About the data</button>
   </header>
 
@@ -53,6 +47,14 @@
 
   <main id="main" class="layout">
     <aside class="themes card" aria-labelledby="themes-h">
+      <div class="chain" id="chain" role="group" aria-label="Active filters">
+        <div class="chain-top"><span class="seg-label">Filters</span><span class="chain-n" id="chain-n" aria-live="polite"></span></div>
+        <div class="chips" id="chips" aria-live="polite"></div>
+        <div class="chain-actions">
+          <button class="ghost small" id="back-btn" title="Previous view">← Back</button>
+          <button class="ghost small" id="reset-btn" title="Clear all filters">Reset filters</button>
+        </div>
+      </div>
       <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
       <h2 id="themes-h" class="focus-title">Themes</h2>
       <p class="focus-desc" id="focus-desc"></p>
