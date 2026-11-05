@@ -33,7 +33,8 @@ ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..")
 WEB = os.path.join(ROOT, "web")
 CACHE_SIZE = 2048
 # Optional protection, configured by environment (e.g. /etc/daedalus-thread.env on the server):
-#   SITE_USER / SITE_PASSWORD  -> every request needs HTTP Basic auth (the browser shows a login prompt)
+#   SITE_PASSWORD [SITE_USER]  -> every request needs HTTP Basic auth (the browser shows a login prompt);
+#                                 without SITE_USER the username box can be left empty
 #   RATE_PER_MIN (default 240) -> API requests per visitor per minute before answering 429
 #   TRUST_PROXY=1               -> take the visitor IP from X-Forwarded-For (set when behind Caddy on localhost)
 SITE_USER = os.environ.get("SITE_USER", "")
@@ -166,7 +167,8 @@ class Handler(BaseHTTPRequestHandler):
             user, _, pw = base64.b64decode(header[6:]).decode("utf-8").partition(":")
         except Exception:
             return False
-        return hmac.compare_digest(user, SITE_USER) and hmac.compare_digest(pw, SITE_PASSWORD)
+        user_ok = hmac.compare_digest(user, SITE_USER) if SITE_USER else True  # no SITE_USER: any (or no) username
+        return user_ok and hmac.compare_digest(pw, SITE_PASSWORD)
 
     def client_ip(self):
         if TRUST_PROXY:

@@ -19,8 +19,8 @@ ssh -i ~/.ssh/daedalus_hetzner root@SERVER_IP /opt/daedalus-thread/deploy/update
 `systemctl restart daedalus-thread`:
 
 ```
-SITE_USER=daedalus
-SITE_PASSWORD=...        # remove both lines to make the site public
+SITE_PASSWORD=...        # remove to make the site public
+#SITE_USER=...           # optional; without it visitors leave the username box empty
 RATE_PER_MIN=240         # API requests per visitor per minute
 TRUST_PROXY=1            # visitor IP comes from Caddy
 ```
