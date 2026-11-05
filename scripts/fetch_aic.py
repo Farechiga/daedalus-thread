@@ -41,6 +41,11 @@ OUT_CRE = os.path.join(ROOT, "data", "enrichment", "aic_creators.tsv")
 FIELDS = ("id,title,artist_id,artist_ids,artist_title,date_start,date_end,date_display,place_of_origin,artwork_type_title,"
           "classification_titles,subject_titles,image_id,is_public_domain,department_title,medium_display,is_boosted")
 SKIP_TYPE = re.compile(r"\b(print|photograph|film|video|book|archit)", re.I)
+# AIC subject words that match a theme name but mean something generic (reviewed 2026-11-05): a ring tagged "healing"
+# is not a Miracle of Christ, a landscape tagged "winter" is not a personified Season, "water" is not the Element.
+STOP_TERMS = {"religion", "water", "fire", "earth", "air", "death", "europe", "africa", "asia", "america", "americas",
+              "victory", "logo", "power", "winter", "summer", "autumn", "spring", "fall", "healing", "love", "time",
+              "light", "night", "day", "christianity", "religious figures", "religious scenes", "christian subjects"}
 
 
 def log(msg, t0=[time.time()]):
@@ -157,7 +162,7 @@ def main():
         if aic_to_qid.get(str(w["id"])) in have:
             dropped["already_in_wikidata_harvest"] += 1
             continue
-        codes = sorted({c for t in (w.get("subject_titles") or []) for c in tmap.get(norm(t), ())})
+        codes = sorted({c for t in (w.get("subject_titles") or []) if norm(t) not in STOP_TERMS for c in tmap.get(norm(t), ())})
         if not codes:
             dropped["no_mapped_subject"] += 1
             continue
