@@ -2,6 +2,14 @@
 
 Newest first. Each entry records what was decided, why, and where it is implemented.
 
+## 2026-11-04 (later): Brand, search and catalogue design
+
+| # | Decision | Implementation |
+|---|---|---|
+| D9 | **A search always starts fresh.** Picking any search suggestion, or pressing Enter for a title search, clears every existing filter. While filters are active, the dropdown says so. Drill-down links in the artwork panel still narrow the current view. | `web/js/app.js: pick()` |
+| D10 | **Brand palette from the logo.** Navy `#022e3a` is used for bars, headings and data. Gold `#cf9203` is used only for active and selected states: the current segment tab, selected bars, active filter chips, the featured badge, and the thread rule on artworks. Gold is never used for body text (contrast). Dark mode uses a lighter navy tint for bars. | `web/css/app.css` tokens. Logo master in `assets/`, web sizes in `web/assets/` |
+| D11 | **The artwork section is a catalogue set in type alone**, with no boxes or images. Each entry has a number, italic title, small-caps artist, old-style date and tracked object/source line. The detail panel is laid out as a museum label. System serif fonts only (no web fonts or CDNs). | `.result-list`, `.drawer` |
+
 ## 2026-11-04: Taxonomy v0.2 and data-handling rules
 
 | # | Decision | Implementation |

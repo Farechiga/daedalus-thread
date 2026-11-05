@@ -127,9 +127,9 @@ export function treemap(items, { onPick, width = 520, height = 300 } = {}) {
   rects.forEach((r, i) => {
     const g = hit(svg, `${r.label}: ${fmt.format(r.n)}`, onPick, r);
     g.classList.add("tm");
-    const shade = 35 + 65 * (1 - i / Math.max(1, rects.length - 1));
+    const shade = 62 + 38 * (1 - i / Math.max(1, rects.length - 1));
     el("rect", { x: r.x, y: r.y, width: Math.max(0, r.w), height: Math.max(0, r.h),
-      fill: `color-mix(in oklab, var(--bar-hi) ${shade}%, var(--bar-muted))` }, g);
+      fill: `color-mix(in oklab, var(--bar) ${shade}%, var(--bar-muted))` }, g);
     if (r.w > 60 && r.h > 26) {
       const t = el("text", { x: r.x + 6, y: r.y + 16 }, g);
       t.textContent = truncate(r.label, Math.floor(r.w / 7));

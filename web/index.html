@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Daedalus Thread</title>
   <meta name="description" content="Explore 477,569 artworks through their subjects: Christian art, classical myth, animals, allegory and landscape.">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 16h6v-6h6v12h6V10h6' fill='none' stroke='%238a2a1b' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#022e3a">
   <link rel="stylesheet" href="/css/app.css">
   <script type="module" src="/js/app.js"></script>
 </head>
@@ -13,8 +15,8 @@
   <a class="skip" href="#main">Skip to content</a>
   <header class="top">
     <a class="brand" href="/" aria-label="Daedalus Thread home">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16h6v-6h6v12h6V10h6"/></svg>
-      <span>Daedalus Thread</span>
+      <img class="logo" src="/assets/logo-96.png" srcset="/assets/logo-96.png 1x, /assets/logo-192.png 2x" width="44" height="44" alt="">
+      <span class="wordmark">Daedalus <em>Thread</em></span>
     </a>
     <div class="search" role="search">
       <label for="q" class="sr-only">Search themes, subjects and artists</label>
@@ -59,7 +61,7 @@
       </div>
 
       <section class="card results" aria-labelledby="results-h">
-        <header><h3 id="results-h">Artworks</h3>
+        <header><div><span class="kicker">The catalogue</span><h3 id="results-h">The Works</h3></div>
           <label>Sort <select id="sort"><option value="date">by date</option><option value="title">by title</option><option value="random">shuffled</option></select></label>
         </header>
         <ol class="result-list" id="results"></ol>

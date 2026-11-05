@@ -50,7 +50,7 @@ function h(tag, attrs = {}, ...kids) {
     else if (k === "class") e.className = v;
     else e.setAttribute(k, v === true ? "" : v);
   }
-  for (const kid of kids.flat()) if (kid !== null && kid !== undefined && kid !== false) e.append(kid.nodeType ? kid : String(kid));
+  for (const kid of kids.flat(Infinity)) if (kid !== null && kid !== undefined && kid !== false) e.append(kid.nodeType ? kid : String(kid));
   return e;
 }
 const nline = (n, of, extra = "") => `n = ${fmt.format(n)} of ${fmt.format(of)} (${pct(n, of)}%)${extra}`;
@@ -116,7 +116,7 @@ function renderThemes() {
       title: k.n_total !== k.n ? `${fmt.format(k.n)} with current filters (${fmt.format(k.n_total)} in total)` : null },
     h("span", { class: "label" }, k.label, k.has_children ? h("span", { class: "chev" }, " ›") : null,
       k.flags.includes("decorative") ? h("span", { class: "badge" }, "decorative") : null,
-      k.flags.includes("featured") ? h("span", { class: "badge" }, "featured") : null,
+      k.flags.includes("featured") ? h("span", { class: "badge gold" }, "featured") : null,
       k.n_total < 300 && k.n_total >= 100 ? h("span", { class: "badge warn", title: "Fewer than 300 artworks" }, "low n") : null,
       k.n_total < 100 ? h("span", { class: "badge warn", title: "Fewer than 100 artworks" }, "very low n") : null),
     h("span", { class: "count" }, fmt.format(k.n)),
@@ -238,13 +238,16 @@ async function loadResults(append) {
   const sort = $("#sort").value;
   const data = await api("artworks", `${toQuery()}${toQuery() ? "&" : ""}offset=${resultsOffset}&limit=40&sort=${sort}`);
   if (id !== requestId) return;
-  const items = data.items.map((a) => h("li", {}, h("button", { onclick: () => openArtwork(a.id) },
+  const items = data.items.map((a) => h("li", {}, h("button", { onclick: () => openArtwork(a.id),
+      "aria-label": `${a.title || "Untitled"}${a.creators ? ", " + a.creators : ""}${a.date ? ", " + a.date : ""}` },
+    h("span", { class: "no", "aria-hidden": "true" }),
     h("span", { class: "t" }, a.title || "Untitled"),
-    h("span", { class: "m" }, [a.creators || "Unknown artist", a.date].filter(Boolean).join(" · ")),
-    h("span", { class: "m" }, `${a.type} · ${a.source}${a.reproduction ? " · documentary photograph" : ""}`))));
+    h("span", { class: "a" + (a.creators ? "" : " unknown") }, a.creators ? a.creators.split("; ").join(" · ") : "Artist unknown"),
+    a.date ? h("span", { class: "d" }, a.date) : null,
+    h("span", { class: "m" }, a.type, " · ", a.source, a.reproduction ? h("span", { class: "repro" }, " · documentary photograph") : null))));
   if (append) $("#results").append(...items); else $("#results").replaceChildren(...items);
   if (!append && !items.length) $("#results").replaceChildren(h("li", { class: "empty" }, "No artworks match these filters."));
-  $("#results-h").textContent = `Artworks (${fmt.format(view.n)})`;
+  $("#results-h").replaceChildren("The Works", h("span", { class: "tally" }, ` ${fmt.format(view.n)}`));
   $("#more-btn").hidden = resultsOffset + data.items.length >= view.n;
 }
 $("#more-btn").addEventListener("click", () => { resultsOffset += 40; loadResults(true); });
@@ -253,26 +256,33 @@ $("#sort").addEventListener("change", () => { resultsOffset = 0; loadResults(fal
 async function openArtwork(id) {
   const a = await api("artwork", `id=${encodeURIComponent(id)}`);
   const d = $("#drawer");
-  const creators = a.creators.length ? a.creators.map((c) => h("li", {},
-    c.id && c.kind !== "anonymous" ? h("button", { class: "linkish", onclick: () => { labels["creator:" + c.id] = c.name; closeDrawer(); navigate({ creator: c.id }); } }, c.name) : (c.name || c.raw),
-    c.qualifier ? ` (${c.qualifier})` : "", c.life ? ` · ${c.life}` : "", c.kind === "institution" ? " · institution/publisher" : "")) : [h("li", {}, "Not recorded")];
-  d.querySelector("#drawer-body").replaceChildren(
+  const named = a.creators.filter((c) => c.kind && c.kind !== "anonymous");
+  const byline = named.length ? named.map((c, i) => [i ? " · " : "",
+    h("button", { class: "linkish", style: "font:inherit", onclick: () => { labels["creator:" + c.id] = c.name; closeDrawer(); navigate({ creator: c.id }); } }, c.name),
+    c.qualifier ? h("span", { class: "life" }, ` (${c.qualifier})`) : null,
+    c.life ? h("span", { class: "life" }, ` ${c.life}`) : null]) : ["Artist unknown"];
+  const roles = a.creators.filter((c) => c.kind === "institution" || c.kind === "qualifier");
+  const eyebrow = [a.object_type_label, a.century !== null && a.century !== undefined ? centuryLabel(a.century) : null, a.source.name].filter(Boolean).join(" · ");
+  d.querySelector("#drawer-body").replaceChildren(...[
+    h("p", { class: "eyebrow" }, eyebrow),
     h("h2", { id: "drawer-title" }, a.title || "Untitled"),
+    h("hr", { class: "thread" }),
+    h("p", { class: "byline" }, byline),
+    h("p", { class: "dateline" }, a.date_text || "Undated", a.date_semantics === "reproduction" ? " (date of the photograph)" : ""),
     a.source_url ? h("a", { class: "cta", href: a.source_url, target: "_blank", rel: "noopener" }, `View image & record at ${a.source.name} ↗`) : null,
     h("dl", {},
-      h("dt", {}, "Artist(s)"), h("dd", {}, h("ul", {}, creators)),
-      h("dt", {}, "Date"), h("dd", {}, a.date_text || "Undated", a.date_semantics === "reproduction" ? " (date of the photograph)" : ""),
+      roles.length ? [h("dt", {}, "Also credited"), h("dd", {}, roles.map((c) => c.raw).join(" · "))] : null,
       h("dt", {}, "Object"), h("dd", {}, a.object_type_label || "—", a.instance_of ? ` · ${a.instance_of}` : ""),
       h("dt", {}, "Held by"), h("dd", {}, a.holding || "—"),
       h("dt", {}, "Source"), h("dd", {}, a.source.name),
       h("dt", {}, "ICARUS id"), h("dd", {}, h("code", {}, a.id))),
-    a.titles.length > 1 ? [h("h3", {}, "Other titles"), h("ul", {}, a.titles.slice(1).map((t) => h("li", {}, t)))] : null,
+    a.titles.length > 1 ? [h("h3", {}, "Also titled"), h("ul", {}, a.titles.slice(1).map((t) => h("li", { class: "alt-title" }, t)))] : null,
     h("h3", {}, "Themes"),
     a.themes.length ? h("ul", {}, a.themes.map((p) => h("li", {}, h("button", { class: "linkish", onclick: () => { closeDrawer(); navigate(blank({ node: [p.at(-1).id] })); } },
       p.map((x) => x.label).join(" › "))))) : h("p", {}, "Not in a curated theme yet."),
     h("h3", {}, "Iconclass subjects"),
     h("ul", {}, a.subjects.map((s) => h("li", {}, h("button", { class: "linkish", title: s.label || s.code,
-      onclick: () => { labels["code:" + s.code] = s.label_short; closeDrawer(); navigate({ code: s.code }); } }, s.label_short || s.code), " ", h("code", {}, s.code)))));
+      onclick: () => { labels["code:" + s.code] = s.label_short; closeDrawer(); navigate({ code: s.code }); } }, s.label_short || s.code), " ", h("code", {}, s.code))))].flat(Infinity).filter(Boolean));
   d.hidden = false;
   d.querySelector("#drawer-close").focus();
 }
@@ -319,18 +329,23 @@ async function suggest() {
     h("span", {}, `Search titles for “${q}”`), h("span", { class: "count" }, "↵"));
   sugItems.push({ el: titleOpt, item: { kind: "title", ref: q } });
   nodes.push(h("div", { class: "group" }, "Full text"), titleOpt);
+  if (hasFilters()) nodes.push(h("div", { class: "hint" }, "Choosing a result starts a fresh search and clears the current filters."));
   box.replaceChildren(...nodes);
   box.hidden = false; input.setAttribute("aria-expanded", "true");
 }
 function hideSuggest() { box.hidden = true; input.setAttribute("aria-expanded", "false"); sugIndex = -1; }
+function hasFilters() {
+  return state.node.length > 1 || [state.century, state.creator, state.type, state.source, state.code, state.q].some((v) => v !== null && v !== undefined && v !== "");
+}
+// A search always starts over: every pick replaces the whole filter state (decision D9).
 function pick(item) {
   hideSuggest(); input.value = ""; input.blur();
   if (item.kind === "segment" || item.kind === "theme") navigate(blank({ node: [item.ref] }));
-  else if (item.kind === "subject") { labels["code:" + item.ref] = item.label; navigate({ code: item.ref }); }
-  else if (item.kind === "artist") { labels["creator:" + item.ref] = item.label; navigate({ creator: Number(item.ref) }); }
-  else if (item.kind === "object_type") navigate({ type: item.ref });
-  else if (item.kind === "source") navigate({ source: item.ref });
-  else if (item.kind === "title") navigate({ q: item.ref });
+  else if (item.kind === "subject") { labels["code:" + item.ref] = item.label; navigate(blank({ code: item.ref })); }
+  else if (item.kind === "artist") { labels["creator:" + item.ref] = item.label; navigate(blank({ creator: Number(item.ref) })); }
+  else if (item.kind === "object_type") navigate(blank({ type: item.ref }));
+  else if (item.kind === "source") navigate(blank({ source: item.ref }));
+  else if (item.kind === "title") navigate(blank({ q: item.ref }));
 }
 
 // ---------- controls & info ----------
