@@ -1,0 +1,149 @@
+name_key	display_name	n_artworks	status	match_method	match_confidence	ulan_id	ulan_name	ulan_birth	ulan_death	wikidata_qid	country_code	country_name	proxy_type	evidence_source	geo_confidence	birth_place	birth_lat	birth_lon	nationality	notes	candidates	links
+wd:Q102156729	Agnes Northrop	1	matched	wikidata_identifier	high			1857	1953	Q102156729	USA	United States of America	birthplace	wikidata	high	Flushing	40.76583	-73.833084				3
+wd:Q110748577	Muhammad ibn Badr al-Din Jajarmi	1	matched	wikidata_identifier	high			1300		Q110748577												1
+wd:Q111576861	Fathallah Shirazi	1	matched	wikidata_identifier	high					Q111576861	IRN	Iran	birthplace	wikidata	high	Shiraz	29.610277777	52.531111111				1
+wd:Q11571483	Kanō Einō	1	matched	wikidata_identifier	high			1631	1697	Q11571483	JPN	Japan	birthplace	wikidata	high	Heian-kyō	35.0	135.76666667				7
+wd:Q120799115	Ahmed Tekelü	1	matched	wikidata_identifier	high	500524445		1600	1600	Q120799115	TUR	Turkey	birthplace	wikidata	high	Istanbul	41.01	28.960277777				1
+wd:Q122363013	Haji Muhammad	1	matched	wikidata_identifier	high			1650	1720	Q122363013	IRN	Iran	birthplace	wikidata	high	Qom	34.64	50.876388888				1
+wd:Q1227082	Diosphos Painter	1	matched	wikidata_identifier	high	500058361		-550	-500	Q1227082												8
+wd:Q1246573	Anne Seymour Damer	1	matched	wikidata_identifier	high	500105950		1748	1828	Q1246573	GBR	United Kingdom	birthplace	wikidata	high	Sevenoaks	51.2781	0.1874				16
+wd:Q133828209	Mukund	1	matched	wikidata_identifier	high	500332108				Q133828209												1
+wd:Q1350695	Ergotimos	1	matched	wikidata_identifier	high	500111989		-600	-600	Q1350695												14
+wd:Q1372840	William Rush	1	matched	wikidata_identifier	high	500021866		1756	1833	Q1372840	USA	United States of America	birthplace	wikidata	high	Philadelphia	39.952777777	-75.163611111				12
+wd:Q1374087	Euphiletos Painter	1	matched	wikidata_identifier	high	500116404		-600		Q1374087												7
+wd:Q138337556	Jean Brandely	1	matched	wikidata_identifier	high					Q138337556												1
+wd:Q1389068	Joseph Pennell	1	matched	wikidata_identifier	high	500020707		1857	1926	Q1389068	USA	United States of America	birthplace	wikidata	high	Philadelphia	39.952777777	-75.163611111				13
+wd:Q1451318	Jasper Francis Cropsey	2	matched	wikidata_identifier	high	500012491		1823	1900	Q1451318	USA	United States of America	birthplace	wikidata	high	Staten Island	40.571944444	-74.146944444				20
+wd:Q14633979	Christo	1	matched	wikidata_identifier	high	500115266		1935	2020	Q14633979	BGR	Bulgaria	birthplace	wikidata	high	Gabrovo	42.874242	25.31784				21
+wd:Q14755480	Jan Martel	1	matched	wikidata_identifier	high	500204638		1896	1966	Q14755480	FRA	France	birthplace	wikidata	high	Nantes	47.217222222	-1.553888888				3
+wd:Q1564310	James Wells Champney	1	matched	wikidata_identifier	high	500002288		1843	1903	Q1564310	USA	United States of America	birthplace	wikidata	high	Boston	42.360277777	-71.057777777				7
+wd:Q1620749	Master Hugo	1	matched	wikidata_identifier	high	500000343		1050		Q1620749												6
+wd:Q1632536	Nagasawa Rosetsu	1	matched	wikidata_identifier	high	500323051		1754	1799	Q1632536	JPN	Japan	birthplace	wikidata	high	Sasayama	35.075666666	135.219				9
+wd:Q1673948	Isidore Konti	2	matched	wikidata_identifier	high	500007465		1862	1938	Q1673948	AUT	Austria	birthplace	wikidata	high	Vienna	48.208333333	16.3725				5
+wd:Q175888	Jean Pucelle	1	matched	wikidata_identifier	high	500115647		1300	1334	Q175888	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222				14
+wd:Q17747277	Archibald Robertson	1	matched	wikidata_identifier	high	500002809		1765	1835	Q17747277	GBR	United Kingdom	birthplace	wikidata	high	Monymusk	57.2269	-2.52385				7
+wd:Q18704770	Cesnola Painter	1	matched	wikidata_identifier	high			-800	-800	Q18704770												3
+wd:Q1878978	Lysippides Painter	1	matched	wikidata_identifier	high	500012587		-550		Q1878978												8
+wd:Q1918295	Master Heinrich of Constance	1	matched	wikidata_identifier	high			1300	1400	Q1918295	CHE	Switzerland	birthplace	wikidata	high	Constance	47.663333333	9.175277777				3
+wd:Q19569433	Jan van Mekeren	1	matched	wikidata_identifier	high	500322397		1658	1733	Q19569433												1
+wd:Q197461	Chao Meng-Fu	1	matched	wikidata_identifier	high	500121418		1254	1322	Q197461	CHN	China	birthplace	wikidata	high	Huzhou	30.8925	120.0875				28
+wd:Q19792224	Laura Coombs Hills	2	matched	wikidata_identifier	high	500019684		1859	1952	Q19792224	USA	United States of America	birthplace	wikidata	high	Newburyport	42.8125	-70.877222222				11
+wd:Q1985982	William Trost Richards	12	matched	wikidata_identifier	high	500014455		1833	1905	Q1985982	USA	United States of America	birthplace	wikidata	high	Philadelphia	39.952777777	-75.163611111				14
+wd:Q1990496	Nikolaus Hagenauer	1	matched	wikidata_identifier	high	500053757		1445	1538	Q1990496	FRA	France	birthplace	wikidata	high	Haguenau	48.816666666	7.787777777				7
+wd:Q19917984	Lucia Kleinhans Mathews	1	matched	wikidata_identifier	high	500068744		1870	1955	Q19917984	USA	United States of America	birthplace	wikidata	high	San Francisco	37.775	-122.419444444				2
+wd:Q19955603	Master of Charles of France	1	matched	wikidata_identifier	high	500010157				Q19955603												2
+wd:Q20005928	Michele Todini	1	matched	wikidata_identifier	high	500334757		1610	1690	Q20005928	ITA	Italy	birthplace	wikidata	high	Saluzzo	44.645277777	7.490555555				3
+wd:Q2069921	John Quincy Adams Ward	2	matched	wikidata_identifier	high	500023733		1830	1910	Q2069921	USA	United States of America	birthplace	wikidata	high	Urbana	40.1108	-83.7514				11
+wd:Q20727326	William Robertson	1	matched	wikidata_identifier	high			1936		Q20727326												0
+wd:Q20741693	Q20741693	1	matched	wikidata_identifier	high			1959		Q20741693	USA	United States of America	birthplace	wikidata	high	Bellefonte	40.914722222	-77.774722222				0
+wd:Q20853358	Thomas Hewes Hinckley	1	matched	wikidata_identifier	high	500009040		1813	1896	Q20853358	USA	United States of America	birthplace	wikidata	high	Milton	42.2417	-71.0828				1
+wd:Q2141574	Reinhold Vasters	1	matched	wikidata_identifier	high	500109723		1827	1909	Q2141574	DEU	Germany	birthplace	wikidata	high	Erkelenz	51.08	6.315555555				4
+wd:Q21857518	Master of the Lautenbach Altar	2	matched	wikidata_identifier	high					Q21857518												0
+wd:Q21995306	Sarah Fairchild	1	matched	wikidata_identifier	high					Q21995306												1
+wd:Q22019204	Frances Flora Bond Palmer	1	matched	wikidata_identifier	high	500021237		1812	1876	Q22019204	GBR	United Kingdom	birthplace	wikidata	high	Leicester	52.636111111	-1.133055555				5
+wd:Q22123665	Adolfo Riestra	1	matched	wikidata_identifier	high			1944	1989	Q22123665	MEX	Mexico	birthplace	wikidata	high	Tepic	21.5	-104.9				1
+wd:Q22131067	Q22131067	1	matched	wikidata_identifier	high	500084418		1952		Q22131067	USA	United States of America	birthplace	wikidata	high	Concord	43.206666666	-71.538055555				0
+wd:Q22661422	Joseph Etienne Blerzy	1	matched	wikidata_identifier	high	500524496		1735	1821	Q22661422	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222				2
+wd:Q22712834	Joan Avesta	1	matched	wikidata_identifier	high	500240335				Q22712834												1
+wd:Q22957899	Dora Wheeler Keith	1	matched	wikidata_identifier	high	500019507		1856	1940	Q22957899	USA	United States of America	birthplace	wikidata	high	Long Island	40.78886	-73.23349				9
+wd:Q2580100	Jervis McEntee	2	matched	wikidata_identifier	high	500024287		1828	1891	Q2580100	USA	United States of America	birthplace	wikidata	high	Rondout	41.9206	-73.985				13
+wd:Q26203793	Villa Giulia Painter	1	matched	wikidata_identifier	high	500023167				Q26203793												3
+wd:Q2646046	Alfred Thompson Bricher	1	matched	wikidata_identifier	high	500021690		1837	1908	Q2646046	USA	United States of America	birthplace	wikidata	high	Portsmouth	43.07572	-70.76075				11
+wd:Q27535235	Charles-Guillaume Diehl	1	matched	wikidata_identifier	high	500332074		1811	1885	Q27535235	DEU	Germany	birthplace	wikidata	high	Steinbach (Taunus)	50.167777777	8.571875				2
+wd:Q27884301	Peter Lekeux	1	matched	wikidata_identifier	high	500331506		1716	1768	Q27884301												1
+wd:Q2834942	Alfred André	1	matched	wikidata_identifier	high			1827	1893	Q2834942	FRA	France	birthplace	wikidata	high	former 3rd arrondissement of Paris	48.866834	2.340592				2
+wd:Q28922564	Shiva Ahmadi	1	matched	wikidata_identifier	high			1975		Q28922564	IRN	Iran	birthplace	wikidata	high	Tehran	35.688888888	51.389722222				7
+wd:Q29228073	Giovanni Battista Lodi da Cremona	2	matched	wikidata_identifier	high	500524319		1520	1612	Q29228073	ITA	Italy	birthplace	wikidata	high	Cremona	45.133333333	10.024722222				2
+wd:Q29412617	Q29412617	1	matched	wikidata_identifier	high	500332095		1764	1848	Q29412617												3
+wd:Q29413383	Rebekah S. Munro	1	matched	wikidata_identifier	high	500329617		1780	1803	Q29413383												0
+wd:Q29908787	Patty Coggeshall	1	matched	wikidata_identifier	high	500331501		1780	1797	Q29908787												0
+wd:Q30104791	Ferdinand Eusebius Miseroni	1	matched	wikidata_identifier	high	500080204		1639	1684	Q30104791												1
+wd:Q30727887	Camille Pernon	1	matched	wikidata_identifier	high	500239937		1753	1808	Q30727887	FRA	France	birthplace	wikidata	high	Lyon	45.7675	4.835				2
+wd:Q3120087	John La Farge	8	matched	wikidata_identifier	high	500022926		1835	1910	Q3120087	USA	United States of America	birthplace	wikidata	high	New York City	40.712777777	-74.006111111				24
+wd:Q312950	Louis Comfort Tiffany	3	matched	wikidata_identifier	high	500030415		1848	1933	Q312950	USA	United States of America	birthplace	wikidata	high	New York City	40.712777777	-74.006111111				37
+wd:Q3160089	Jacques Thévenet	1	matched	wikidata_identifier	high	500041845		1891	1989	Q3160089	FRA	France	birthplace	wikidata	high	Dommartin	47.067777777	3.845				2
+wd:Q3210067	Pavel Svinyin	14	matched	wikidata_identifier	high	500176559		1787	1839	Q3210067												7
+wd:Q3222703	Spanish Forger	1	matched	wikidata_identifier	high	500021549				Q3222703												6
+wd:Q325076	Horace Pippin	1	matched	wikidata_identifier	high	500026325		1888	1946	Q325076	USA	United States of America	birthplace	wikidata	high	West Chester	39.9586	-75.605				14
+wd:Q330410	Nearchos	1	matched	wikidata_identifier	high	500045949		-600		Q330410												8
+wd:Q3339918	Nicola da Urbino	1	matched	wikidata_identifier	high	500023587		1480	1538	Q3339918	ITA	Italy	birthplace	wikidata	high	Urbania	43.667773055	12.522088055				5
+wd:Q3439532	Roger Vandercruse Lacroix	1	matched	wikidata_identifier	high	500007075		1728	1799	Q3439532	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222				7
+wd:Q3469342	Sakai Hōitsu	1	matched	wikidata_identifier	high	500121066		1761	1828	Q3469342	JPN	Japan	birthplace	wikidata	high	Ogawamachi	35.694805555	139.763669444				14
+wd:Q3706954	James David Smillie	1	matched	wikidata_identifier	high	500019130		1833	1909	Q3706954	USA	United States of America	birthplace	wikidata	high	New York City	40.712777777	-74.006111111				8
+wd:Q389726	Elihu Vedder	1	matched	wikidata_identifier	high	500032587		1836	1923	Q389726	USA	United States of America	birthplace	wikidata	high	New York City	40.712777777	-74.006111111				15
+wd:Q391671	Andokides	1	matched	wikidata_identifier	high	500019306		-600		Q391671												13
+wd:Q4102410	Dolon Painter	1	matched	wikidata_identifier	high	500004748				Q4102410												6
+wd:Q431475	Evelyn Beatrice Longman	1	matched	wikidata_identifier	high	500017112		1874	1954	Q431475	USA	United States of America	birthplace	wikidata	high	Winchester	38.941666666	-83.650833333				10
+wd:Q432856	Saul Steinberg	1	matched	wikidata_identifier	high	500005873		1914	1999	Q432856	ROU	Romania	birthplace	wikidata	high	Râmnicu Sărat	45.38	27.06				24
+wd:Q433205	Martin Carlin	1	matched	wikidata_identifier	high	500014041		1730	1785	Q433205	DEU	Germany	birthplace	wikidata	high	Freiburg im Breisgau	47.995	7.85				8
+wd:Q4445553	Séraphin Soudbinine	1	matched	wikidata_identifier	high	500329978		1867	1944	Q4445553	RUS	Russia	birthplace	wikidata	high	Nizhny Novgorod	56.326944444	44.0075				7
+wd:Q445026	Anna Hyatt Huntington	1	matched	wikidata_identifier	high	500028984		1876	1973	Q445026	USA	United States of America	birthplace	wikidata	high	Cambridge	42.375	-71.106111111				20
+wd:Q4484057	Filippo Negroli	1	matched	wikidata_identifier	high	500034788		1510	1579	Q4484057	ITA	Italy	birthplace	wikidata	high	Milan	45.466944444	9.19				5
+wd:Q4494389	Habiballah Savaji	1	matched	wikidata_identifier	high					Q4494389	IRN	Iran	birthplace	wikidata	high	Saveh	35.021388888	50.356666666				3
+wd:Q4522495	Sheikhzadeh	1	matched	wikidata_identifier	high	500059685				Q4522495												7
+wd:Q4727179	Alison Saar	1	matched	wikidata_identifier	high	500122244		1956		Q4727179	USA	United States of America	birthplace	wikidata	high	Los Angeles	34.05223	-118.24368				9
+wd:Q4767293	Anna Maria Garthwaite	1	matched	wikidata_identifier	high	500329976		1688	1763	Q4767293	GBR	United Kingdom	birthplace	wikidata	high	Leicestershire	52.716666666	-1.183333333				6
+wd:Q492239	Andokides painter	1	matched	wikidata_identifier	high	500030596		-600		Q492239												18
+wd:Q5031575	Candace Wheeler	1	matched	wikidata_identifier	high	500000563		1827	1923	Q5031575	USA	United States of America	birthplace	wikidata	high	Delhi	42.274166666	-74.925277777				14
+wd:Q503567	Georges Jacob	1	matched	wikidata_identifier	high	500115031		1739	1814	Q503567	FRA	France	birthplace	wikidata	high	Cheny	47.952777777	3.534166666				9
+wd:Q50437849	Emily Maria Scott	1	matched	wikidata_identifier	high	500058789		1832	1915	Q50437849	USA	United States of America	birthplace	wikidata	high	Springwater	42.637222222	-77.595833333				4
+wd:Q5110115	Christian Schussele	1	matched	wikidata_identifier	high	500029871		1824	1879	Q5110115	FRA	France	birthplace	wikidata	high	Guebwiller	47.9075	7.210277777				6
+wd:Q52161471	John Bennett	2	matched	wikidata_identifier	high	500022400		1840	1907	Q52161471												3
+wd:Q5232408	David Claypoole Johnston	1	matched	wikidata_identifier	high	500031218		1797	1865	Q5232408	USA	United States of America	birthplace	wikidata	high	Philadelphia	39.952777777	-75.163611111				6
+wd:Q5274876	Diego de Pesquera	1	matched	wikidata_identifier	high	500040013		1550		Q5274876												3
+wd:Q5294242	Donald Deskey	1	matched	wikidata_identifier	high	500013266		1894	1989	Q5294242	USA	United States of America	birthplace	wikidata	high	Blue Earth	43.6375	-94.102222222				5
+wd:Q5298386	Dorothy Doughty	2	matched	wikidata_identifier	high	500490254		1892	1962	Q5298386												1
+wd:Q5338696	Edith Woodman Burroughs	1	matched	wikidata_identifier	high	500524280		1871	1916	Q5338696	USA	United States of America	birthplace	wikidata	high	Riverdale	40.8941	-73.9087				6
+wd:Q5540480	George Henry Smillie	2	matched	wikidata_identifier	high	500002005		1840	1921	Q5540480	USA	United States of America	birthplace	wikidata	high	New York City	40.712777777	-74.006111111				6
+wd:Q55618750	Zheng Min	2	matched	wikidata_identifier	high			1633	1683	Q55618750												1
+wd:Q5588580	Govardhan	1	matched	wikidata_identifier	high	500334204		1600	1700	Q5588580												9
+wd:Q56006629	Thomas Fletcher	1	matched	wikidata_identifier	high	500024954		1787	1866	Q56006629	USA	United States of America	birthplace	wikidata	high	Alstead	43.148888888	-72.360555555				2
+wd:Q56006667	John Townsend	1	matched	wikidata_identifier	high	500062602		1732	1809	Q56006667	USA	United States of America	birthplace	wikidata	high	Newport	41.491666666	-71.311944444				1
+wd:Q5668811	Harry Fenn	3	matched	wikidata_identifier	high	500020449		1845	1911	Q5668811	GBR	United Kingdom	birthplace	wikidata	high	Richmond	51.456	-0.301				6
+wd:Q56715821	Francí Gomar	2	matched	wikidata_identifier	high				1492	Q56715821												1
+wd:Q56738109	Hans of Landshut	1	matched	wikidata_identifier	high					Q56738109												1
+wd:Q5959839	Mir Ali Heravi	1	matched	wikidata_identifier	high	500116607		1476	1544	Q5959839	AFG	Afghanistan	birthplace	wikidata	high	Herat	34.341944	62.203056				10
+wd:Q60311831	Qasim ibn 'Ali	1	matched	wikidata_identifier	high					Q60311831												1
+wd:Q60833188	Michael Redlin	1	matched	wikidata_identifier	high			1640	1702	Q60833188												2
+wd:Q609754	François Pompon	1	matched	wikidata_identifier	high	500048146		1855	1933	Q609754	FRA	France	birthplace	wikidata	high	Saulieu	47.28	4.228611111				14
+wd:Q610928	Juan Martínez Montañés	1	matched	wikidata_identifier	high	500037691		1568	1649	Q610928	ESP	Spain	birthplace	wikidata	high	Jaén	37.769722222	-3.788888888				17
+wd:Q6153595	Janet Scudder	2	matched	wikidata_identifier	high	500004026		1869	1940	Q6153595	USA	United States of America	birthplace	wikidata	high	Terre Haute	39.469586	-87.389762				10
+wd:Q6445171	Kunz Lochner	1	matched	wikidata_identifier	high	500076947		1510	1567	Q6445171	DEU	Germany	birthplace	wikidata	high	Nuremberg	49.453888888	11.0775				6
+wd:Q6488051	Sultan Muhammad Nur	1	matched	wikidata_identifier	high	500116612		1472	1536	Q6488051	AFG	Afghanistan	birthplace	wikidata	high	Herat	34.341944	62.203056				4
+wd:Q6547717	Lilian Westcott Hale	1	matched	wikidata_identifier	high	500015513		1880	1963	Q6547717	USA	United States of America	birthplace	wikidata	high	Bridgeport	41.183333333	-73.2				8
+wd:Q6701326	Luisa Roldán	2	matched	wikidata_identifier	high	500035072		1652	1706	Q6701326	ESP	Spain	birthplace	wikidata	high	Seville	37.388611111	-5.995				16
+wd:Q6712884	Sultan Muhammad	1	matched	wikidata_identifier	high	500034113		1470	1555	Q6712884	IRN	Iran	birthplace	wikidata	high	Tabriz	38.073888888	46.296111111				13
+wd:Q67131647	Cornelius Kierstede	1	matched	wikidata_identifier	high	500068837		1674	1757	Q67131647												2
+wd:Q6761366	Maria Longworth Nichols Storer	2	matched	wikidata_identifier	high	500091208		1849	1932	Q6761366	USA	United States of America	birthplace	wikidata	high	Cincinnati	39.1	-84.5125				5
+wd:Q6990118	Nellie Mae Rowe	2	matched	wikidata_identifier	high	500125701		1900	1982	Q6990118	USA	United States of America	birthplace	wikidata	high	Fayette County	33.41	-84.49				3
+wd:Q70441	Jean-François Oeben	1	matched	wikidata_identifier	high	500022758		1721	1763	Q70441	DEU	Germany	birthplace	wikidata	high	Heinsberg	51.063055555	6.096388888				12
+wd:Q708502	Arthur Bowen Davies	6	matched	wikidata_identifier	high	500013464		1862	1928	Q708502	USA	United States of America	birthplace	wikidata	high	Utica	43.100833333	-75.2325				16
+wd:Q7086914	Olin Levi Warner	1	matched	wikidata_identifier	high	500001669		1844	1896	Q7086914	USA	United States of America	birthplace	wikidata	high	Suffield	41.983333333	-72.691111111				7
+wd:Q720910	Daniel Chester French	1	matched	wikidata_identifier	high	500009434		1850	1931	Q720910	USA	United States of America	birthplace	wikidata	high	Exeter	42.981388888	-70.947777777				28
+wd:Q722963	Kleitias	1	matched	wikidata_identifier	high	500089125		-614	-600	Q722963												18
+wd:Q724570	Claus de Werve	1	matched	wikidata_identifier	high	500044477		1380	1439	Q724570	NLD	Netherlands	birthplace	wikidata	high	Haarlem	52.381388888	4.635555555				12
+wd:Q737635	Childe Hassam	1	matched	wikidata_identifier	high	500018088		1859	1935	Q737635	USA	United States of America	birthplace	wikidata	high	Dorchester	42.316666666	-71.05				28
+wd:Q7397924	Sadie Irvine	1	matched	wikidata_identifier	high	500034287		1887	1970	Q7397924	USA	United States of America	birthplace	wikidata	high	New Orleans	29.976111111	-90.078333333				2
+wd:Q75309789	Susan Alice Dashwood	1	matched	wikidata_identifier	high			1856	1922	Q75309789												1
+wd:Q75847742	Pieter de Pannemaker	1	matched	wikidata_identifier	high	500336173			1538	Q75847742	BEL	Belgium	birthplace	wikidata	high	Brussels	50.846666666	4.351666666				1
+wd:Q766375	Lorenzo Vaccaro	1	matched	wikidata_identifier	high	500026398		1655	1706	Q766375	ITA	Italy	birthplace	wikidata	high	Naples	40.835833333	14.248611111				7
+wd:Q770625	Augustus Saint-Gaudens	6	matched	wikidata_identifier	high	500124332		1848	1907	Q770625	IRL	Ireland	birthplace	wikidata	high	Dublin	53.349722222	-6.260277777				22
+wd:Q77730	David Roentgen	2	matched	wikidata_identifier	high	500032302		1743	1807	Q77730	DEU	Germany	birthplace	wikidata	high	Herrnhaag	50.2639	9.08333				10
+wd:Q7791711	Thomas Lanigan-Schmidt	1	matched	wikidata_identifier	high	500083582		1948		Q7791711	USA	United States of America	birthplace	wikidata	high	Elizabeth	40.662222222	-74.209166666				2
+wd:Q7794495	Thomas Toft	1	matched	wikidata_identifier	high	500099179		1700	1689	Q7794495	GBR	United Kingdom	birthplace	wikidata	high	England	53.0	-1.0				3
+wd:Q7824142	Yongxing	1	matched	wikidata_identifier	high			1752	1823	Q7824142												5
+wd:Q7933014	Viola Frey	1	matched	wikidata_identifier	high	500061622		1933	2004	Q7933014	USA	United States of America	birthplace	wikidata	high	Lodi	38.128888888	-121.280833333				6
+wd:Q79424575	Jean Lemoyen le Lorrain	5	matched	wikidata_identifier	high			1638	1709	Q79424575												1
+wd:Q7996460	Whitfield Lovell	1	matched	wikidata_identifier	high	500330833		1959		Q7996460	USA	United States of America	birthplace	wikidata	high	The Bronx	40.846666666	-73.873333333				6
+wd:Q8005269	William Beattie	1	matched	wikidata_identifier	high	500524545		1793	1875	Q8005269	GBR	United Kingdom	birthplace	wikidata	high	Dalton	55.0531	-3.38778				4
+wd:Q8017566	William Rickarby Miller	6	matched	wikidata_identifier	high	500018891		1818	1893	Q8017566	GBR	United Kingdom	birthplace	wikidata	high	Staindrop	54.566666666	-1.8				3
+wd:Q81627	al-Jazari	1	matched	wikidata_identifier	high	500475824		1136	1206	Q81627	IRQ	Iraq	birthplace	wikidata	high	Upper Mesopotamia	36.466666666	42.1				56
+wd:Q81808335	Q81808335	1	matched	wikidata_identifier	high				1810	Q81808335	USA	United States of America	birthplace	wikidata	high	Northampton County	40.75	-75.31				1
+wd:Q82800530	Philippe Behagle	5	matched	wikidata_identifier	high	500057448		1641	1705	Q82800530	BEL	Belgium	birthplace	wikidata	high	Oudenaarde	50.85	3.6				2
+wd:Q902022	Darius Painter	1	matched	wikidata_identifier	high	500029448		-400		Q902022												13
+wd:Q970511	Charles Meynier	1	matched	wikidata_identifier	high	500020752		1763	1832	Q970511	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222				12
+wd:Q97998652	Muslim ibn al-Dahhan	1	matched	wikidata_identifier	high	500323020				Q97998652												1
+wd:Q98245736	Joseph Barry	1	matched	wikidata_identifier	high	500104567		1757	1838	Q98245736	IRL	Ireland	birthplace	wikidata	high	Dublin	53.349722222	-6.260277777				0
+wd:Q983441	Thomas Moran	1	matched	wikidata_identifier	high	500015257		1837	1926	Q983441	GBR	United Kingdom	birthplace	wikidata	high	Bolton	53.578333333	-2.43				26
+wd:Q98460120	Şahkulu	1	matched	wikidata_identifier	high	500325904			1556	Q98460120												5
+wd:Q98795363	Adolfo Patiño	1	matched	wikidata_identifier	high	500656078		1954	2005	Q98795363	MEX	Mexico	birthplace	wikidata	high	Mexico City	19.353773	-99.13589				1
