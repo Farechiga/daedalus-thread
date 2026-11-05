@@ -92,7 +92,7 @@
             {"id": "creation", "label": "The Creation", "include": ["71A1", "71A2", "71A3"], "aliases": ["Schöpfung", "Schepping", "Stworzenie świata", "Garden of Eden", "Creation of Adam"]},
             {"id": "adam-and-eve", "label": "Adam & Eve: Fall and Expulsion", "include": ["71A4", "71A5", "71A6"], "aliases": ["Sündenfall", "Fall of Man", "Zondeval", "Expulsion from Paradise", "Vertreibung aus dem Paradies", "Adam en Eva"]},
             {"id": "cain-and-abel", "label": "Cain & Abel", "include": ["71A8"], "aliases": ["Kain und Abel", "Kaïn en Abel", "Brudermord"]},
-            {"id": "noah", "label": "Noah's Ark & the Flood", "include": ["71B3"], "aliases": ["Noah", "Noach", "Sintflut", "Zondvloed", "Arche Noah", "Ark", "Deluge"]},
+            {"id": "noah", "label": "Noah's Ark & the Flood", "include": ["71B3"], "aliases": ["Noah", "Noahs Ark", "Noah's Ark", "Noach", "Sintflut", "Zondvloed", "Arche Noah", "Ark", "Deluge"]},
             {"id": "tower-of-babel", "label": "The Tower of Babel", "include": ["71B4"], "aliases": ["Turmbau zu Babel", "Toren van Babel", "Wieża Babel"]},
             {
               "id": "abraham",
@@ -459,7 +459,7 @@
         {"id": "virtues", "label": "The Virtues", "include": ["11M"], "aliases": ["Tugenden", "Deugden", "Faith Hope and Charity", "Glaube Liebe Hoffnung", "Prudence", "Justice", "Temperance", "Fortitude", "Caritas"]},
         {"id": "vices-sins", "label": "Vices & the Seven Deadly Sins", "include": ["11N"], "aliases": ["Todsünden", "Hoofdzonden", "Sloth", "Envy", "Pride", "Greed", "Avaritia", "Superbia"]},
         {"id": "vanitas", "label": "Vanitas", "include": ["11R5", "11R7"], "aliases": ["Memento mori", "Vergänglichkeit", "Vergankelijkheid", "skull", "Totenkopf", "soap bubbles", "Homo bulla"]},
-        {"id": "death-dance-of-death", "label": "Death & the Dance of Death", "include": ["31F2", "31F3"], "aliases": ["Totentanz", "Dodendans", "Danse macabre", "Death as a skeleton", "Sensenmann", "Grim Reaper"]},
+        {"id": "death-dance-of-death", "label": "Death & the Dance of Death", "include": ["31F2", "31F3"], "aliases": ["Dance of Death", "Totentanz", "Dodendans", "Danse macabre", "Death as a skeleton", "Sensenmann", "Grim Reaper"]},
         {"id": "fortune", "label": "Fortune & the Wheel of Fortune", "include": ["54F"], "aliases": ["Fortuna", "Glücksrad", "Rad van Fortuin", "Luck", "Fate"]},
         {"id": "father-time", "label": "Time & Eternity", "include": ["23A"], "aliases": ["Father Time", "Chronos", "Saturn", "Chronos", "Zeit", "Tijd", "hourglass", "Sanduhr"]},
         {"id": "four-seasons", "label": "The Four Seasons", "include": ["23D", "23E4", "23F4"], "aliases": ["Jahreszeiten", "Jaargetijden", "Pory roku", "Winter", "Spring", "Summer", "Autumn", "Winterlandschaft"]},

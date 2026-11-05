@@ -13,7 +13,16 @@ Newest first. Each entry records what was decided, why, and where it is implemen
 | D5 | **Putti stay inside Mythology** as a theme flagged `decorative`. | `classical-mythology → love-and-desire → putti` |
 | D6 | **"Horses and Riding"** is the catch-all title and includes all riding (`46C131`, `46C132`) plus horses (`46C1314`). Donkeys that aren't being ridden keep their own theme. | `animals → horses-farm → horses-and-riding` |
 | D7 | **Build now with the known taxonomy gaps** and close them in a later pass (list below). | |
-| D8 | **Domain is `daedalus-thread.com`** (Squarespace Domains, registered 2026-11-05 UTC). The brief's spelling "deadalus-thread.com" and the spelling "daedelus-thread.com" are not registered. | DNS setup pending hosting choice |
+| D8 | **Domain is `daedalus-thread.com`** (Squarespace Domains, registered 2026-11-05 UTC). The brief's spelling "deadalus-thread.com" and the spelling "daedelus-thread.com" are not registered. | DNS steps in `docs/deployment.md`. Waiting on the hosting choice. |
+
+Implementation notes (same night):
+
+- **BCE dates** ("27 v. Chr.", "50 BC") and early ranges starting before year 100 ("1/100") are left unparsed for now (798
+  records), not misread as AD. Gap: add proper BCE support.
+- **Search ranking:** a match on a theme's own name beats an alias match, curated themes rank above raw Iconclass subjects,
+  and size breaks near-ties on a log scale. Guarded by `tests/search_golden.tsv` (26 queries, all passing).
+- **Performance:** all 263 unfiltered views are precomputed at server start (about 10 s). Filtered drill-downs take 10–350 ms.
+  Whole-segment views with extra filters take about 1 s. Optimise if that matters.
 
 Still open from the profile (defaults applied until decided): reproduction photographs (PAUart, and Rijksmuseum/Bildindex
 `photograph`/`Fotografie`) are flagged `date_semantics = reproduction` and left out of the timeline by default, with a toggle.

@@ -1,0 +1,41 @@
+{
+  "version": "0.1",
+  "rules": "The first matching rule wins (case-insensitive regex against each meta/instance_of value, then meta/genre). Records with no match fall back to the source default, then to 'other'.",
+  "types": [
+    {"id": "painting", "label": "Paintings"},
+    {"id": "wall-painting", "label": "Wall & Ceiling Paintings"},
+    {"id": "drawing", "label": "Drawings & Designs"},
+    {"id": "print", "label": "Prints"},
+    {"id": "book-illustration", "label": "Books, Manuscripts & Emblems"},
+    {"id": "photograph", "label": "Photographs"},
+    {"id": "poster-graphic", "label": "Posters & Graphic Design"},
+    {"id": "stained-glass", "label": "Stained Glass"},
+    {"id": "sculpture", "label": "Sculpture"},
+    {"id": "decorative-arts", "label": "Decorative Arts"},
+    {"id": "map", "label": "Maps & Plans"},
+    {"id": "other", "label": "Other / Unspecified"}
+  ],
+  "patterns": [
+    ["stained-glass", "stained glass|glasmalerei|glasgemälde|kabinettscheibe|wappenscheibe|vitrail|glasfenster"],
+    ["wall-painting", "wandmalerei|wandbild|mural|wall painting|wallpaper painting|decorative wall|deckenmalerei|deckenbild|deckendekoration|gewölbedekoration|ceiling painting|fresko|fresco"],
+    ["poster-graphic", "plakat|poster|graphic design|buchgestaltung|presse|magazine|zeitschrift|zeitung|originalmontage|fotomontage|photomontage|umschlag|postkarte"],
+    ["photograph", "photograph|fotografie|foto\\b|stereograph|carte-de-visite|cabinet photograph|vintage print|daguerreotyp|albumin"],
+    ["map", "landkarte|stadtplan|schlachtplan|\\bmap\\b|karte\\b|atlas"],
+    ["book-illustration", "illustrationszyklus|buchseite|buchillustration|book illustration|schriftkultur|text sheet|miniatur in|handschrift|manuscript|codex|emblem|inkunabel|illumination|\\bbuch\\b|scrapbook"],
+    ["drawing", "zeichnung|drawing|entwurf|studie|skizze|sketch|design\\b|aquarell|watercolou?r|gouache|wettbewerbsarbeit|grundriss|\\bplan\\b|aufriss"],
+    ["print", "\\bprint|druck|graphik|grafik|radierung|kupferstich|holzschnitt|lithogra|etching|engraving|woodcut|bilderbogen|flugblatt|spottblatt|erinnerungsblatt|karikatur|einblatt|einzelblatt"],
+    ["sculpture", "statue|relief|büste|bust\\b|skulptur|sculpture|plastik|statuette|kapitell|sitzfigur|kruzifix|grabmal|epitaph|grabplatte|grabstein|modell|kopf|abguss|figur|figure|plakette|portal|bauskulptur|rundplastik"],
+    ["decorative-arts", "tapestry|tapisserie|teppich|orden|siegel|ofenkachel|reliquiar|innenausstattung|kunstgewerbe|angewandte kunst|medaille|medal|münze|coin|möbel|furniture|textil|goldschmied|keramik|porzellan|email\\b|elfenbein|vase|plate \\(dishes\\)|kachelofen|chorgestühl|konsole|ambo|kanzel|objekt"],
+    ["painting", "painting|gemälde|malerei|\\bbild\\b|bild,|tafelbild|altarbild|altar|retabel|retable|triptych|triptychon|diptych|flügelaltar|predella|oil sketch|ölskizze|overdoor|overmantel|ikone|icon\\b|andachtsbild|pendant|miniature|tafelmalerei"]
+  ],
+  "source_defaults": {
+    "emblematica": "book-illustration",
+    "bsb_ink": "book-illustration",
+    "kb_mss": "book-illustration",
+    "bodleian_ballads": "print",
+    "cvma": "stained-glass",
+    "vitrosearch": "stained-glass",
+    "pauart": "photograph",
+    "heartfield": "poster-graphic"
+  }
+}

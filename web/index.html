@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daedalus Thread</title>
+  <meta name="description" content="Explore 477,569 artworks through their subjects: Christian art, classical myth, animals, allegory and landscape.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M4 16h6v-6h6v12h6V10h6' fill='none' stroke='%238a2a1b' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/css/app.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="/" aria-label="Daedalus Thread home">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M4 16h6v-6h6v12h6V10h6"/></svg>
+      <span>Daedalus Thread</span>
+    </a>
+    <div class="search" role="search">
+      <label for="q" class="sr-only">Search themes, subjects and artists</label>
+      <input id="q" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Search: Annunciation, St George, Dürer, lion, Verkündigung…"
+             role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list">
+      <div id="suggest" class="suggest" role="listbox" hidden></div>
+    </div>
+    <button class="ghost" id="info-btn" aria-haspopup="dialog">About the data</button>
+  </header>
+
+  <nav class="segments" id="segments" aria-label="Segments"></nav>
+
+  <main id="main" class="layout">
+    <aside class="themes card" aria-labelledby="themes-h">
+      <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+      <h2 id="themes-h" class="focus-title">Themes</h2>
+      <p class="focus-desc" id="focus-desc"></p>
+      <ol class="theme-list" id="theme-list"></ol>
+    </aside>
+
+    <section class="content">
+      <div class="statusbar card">
+        <div class="filters">
+          <button class="ghost small" id="back-btn" title="Previous view">← Back</button>
+          <button class="ghost small" id="reset-btn" title="Clear all filters">Reset filters</button>
+          <div class="chips" id="chips" aria-live="polite"></div>
+        </div>
+        <div class="summary" id="summary" aria-live="polite"></div>
+        <label class="toggle"><input type="checkbox" id="repro-toggle"> Include documentary photographs in date &amp; artist charts</label>
+      </div>
+
+      <div class="grid">
+        <article class="card chart wide" id="c-timeline"><header><h3>When</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-artists"><header><h3>Most frequent artists</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-treemap"><header><h3>Theme proportions</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart wide" id="c-heatmap"><header><h3>Themes across the centuries</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-subjects"><header><h3>Most frequent Iconclass subjects</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-types"><header><h3>Kinds of object</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-map"><header><h3>Where the artists came from</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-sources"><header><h3>Source collections</h3><p class="n"></p></header><div class="body"></div></article>
+      </div>
+
+      <section class="card results" aria-labelledby="results-h">
+        <header><h3 id="results-h">Artworks</h3>
+          <label>Sort <select id="sort"><option value="date">by date</option><option value="title">by title</option><option value="random">shuffled</option></select></label>
+        </header>
+        <ol class="result-list" id="results"></ol>
+        <button class="ghost" id="more-btn" hidden>Show more</button>
+      </section>
+    </section>
+  </main>
+
+  <aside class="drawer" id="drawer" aria-labelledby="drawer-title" hidden>
+    <button class="ghost close" id="drawer-close" aria-label="Close details">×</button>
+    <div id="drawer-body"></div>
+  </aside>
+
+  <dialog id="info">
+    <form method="dialog"><button class="ghost close" aria-label="Close">×</button></form>
+    <h2>About the data</h2>
+    <div id="info-body"></div>
+  </dialog>
+
+  <footer class="foot">
+    Data: <a href="https://zenodo.org/records/18980670">ICARUS</a> (CC BY 4.0) ·
+    <a href="https://iconclass.org/">Iconclass</a> (CC0) · Getty Vocabularies (ODC-By) · Natural Earth.
+    Counts describe the ICARUS collection, not art history as a whole.
+  </footer>
+</body>
+</html>

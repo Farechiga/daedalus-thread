@@ -17,10 +17,23 @@ and country boundaries come from Natural Earth.
 | `Deadalus_Thread_Project Overview.md` | Project brief (v0.1) |
 | `docs/` | Dataset profile, taxonomy & search proposal, decisions log |
 | `taxonomy/segments.json` | The human-readable taxonomy: segments → groups → themes → Iconclass notations |
+| `taxonomy/object_types.json` | Rules mapping the sources' multilingual object terms to 12 object types |
 | `etl/` | Stdlib-only parsers shared by every script (ICARUS records, dates, Iconclass tree) |
-| `scripts/` | Fetching, profiling, taxonomy evaluation and formatting |
+| `scripts/` | Fetching, profiling, taxonomy evaluation/formatting, and `build_db.py` (the SQLite importer) |
+| `server/` | Stdlib HTTP server and query layer (`/api/view`, `/api/artworks`, `/api/artwork`, `/api/suggest`) |
+| `web/` | Single-pane browser: vanilla ES modules, native SVG charts, no third-party code |
+| `tests/` | Search golden queries (`python3 tests/test_search.py`) |
 | `data/SOURCES.md` | Provenance, versions and licenses of every source |
 | `data/raw/`, `data/profile/`, `data/db/` | Downloaded and generated data (git-ignored) |
+
+## Running the app
+
+```sh
+python3 scripts/build_db.py      # build data/db/daedalus.sqlite (~25 s, after fetching sources)
+python3 server/app.py            # open http://127.0.0.1:8000
+```
+
+Deployment and domain setup are covered in `docs/deployment.md`.
 
 ## Getting started
 

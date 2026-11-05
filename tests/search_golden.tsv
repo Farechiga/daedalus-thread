@@ -1,0 +1,27 @@
+# query	expected kind	expected ref or label (first item of the first group, or anywhere in the top 3 groups with "~")
+annunciation	theme	annunciation
+verkündigung	theme	annunciation
+verk	theme	~annunciation
+unciat	theme	annunciation
+pieta	theme	lamentation-pieta
+noah	theme	noah
+st george	theme	st-george
+sint joris	theme	~st-george
+hl. georg	theme	st-george
+david gol	theme	david-and-goliath
+icarus	theme	daedalus-icarus
+putti	theme	putti
+lion	theme	lions
+löwe	theme	lions
+owl	theme	owls
+dragon	theme	dragons
+horses	theme	~horses-and-riding
+riding	theme	~horses-and-riding
+vanitas	theme	vanitas
+dance of death	theme	death-dance-of-death
+durer	artist	Albrecht Dürer
+rubens	artist	Peter Paul Rubens
+rembrandt	artist	~Rembrandt
+rijks	source	rijksmuseum
+73A5	subject	73A5
+noahs ark	theme	noah

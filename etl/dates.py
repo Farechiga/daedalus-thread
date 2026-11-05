@@ -18,6 +18,10 @@ BEFORE = re.compile(r"\b(vor|before|bis|ante|przed|voor|avant|uiterlijk|spätest
 AFTER = re.compile(r"\b(nach|after|post|po|na|na\s+ok|ná|après|frühestens)\b", re.I)
 
 # Trailing normalised range, e.g. "c. 1595 (1590 - 1600)" or "dated 1634 (1634)" (RKD style).
+# BCE dates ("27 v. Chr.", "50 BC", "av. J.-C.") are left unparsed for now rather than misread as CE.
+BCE = re.compile(r"v\.\s?chr|\bb\.?c\.?(e\.?)?\b|av\.\s?j\.?-?c|\bvor christus|\bp\.?n\.?e\.?", re.I)
+
+SLASH_RANGE = re.compile(r"^(\d{1,4})\s*/\s*(\d{3,4})\s*\??$")
 TRAILING = re.compile(r"\((\d{3,4})(?:\s*[-–]\s*(\d{3,4}))?\)\s*$")
 
 CENTURY_WORD = r"(?:jh\.?|jhdt\.?|jahrhunderts?|century|centuries|eeuws?|siècle|wieku?|w\.)"
@@ -77,7 +81,16 @@ def parse_time(text):
     s = " ".join(text.split())
     if not s:
         return None
+    if BCE.search(s):
+        return unparsed(text, "bce")
     approx = bool(APPROX.search(s))
+
+    m = SLASH_RANGE.match(s)
+    if m:  # "1/100", "0/330", "101/200": early ranges whose first year may have < 3 digits
+        a, b = int(m.group(1)), int(m.group(2))
+        if a < MIN_YEAR:
+            return unparsed(text, "before_min_year")
+        return _result(a, b, "range", approx, text)
 
     m = TRAILING.search(s)
     if m:
