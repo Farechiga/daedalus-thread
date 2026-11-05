@@ -222,7 +222,55 @@ class Queries:
         out["coverage"] = self.coverage(where, args, n)
         out["geo"] = self.geo(f, where, args, n)
         out["coverage"]["artist_country"] = out["geo"]["n"]
+        out["country_mix"] = self.country_mix(f, focus, where, args, out)
         return out
+
+    def country_mix(self, f, focus, where, args, out, n_countries=5, n_cats=5):
+        """Top artist countries, each split into the selection's leading sub-themes (or, for a theme without
+        sub-themes, its leading Iconclass subjects) plus Other. Shares are of memberships: a work in two
+        sub-themes counts in both, so each country's bar sums to 100% of its memberships."""
+        countries = [c for c in out["geo"]["countries"]][:n_countries]
+        if not countries:
+            return None
+        codes = [c["code"] for c in countries]
+        obj = self._object_clause(f)
+        prox = f.proxies()
+        cm, pm = ",".join("?" * len(codes)), ",".join("?" * len(prox))
+        geo_join = (f"FROM artwork a JOIN artwork_creator ac ON ac.artwork_rid = a.rid JOIN creator_geo g ON g.creator_id = ac.creator_id "
+                    f"{{extra}} WHERE {where}{obj} AND g.country_code IN ({cm}) AND g.proxy IN ({pm})")
+        gargs = args + codes + list(prox)
+        kids = [c for c in out["tree"]["children"] if c["n"]]
+        if kids:
+            kind, cats = "theme", [{"id": c["id"], "label": c["label"]} for c in kids[:n_cats]]
+            ids = [c["id"] for c in kids] + ([focus] if out["tree"]["other"] else [])
+            im = ",".join("?" * len(ids))
+            # the focus's own remainder ('Other <theme>') counts toward Other; a node id per membership
+            rows = self.db.execute(
+                f"SELECT g.country_code, n.node_id, count(DISTINCT a.rid) "
+                + geo_join.format(extra="JOIN artwork_node n ON n.artwork_rid = a.rid")
+                + f" AND n.node_id IN ({im}) AND (n.node_id <> ? OR n.is_other = 1) GROUP BY 1, 2",
+                gargs + ids + [focus or ""]).fetchall()
+        elif out["subjects"]:
+            kind, cats = "subject", [{"id": s["code"], "label": s["label"]} for s in out["subjects"][:n_cats]]
+            rows = self.db.execute(
+                f"SELECT g.country_code, ai.notation, count(DISTINCT a.rid) "
+                + geo_join.format(extra="JOIN artwork_iconclass ai ON ai.artwork_rid = a.rid") + " GROUP BY 1, 2",
+                gargs).fetchall()
+        else:
+            return None
+        rest = [c["label"] for c in kids[n_cats:]] if kind == "theme" else []
+        other_label = rest[0] if len(rest) == 1 and not out["tree"]["other"] else "Other"
+        top = {c["id"] for c in cats}
+        mix = {code: {"parts": {}, "other": 0} for code in codes}
+        for code, cat, k in rows:
+            if cat in top:
+                mix[code]["parts"][cat] = k
+            else:
+                mix[code]["other"] += k
+        return {"kind": kind, "categories": cats, "other_label": other_label, "include_nationality": f.nat,
+                "countries": [{"code": c["code"], "name": c["name"], "n": c["n"],
+                               "parts": [mix[c["code"]]["parts"].get(cat["id"], 0) for cat in cats],
+                               "other": mix[c["code"]]["other"]} for c in countries]}
 
     def geo(self, f, where, args, n, max_places=160):
         """Artist-country attribution for the filtered set (decision D3: an artwork counts once per country
