@@ -358,7 +358,7 @@ async function openArtwork(id) {
     h("p", { class: "dateline" }, a.date_text || "Undated", a.date_semantics === "reproduction" ? " (date of the photograph)" : ""),
     a.source_url ? h("a", { class: a.link_https ? "cta" : "cta insecure", href: a.source_url, target: "_blank", rel: "noopener noreferrer",
       "aria-describedby": a.link_https ? null : "link-warning" }, wd ? "View on Wikidata ↗" : a.dataset === "met" ? "View at The Met ↗" : a.dataset === "aic" ? "View at the Art Institute of Chicago ↗" :
-      a.dataset === "zeri" ? "View the Zeri catalogue record ↗" : `View image & record at ${a.source.name} ↗`) : null,
+      a.dataset === "zeri" ? "View the Zeri catalogue record ↗" : a.dataset === "joconde" ? "View the record on POP (Joconde) ↗" : `View image & record at ${a.source.name} ↗`) : null,
     a.source_url && !a.link_https ? h("p", { class: "link-warning", id: "link-warning", role: "note" }, h("span", { "aria-hidden": "true" }, "⚠"),
       h("span", {}, "Warning: link may not be safe",
         h("small", {}, `${a.source.name} uses an unencrypted http:// address, so your browser may warn you before opening it.`))) : null,
@@ -367,7 +367,7 @@ async function openArtwork(id) {
       h("dt", {}, "Object"), h("dd", {}, a.object_type_label || "—", a.instance_of ? ` · ${a.instance_of}` : ""),
       h("dt", {}, "Held by"), h("dd", {}, a.holding || "—"),
       h("dt", {}, "Source"), h("dd", {}, a.source.name),
-      h("dt", {}, { wikidata: "Wikidata", met: "Met object", aic: "AIC object", zeri: "Zeri record" }[a.dataset] || "ICARUS id"),
+      h("dt", {}, { wikidata: "Wikidata", met: "Met object", aic: "AIC object", zeri: "Zeri record", joconde: "Joconde ref." }[a.dataset] || "ICARUS id"),
       h("dd", {}, h("code", {}, a.dataset && a.dataset !== "icarus" ? a.id.slice(a.id.indexOf("-") + 1) : a.id)),
       wd && a.fame !== null ? [h("dt", {}, "Wikipedia"), h("dd", {}, `${a.fame} language edition${a.fame === 1 ? "" : "s"}`)] : null,
       a.fame_pct !== null && a.fame_pct !== undefined ? [h("dt", {}, "Renown"), h("dd", {},
@@ -452,7 +452,7 @@ $("#back-btn").addEventListener("click", () => history.back());
 $("#reset-btn").addEventListener("click", () => navigate(blank({ node: view.path.length ? [view.path[0].id] : [] })));
 $("#repro-toggle").addEventListener("change", (e) => navigate({ repro: e.target.checked }, { replace: true }));
 $("#nat-toggle").addEventListener("change", (e) => navigate({ nat: e.target.checked }, { replace: true }));
-const DATASET_LABEL = { icarus: "ICARUS", wikidata: "Wikidata", met: "The Met", aic: "Chicago", zeri: "Zeri" };
+const DATASET_LABEL = { icarus: "ICARUS", wikidata: "Wikidata", met: "The Met", aic: "Chicago", zeri: "Zeri", joconde: "Joconde" };
 function renderDatasetSwitch() {
   const el = $("#ds-switch");
   const sets = Object.entries(meta.datasets || {}).sort((a, b) => b[1] - a[1]);
@@ -489,6 +489,7 @@ function renderInfo() {
       h("li", {}, "Some collections still use unencrypted http:// links. Artworks with those links are listed after the others, and their detail panel shows a warning."),
       h("li", {}, "A second source adds paintings from Wikidata (CC0), from museums worldwide, to balance ICARUS's strength in Northern European prints. A painting's subjects come from what Wikidata says it depicts, mapped to Iconclass through subject entries that carry Iconclass codes. Use the Collections switch to view either source alone."),
       h("li", {}, "Further sources: the Art Institute of Chicago (CC0), whose subject terms are mapped to themes through their names and Wikidata's Iconclass links; and the Fondazione Federico Zeri photo-archive catalogue of mostly Italian Renaissance art, whose subjects come linked to Iconclass by the Fondazione. Zeri data © Fondazione Federico Zeri, Università di Bologna, CC BY-NC 4.0, non-commercial use."),
+      h("li", {}, "Joconde, the national catalogue of the Musées de France, adds paintings, drawings, prints and sculpture from French museums, which hold much Italian, Flemish and Spanish art as well as French. Its French subject terms (“scène biblique (Annonciation)”) are mapped to themes by a reviewed term list. Data: Ministère de la Culture, base Joconde (POP), Licence Ouverte 2.0."),
       h("li", {}, "These are distributions within the collections shown, not definitive histories of art.")),
     h("h3", {}, "Sources"),
     h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Collection"), h("th", {}, "Country"), h("th", { class: "num" }, "Artworks"))), h("tbody", {}, rows)),

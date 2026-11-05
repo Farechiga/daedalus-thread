@@ -2,6 +2,13 @@
 
 Newest first. Each entry records what was decided, why, and where it is implemented.
 
+## 2026-11-05 (morning): Hosting, French museums
+
+| # | Decision | Implementation |
+|---|---|---|
+| D30 | **Joconde, the Musées de France catalogue** (Licence Ouverte 2.0, attribution only). 88,968 paintings, drawings, prints and sculptures whose French subject terms map to themes. The term list is reviewed by hand and scoped by category: a "Christ" inside a biblical scene isn't a devotional image, the eagle of St John isn't an eagle, a winter landscape isn't the personified Winter, and portrait sitters aren't subjects. Records already harvested from Wikidata (P347) are dropped. Artists: an existing name key; else Getty ULAN by name and life dates, which merges French name forms such as "Pierre Paul Rubens" into the existing artist; else the school as a low-confidence nationality proxy. | `scripts/import_joconde.py`, `taxonomy/joconde_terms.json` |
+| D29 | **Host: Hetzner VPS** (replaces D28). Flat monthly price, so traffic can't run up per-query costs. Caddy provides HTTPS. The site is password-protected (password only, no username), with a per-client rate limit. | `deploy/`, `docs/deployment.md` |
+
 ## 2026-11-05 (night): More sources, layout, launch
 
 | # | Decision | Implementation |

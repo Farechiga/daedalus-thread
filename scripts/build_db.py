@@ -29,12 +29,15 @@ RAW = os.path.join(ROOT, "data", "raw")
 LANGS = ("en", "de", "nl", "fr", "it", "pl")
 REPRODUCTION_SOURCES = {"pauart"}
 EXTRA_SOURCES = [("wikidata_paintings.jsonl.gz", "wikidata"), ("met_objects.jsonl.gz", "met"),
-                 ("aic_objects.jsonl.gz", "aic"), ("zeri_objects.jsonl.gz", "zeri")]
+                 ("aic_objects.jsonl.gz", "aic"), ("zeri_objects.jsonl.gz", "zeri"),
+                 ("joconde_objects.jsonl.gz", "joconde")]
 EXTRA_SOURCE_ROWS = [("wikidata", "Wikidata (paintings)", None, "www.wikidata.org"),
                      ("met", "The Metropolitan Museum of Art", "US", "www.metmuseum.org"),
                      ("aic", "Art Institute of Chicago", "US", "www.artic.edu"),
-                     ("zeri", "Fondazione Federico Zeri (photo archive)", "IT", "catalogo.fondazionezeri.unibo.it")]
-CREATOR_FILES = ("creator_geo.tsv", "wikidata_creators.tsv", "met_creators.tsv", "aic_creators.tsv", "zeri_creators.tsv")  # dates/creators describe a documentary photograph (decision log, open item)
+                     ("zeri", "Fondazione Federico Zeri (photo archive)", "IT", "catalogo.fondazionezeri.unibo.it"),
+                     ("joconde", "Joconde (Musées de France)", "FR", "pop.culture.gouv.fr")]
+CREATOR_FILES = ("creator_geo.tsv", "wikidata_creators.tsv", "met_creators.tsv", "aic_creators.tsv", "zeri_creators.tsv",
+                 "joconde_creators.tsv")  # dates/creators describe a documentary photograph (decision log, open item)
 
 SCHEMA = """
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
@@ -294,7 +297,7 @@ def main():
                         info = wd_creators.get(key, {})
                         life = f"{info['birth']}–{info['death']}" if info.get("birth") and info.get("death") else None
                         entry = creators[key] = [len(creators) + 1, collections.Counter(), "person", life, 0, collections.Counter()]
-                    entry[1][name] += 1
+                    entry[1][name] += 0.01 if dataset == "joconde" else 1  # display: prefer other sources' name forms
                     entry[5][name] += 1
                     if entry[0] not in seen_creators:
                         entry[4] += 1
