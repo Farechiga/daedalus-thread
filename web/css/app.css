@@ -19,7 +19,7 @@
   --heat-0: #eef6f4;
   --heat-1: #138f80;
   --heat-mid: #80c2b8; --sea: color-mix(in oklab, #f5f3ee 70%, #e2f2ef);
-  --stack-0: #123a45; --stack-1: #2a6570; --stack-2: #4f8a91; --stack-3: #86b5b7; --stack-other: #cfe0de; --band-ink: #fff;  /* ranked 100% bars */
+  --stack-0: #123a45; --stack-1: #2a6570; --stack-2: #4f8a91; --stack-3: #86b5b7; --stack-4: #b3d1d1; --stack-other: #e2ecea; --band-ink: #fff;  /* 100% bars */
   --ramp-1: #e8f3f1; --ramp-2: #bfdcd7; --ramp-3: #84beb4; --ramp-4: #3e9c8d; --ramp-5: #006d67;  /* map classes */
   /* donut slices: the teal family, then navy and slate, light enough steps apart to tell neighbours apart */
   --pie-0: #006d67; --pie-1: #3e9c8d; --pie-2: #84beb4; --pie-3: #022e3a; --pie-4: #4f7480; --pie-5: #a9c2c8;
@@ -38,7 +38,7 @@
     --navy: #cfe3e8; --accent: #6fd6c8; --accent-soft: #14332f;
     --gold: #e3a828; --gold-soft: #3a2f12; --gold-ink: #f0c76a; --chip: #a48dbc; --chip-ink: #160f1c;
     --bar: #2fb8a6; --bar-hi: #7fdccf; --bar-muted: #1d3d39;
-    --stack-0: #9ae6da; --stack-1: #5cc8b8; --stack-2: #36a091; --stack-3: #25766c; --stack-other: #22363c; --band-ink: #0a171c; --heat-0: #12262d; --heat-mid: #1f6f66; --heat-1: #2fb8a6; --sea: color-mix(in oklab, #0a171c 70%, #14332f); --focus: #6fd6c8; --warn: #e6bd5a; --danger: #ff8a80; color-scheme: dark;
+    --stack-0: #9ae6da; --stack-1: #5cc8b8; --stack-2: #36a091; --stack-3: #25766c; --stack-4: #1d544e; --stack-other: #1f3238; --band-ink: #0a171c; --heat-0: #12262d; --heat-mid: #1f6f66; --heat-1: #2fb8a6; --sea: color-mix(in oklab, #0a171c 70%, #14332f); --focus: #6fd6c8; --warn: #e6bd5a; --danger: #ff8a80; color-scheme: dark;
     --ramp-1: #173a36; --ramp-2: #1f5c54; --ramp-3: #2a8677; --ramp-4: #3fb3a1; --ramp-5: #8de6d6;
     --pie-0: #2fb8a6; --pie-1: #7fdccf; --pie-2: #1f7f72; --pie-3: #cfe3e8; --pie-4: #6f97a3; --pie-5: #3d5a62; --pie-6: #a9efe4; --pie-7: #2a4d55; --pie-8: #8aa0a6; --pie-other: #21363e;
   }
@@ -48,7 +48,7 @@
   --navy: #cfe3e8; --accent: #6fd6c8; --accent-soft: #14332f;
   --gold: #e3a828; --gold-soft: #3a2f12; --gold-ink: #f0c76a; --chip: #a48dbc; --chip-ink: #160f1c;
   --bar: #2fb8a6; --bar-hi: #7fdccf; --bar-muted: #1d3d39;
-  --stack-0: #9ae6da; --stack-1: #5cc8b8; --stack-2: #36a091; --stack-3: #25766c; --stack-other: #22363c; --band-ink: #0a171c; --heat-0: #12262d; --heat-mid: #1f6f66; --heat-1: #2fb8a6; --sea: color-mix(in oklab, #0a171c 70%, #14332f); --focus: #6fd6c8; --warn: #e6bd5a; --danger: #ff8a80; color-scheme: dark;
+  --stack-0: #9ae6da; --stack-1: #5cc8b8; --stack-2: #36a091; --stack-3: #25766c; --stack-4: #1d544e; --stack-other: #1f3238; --band-ink: #0a171c; --heat-0: #12262d; --heat-mid: #1f6f66; --heat-1: #2fb8a6; --sea: color-mix(in oklab, #0a171c 70%, #14332f); --focus: #6fd6c8; --warn: #e6bd5a; --danger: #ff8a80; color-scheme: dark;
     --ramp-1: #173a36; --ramp-2: #1f5c54; --ramp-3: #2a8677; --ramp-4: #3fb3a1; --ramp-5: #8de6d6;
     --pie-0: #2fb8a6; --pie-1: #7fdccf; --pie-2: #1f7f72; --pie-3: #cfe3e8; --pie-4: #6f97a3; --pie-5: #3d5a62; --pie-6: #a9efe4; --pie-7: #2a4d55; --pie-8: #8aa0a6; --pie-other: #21363e;
 }
@@ -217,7 +217,8 @@ svg.donut path.c8, .donut-legend i.c8 { fill: var(--pie-8); background: var(--pi
 svg.donut path.c-other, .donut-legend i.c-other { fill: var(--pie-other); background: var(--pie-other); }
 
 /* ---------- country mix: 100% stacked bars ---------- */
-.mix { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.mix { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.mix li { min-width: 0; }
 .mix-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
 .mix-head .linkish { background: none; border: 0; padding: 0; cursor: pointer; font: 500 15.5px var(--serif); color: var(--navy); }
 .mix-head .linkish:hover { color: var(--accent); }
@@ -225,7 +226,15 @@ svg.donut path.c-other, .donut-legend i.c-other { fill: var(--pie-other); backgr
 .mix-bar { display: flex; gap: 2px; height: 26px; border-radius: 4px; overflow: hidden; }
 .mix-bar > * { flex-basis: 0; min-width: 3px; border: 0; padding: 0 7px; display: flex; align-items: center; overflow: hidden; }
 .mix-bar > * span { font: 11.5px var(--sans); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--band-ink); pointer-events: none; }
-.mix-bar .s3 span, .mix-bar .s-other span { color: var(--navy); }
+.mix-bar .s3 span, .mix-bar .s4 span, .mix-bar .s-other span { color: var(--navy); }
+.mix.compact { gap: 10px; }
+.mix.compact .mix-head { margin-bottom: 3px; gap: 12px; }
+.mix.compact .mix-head .linkish { font: 13.5px var(--sans); color: var(--ink); text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.mix.compact .mix-bar { height: 20px; }
+.mix li.sel .mix-head .linkish { color: var(--gold-ink); font-weight: 600; }
+.mix-bar button.on { box-shadow: inset 0 0 0 2px var(--gold); }
+.mix-bar.none { background: var(--bg); }
+.mix-bar.none span { color: var(--muted); font: italic 12px var(--sans); }
 .mix-bar button { cursor: pointer; }
 .mix-bar button:hover, .mix-bar button:focus-visible { filter: brightness(1.18); outline-offset: -2px; }
 .mix-legend { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12.5px; color: var(--muted); }
@@ -235,6 +244,7 @@ svg.donut path.c-other, .donut-legend i.c-other { fill: var(--pie-other); backgr
 .mix .s1, .mix-legend .s1 { background: var(--stack-1); }
 .mix .s2, .mix-legend .s2 { background: var(--stack-2); }
 .mix .s3, .mix-legend .s3 { background: var(--stack-3); }
+.mix .s4, .mix-legend .s4 { background: var(--stack-4); }
 .mix .s-other, .mix-legend .s-other { background: var(--stack-other); }
 
 /* ---------- map ---------- */
@@ -441,8 +451,7 @@ dialog td.num, dialog th.num { text-align: right; font-variant-numeric: tabular-
 :root[data-palette="enamel"] .segments button[data-seg="allegory-symbols"] { --dot: #7a2fbf; }
 :root[data-palette="enamel"] .segments button[data-seg="landscape-nature"] { --dot: #0078a8; }
 
-/* "Inside each theme" bands are ranks, not categories: in the multi-colour palettes they are shades of the
-   current segment's hue (deep to pale), so no colour suggests the same sub-theme across rows */
+/* 100% bars (subjects by country): in the multi-colour palettes, shades of the current segment's hue, deep to pale */
 :root[data-palette] { --stack-0: color-mix(in oklab, var(--bar-hi) 88%, #000); --stack-1: var(--bar);
-  --stack-2: color-mix(in oklab, var(--bar) 70%, var(--surface)); --stack-3: color-mix(in oklab, var(--bar) 42%, var(--surface));
-  --stack-other: color-mix(in oklab, var(--bar) 16%, var(--surface)); }
+  --stack-2: color-mix(in oklab, var(--bar) 72%, var(--surface)); --stack-3: color-mix(in oklab, var(--bar) 50%, var(--surface));
+  --stack-4: color-mix(in oklab, var(--bar) 32%, var(--surface)); --stack-other: color-mix(in oklab, var(--bar) 13%, var(--surface)); }

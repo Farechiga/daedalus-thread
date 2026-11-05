@@ -223,48 +223,36 @@ class Queries:
         out["coverage"] = self.coverage(where, args, n)
         out["geo"] = self.geo(f, where, args, n)
         out["coverage"]["artist_country"] = out["geo"]["n"]
-        out["subtheme_mix"] = self.subtheme_mix(focus, where, args, out)
+        out["subject_countries"] = self.subject_countries(f, where, args, out)
         return out
 
-    def subtheme_mix(self, focus, where, args, out, n_rows=5, n_parts=4):
-        """The focus's leading sub-themes, each split into its own top sub-themes (ranked 1st..4th) plus Other.
-        A sub-theme without sub-themes of its own is split by its most frequent Iconclass subjects instead.
-        Shares are of memberships, so a work in two sub-themes counts in both."""
-        rows = [c for c in out["tree"]["children"] if c["n"]][:n_rows]
-        if len(rows) < 2:
+    def subject_countries(self, f, where, args, out, n_subjects=10, n_countries=5):
+        """For the most frequent Iconclass subjects: where their artists were born. The selection's top countries
+        (the same for every subject) plus Other; an artwork counts once per country of its artists (decision D3).
+        Shares are of located artworks only."""
+        subjects = out["subjects"][:n_subjects]
+        countries = out["geo"]["countries"][:n_countries]
+        if not subjects or not countries:
             return None
-        with_kids = [r["id"] for r in rows if self.children.get(r["id"])]
-        leaves = [r["id"] for r in rows if not self.children.get(r["id"])]
-        node_counts, remainder, code_counts = {}, {}, collections.defaultdict(list)
-        if with_kids:
-            kids = [k for r in with_kids for k in self.children[r]]
-            km, rm = ",".join("?" * len(kids)), ",".join("?" * len(with_kids))
-            node_counts = dict(self.db.execute(
-                f"SELECT n.node_id, count(*) FROM artwork_node n JOIN artwork a ON a.rid = n.artwork_rid "
-                f"WHERE n.node_id IN ({km}) AND {where} GROUP BY 1", kids + args))
-            remainder = dict(self.db.execute(
-                f"SELECT n.node_id, count(*) FROM artwork_node n JOIN artwork a ON a.rid = n.artwork_rid "
-                f"WHERE n.node_id IN ({rm}) AND n.is_other = 1 AND {where} GROUP BY 1", with_kids + args))
-        if leaves:
-            lm = ",".join("?" * len(leaves))
-            for nid, code, label, k in self.db.execute(
-                    f"SELECT n.node_id, ai.notation, i.label_en, count(*) k FROM artwork_node n JOIN artwork a ON a.rid = n.artwork_rid "
-                    f"JOIN artwork_iconclass ai ON ai.artwork_rid = a.rid JOIN iconclass i ON i.notation = ai.notation "
-                    f"WHERE n.node_id IN ({lm}) AND {where} GROUP BY 1, 2 ORDER BY k DESC", leaves + args):
-                code_counts[nid].append((code, short_label(label) or code, k))
-        out_rows = []
-        for r in rows:
-            if r["id"] in with_kids:
-                parts = sorted(({"id": k, "label": self.nodes[k][5], "n": node_counts.get(k, 0), "kind": "theme"}
-                                for k in self.children[r["id"]]), key=lambda p: -p["n"])
-                other = sum(p["n"] for p in parts[n_parts:]) + remainder.get(r["id"], 0)
-            else:
-                parts = [{"id": c, "label": lab, "n": k, "kind": "subject"} for c, lab, k in code_counts.get(r["id"], [])]
-                other = sum(p["n"] for p in parts[n_parts:])
-            top = [p for p in parts[:n_parts] if p["n"]]
-            if top:
-                out_rows.append({"id": r["id"], "label": r["label"], "n": r["n"], "parts": top, "other": other})
-        return {"rows": out_rows} if len(out_rows) >= 2 else None
+        codes = [s["code"] for s in subjects]
+        prox = f.proxies()
+        cm, pm = ",".join("?" * len(codes)), ",".join("?" * len(prox))
+        counts = collections.defaultdict(dict)
+        for code, country, k in self.db.execute(
+                f"SELECT ai.notation, g.country_code, count(DISTINCT a.rid) FROM artwork a "
+                f"JOIN artwork_iconclass ai ON ai.artwork_rid = a.rid JOIN artwork_creator ac ON ac.artwork_rid = a.rid "
+                f"JOIN creator_geo g ON g.creator_id = ac.creator_id WHERE {where}{self._object_clause(f)} "
+                f"AND ai.notation IN ({cm}) AND g.country_code IS NOT NULL AND g.proxy IN ({pm}) GROUP BY 1, 2",
+                args + codes + list(prox)):
+            counts[code][country] = k
+        top = [c["code"] for c in countries]
+        rows = []
+        for s in subjects:
+            c = counts.get(s["code"], {})
+            rows.append({"code": s["code"], "label": s["label"], "n": s["n"], "parts": [c.get(t, 0) for t in top],
+                         "other": sum(k for t, k in c.items() if t not in top)})
+        return {"countries": [{"code": c["code"], "name": c["name"]} for c in countries], "rows": rows,
+                "include_nationality": f.nat}
 
     def geo(self, f, where, args, n, max_places=160):
         """Artist-country attribution for the filtered set (decision D3: an artwork counts once per country

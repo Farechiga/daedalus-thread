@@ -86,7 +86,6 @@ function render() {
   renderArtists();
   renderTreemap();
   renderSubjects();
-  renderSubthemeMix();
   renderTypes();
   renderMediaFilter();
   renderSources();
@@ -243,41 +242,36 @@ function renderTreemap() {
 function renderSubjects() {
   const s = view.subjects;
   for (const x of s) labels["code:" + x.code] = x.label;
-  card("#c-subjects", view.n ? `unique artworks per Iconclass code · n = ${fmt.format(view.n)}` : "",
-    s.length ? rankedBars(s.map((x) => ({ ...x, label: `${x.label}`, sel: x.code === state.code })), {
+  const sc = view.subject_countries;
+  const nText = view.n ? `unique artworks per Iconclass code · n = ${fmt.format(view.n)}` : "";
+  if (!sc) {
+    card("#c-subjects", nText, s.length ? rankedBars(s.map((x) => ({ ...x, label: `${x.label}`, sel: x.code === state.code })), {
       width: widthOf("#c-subjects"), labelWidth: Math.min(230, widthOf("#c-subjects") * 0.45), maxLabel: widthOf("#c-subjects") < 420 ? 22 : 36,
       onPick: (x) => navigate({ code: state.code === x.code ? null : x.code }) }) : empty("No subjects."));
-}
-
-// The focus's leading sub-themes, each a 100% bar of its own sub-themes ranked 1st..4th (or its Iconclass subjects) + Other.
-function renderSubthemeMix() {
-  const m = view.subtheme_mix;
-  const c = $("#c-mix");
-  c.hidden = !m;
-  if (!m) return;
-  const rest = state.node.slice(1);
-  const rows = m.rows.map((row) => {
-    const parts = [...row.parts.map((p, i) => ({ ...p, rank: i })), { n: row.other, rank: "other", label: "Other" }];
-    const total = parts.reduce((sum, p) => sum + p.n, 0) || 1;
-    return h("li", {},
+    return;
+  }
+  // each subject: its work count, and a 100% bar of where its (located) artists were born
+  for (const c of sc.countries) labels["country:" + c.code] = c.name;
+  const rows = sc.rows.map((row) => {
+    const parts = [...row.parts.map((n, i) => ({ n, rank: i, ...sc.countries[i] })), { n: row.other, rank: "other", name: "Other countries" }];
+    const located = parts.reduce((sum, p) => sum + p.n, 0);
+    const bar = located ? h("div", { class: "mix-bar", role: "list" }, parts.filter((p) => p.n).map((p) => {
+      const share = p.n / located;
+      const tip = `${row.label} · ${p.name}: ${fmt.format(p.n)} (${Math.round(100 * share)}% of located)`;
+      const text = share >= 0.14 ? h("span", {}, p.name) : null;
+      if (p.rank === "other") return h("span", { class: "s-other", role: "listitem", style: `flex-grow:${p.n}`, title: tip }, text);
+      return h("button", { class: `s${p.rank}` + (p.code === state.country ? " on" : ""), role: "listitem", style: `flex-grow:${p.n}`,
+        title: tip, "aria-label": tip, onclick: () => navigate({ code: row.code, country: p.code }) }, text);
+    })) : h("div", { class: "mix-bar none" }, h("span", {}, "no located artists"));
+    return h("li", { class: row.code === state.code ? "sel" : null },
       h("div", { class: "mix-head" },
-        h("button", { class: "linkish", onclick: () => navigate({ node: [row.id, ...rest] }), title: `Open ${row.label}` }, row.label),
-        h("span", { class: "num" }, `${fmt.format(row.n)} works`)),
-      h("div", { class: "mix-bar", role: "list" }, parts.filter((p) => p.n).map((p) => {
-        const share = p.n / total;
-        const tip = `${row.label} › ${p.label}: ${fmt.format(p.n)} (${Math.round(100 * share)}%)` + (p.kind === "subject" ? " · Iconclass subject" : "");
-        const text = share >= 0.13 ? h("span", {}, p.label) : null;
-        if (p.rank === "other") return h("span", { class: "s-other", role: "listitem", style: `flex-grow:${p.n}`, title: tip }, text);
-        return h("button", { class: `s${p.rank}`, role: "listitem", style: `flex-grow:${p.n}`, title: tip, "aria-label": tip,
-          onclick: () => navigate(p.kind === "theme" ? { node: [p.id, ...rest] } : { node: [row.id, ...rest], code: p.id }) }, text);
-      })));
+        h("button", { class: "linkish", title: row.label, onclick: () => navigate({ code: state.code === row.code ? null : row.code }) }, row.label),
+        h("span", { class: "num" }, fmt.format(row.n))), bar);
   });
-  const legend = h("ul", { class: "mix-legend" }, ["1st sub-theme", "2nd", "3rd", "4th"].map((t, i) => h("li", {}, h("i", { class: `s${i}` }), t)),
-    h("li", {}, h("i", { class: "s-other" }), "Other"));
-  const subjectRows = m.rows.some((r) => r.parts[0]?.kind === "subject");
-  card("#c-mix", "each bar is 100% of that theme", h("div", {}, h("ol", { class: "mix" }, rows), legend),
-    { text: "Shares are of theme memberships, so a work in two sub-themes counts in both. Click a band to open it." +
-      (subjectRows ? " Themes without sub-themes are split by their most frequent Iconclass subjects." : "") });
+  const legend = h("ul", { class: "mix-legend" }, sc.countries.map((c, i) => h("li", {}, h("i", { class: `s${i}` }), c.name)),
+    h("li", {}, h("i", { class: "s-other" }), "Other countries"));
+  card("#c-subjects", nText, h("div", {}, h("ol", { class: "mix compact" }, rows), legend),
+    { text: `Bars show where each subject's artists were born${sc.include_nationality ? " (or their nationality)" : ""}, as shares of works with a located artist. Click a band to filter to that subject and country.` });
 }
 
 // Media buttons above the catalogue: the same object-type filter as the "Kinds of object" chart.
