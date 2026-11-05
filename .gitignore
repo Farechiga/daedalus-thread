@@ -1,0 +1,62 @@
+# --- Data: raw sources and derived outputs are reproducible, never committed ---
+# Raw downloads (~5 GB): scripts/fetch_sources.sh
+data/raw/
+# Enrichment caches (Wikidata/ULAN responses): Phase 3 batch jobs
+data/cache/
+# Generated profiles and evaluations: scripts/profile_icarus.py, scripts/evaluate_taxonomy.py
+data/profile/
+# Built SQLite databases: importer output
+data/db/
+*.sqlite
+*.sqlite3
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+# Archives that might be fetched by hand (ICARUS images are ~118 GB)
+*.zip
+*.z0[0-9]
+*.gz
+!data/**/.gitkeep
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# --- Build / deploy output ---
+dist/
+build/
+site/
+.wrangler/
+.vercel/
+.netlify/
+node_modules/
+
+# --- Secrets and local config ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.claude/settings.local.json
+
+# --- Editors / OS ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*~
+
+# --- Logs ---
+*.log
+logs/

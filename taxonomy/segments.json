@@ -1,0 +1,497 @@
+{
+  "schema_version": 1,
+  "taxonomy_version": "0.2",
+  "iconclass_source": "github.com/iconclass/data (see data/raw/iconclass/SOURCE_COMMIT.txt)",
+  "rules": {
+    "node": "Every node has id, label and either `include` (Iconclass notations) or `children`, or both. Optional: exclude, aliases, flags, note.",
+    "match": "An artwork matches a node with `include` if any of its processed Iconclass codes equals, or descends in the Iconclass tree from, a notation in `include` and does not descend from a notation in `exclude`.",
+    "union": "A node without `include` matches the union of its children.",
+    "segment_roots": "A segment's `roots` define the full set of artworks in that segment. Artworks inside the roots but matched by no child are shown as 'Other <segment>'.",
+    "overlap": "Themes can overlap, and an artwork can sit in several themes and segments. Parent counts are always unique artworks, never sums of their children.",
+    "flags": "decorative: mostly ornamental use (shown, but not ranked first by default). featured: highlighted on the landing page. primary: the default segment, given the most curation and shown first."
+  },
+  "segments": [
+    {
+      "id": "christian-art",
+      "label": "Christian Art",
+      "status": "core",
+      "display_order": 1,
+      "flags": ["primary"],
+      "roots": ["11", "7"],
+      "description": "Scenes from the Bible, the lives of Christ, the Virgin and the saints, and the imagery of Christian worship.",
+      "children": [
+        {
+          "id": "life-of-the-virgin",
+          "label": "Life of the Virgin Mary",
+          "children": [
+            {"id": "mary-parents-childhood", "label": "Joachim, Anna & Mary's Childhood", "include": ["73A2", "73A3"], "aliases": ["Holy Kinship", "Anna Selbdritt", "Heilige Sippe", "Joachim and Anna", "Birth of the Virgin"]},
+            {"id": "annunciation", "label": "The Annunciation", "include": ["73A5"], "aliases": ["Annunciation", "Verkündigung", "Mariä Verkündigung", "Annunciatie", "Boodschap aan Maria", "Zwiastowanie", "Annonciation", "Gabriel"]},
+            {"id": "visitation", "label": "The Visitation", "include": ["73A6"], "aliases": ["Heimsuchung", "Mariä Heimsuchung", "Visitatie", "Nawiedzenie", "Mary and Elizabeth"]},
+            {"id": "madonna-and-child", "label": "Madonna and Child", "include": ["11F4", "11F6"], "aliases": ["Virgin and Child", "Maria mit Kind", "Muttergottes", "Madonna met kind", "Matka Boska z Dzieciątkiem", "Vierge à l'Enfant"]},
+            {"id": "assumption-coronation", "label": "Dormition, Assumption & Coronation", "include": ["73E7"], "aliases": ["Assumption", "Mariä Himmelfahrt", "Coronation of the Virgin", "Marienkrönung", "Dormition", "Marientod", "Tenhemelopneming"]}
+          ]
+        },
+        {
+          "id": "childhood-of-christ",
+          "label": "Birth & Childhood of Christ",
+          "children": [
+            {"id": "nativity", "label": "The Nativity & Adoration of the Shepherds", "include": ["73B1", "73B2"], "aliases": ["Nativity", "Christmas", "Geburt Christi", "Christi Geburt", "Anbetung der Hirten", "Geboorte van Christus", "Boże Narodzenie", "Adoration of the Shepherds"]},
+            {"id": "adoration-of-the-magi", "label": "Adoration of the Magi", "include": ["73B5"], "aliases": ["Three Kings", "Wise Men", "Epiphany", "Anbetung der Könige", "Heilige Drei Könige", "Aanbidding der koningen", "Pokłon Trzech Króli"]},
+            {"id": "presentation-circumcision", "label": "Circumcision & Presentation in the Temple", "include": ["73B3", "73B4"], "aliases": ["Presentation in the Temple", "Darbringung im Tempel", "Simeon", "Circumcision", "Beschneidung"]},
+            {"id": "massacre-of-the-innocents", "label": "Massacre of the Innocents", "include": ["73B63"], "aliases": ["Bethlehemitischer Kindermord", "Kindermoord", "Herod"]},
+            {"id": "flight-into-egypt", "label": "Flight into Egypt", "include": ["73B64", "73B65"], "aliases": ["Rest on the Flight", "Flucht nach Ägypten", "Ruhe auf der Flucht", "Vlucht naar Egypte"]},
+            {"id": "holy-family", "label": "The Holy Family", "include": ["73B8"], "aliases": ["Heilige Familie", "Heilige Familie", "Święta Rodzina", "Sainte Famille"]},
+            {"id": "christ-among-the-doctors", "label": "Christ Among the Doctors", "include": ["73B9"], "aliases": ["Twelve-year-old Jesus in the Temple", "Der zwölfjährige Jesus im Tempel"]}
+          ]
+        },
+        {
+          "id": "ministry-of-christ",
+          "label": "Ministry of Christ",
+          "children": [
+            {"id": "baptism-of-christ", "label": "The Baptism of Christ", "include": ["73C121"], "aliases": ["Taufe Christi", "Doop van Christus", "Chrzest Chrystusa", "Jordan"]},
+            {"id": "teaching-apostles", "label": "Christ Teaching & Calling the Apostles", "include": ["73C7"], "aliases": ["Sermon on the Mount", "Bergpredigt", "Transfiguration", "Verklärung"]},
+            {"id": "miracles-of-christ", "label": "Miracles of Christ", "include": ["73C4", "73C5", "73C6"], "aliases": ["Raising of Lazarus", "Auferweckung des Lazarus", "Healing", "Feeding of the Five Thousand", "Wunder Christi"]},
+            {"id": "parables", "label": "Parables of Christ", "include": ["73C8"], "aliases": ["Prodigal Son", "Verlorener Sohn", "Verloren zoon", "Good Samaritan", "Barmherziger Samariter", "Wise and Foolish Virgins"]}
+          ]
+        },
+        {
+          "id": "passion",
+          "label": "The Passion",
+          "children": [
+            {"id": "entry-into-jerusalem", "label": "Entry into Jerusalem", "include": ["73D1"], "aliases": ["Palm Sunday", "Einzug in Jerusalem", "Intocht in Jeruzalem", "Cleansing of the Temple"]},
+            {"id": "last-supper", "label": "The Last Supper", "include": ["73D2"], "aliases": ["Abendmahl", "Letztes Abendmahl", "Laatste Avondmaal", "Ostatnia Wieczerza", "Washing of the Feet", "Fußwaschung"]},
+            {"id": "gethsemane-arrest-trial", "label": "Gethsemane, Arrest & Trial", "include": ["73D3"], "exclude": ["73D35", "73D36"], "aliases": ["Agony in the Garden", "Ölberg", "Christus am Ölberg", "Kiss of Judas", "Judaskuss", "Gefangennahme", "Christ before Pilate"]},
+            {"id": "flagellation-mocking", "label": "Flagellation & Crowning with Thorns", "include": ["73D35"], "aliases": ["Geißelung", "Dornenkrönung", "Geseling", "Biczowanie", "Mocking of Christ"]},
+            {"id": "ecce-homo", "label": "Ecce Homo", "include": ["73D36"], "aliases": ["Ecce Homo", "Pilate shows Christ", "Ostentatio Christi"]},
+            {"id": "carrying-the-cross", "label": "Carrying of the Cross", "include": ["73D4"], "aliases": ["Road to Calvary", "Kreuztragung", "Kruisdraging", "Droga Krzyżowa", "Veronica"]},
+            {"id": "crucifixion", "label": "The Crucifixion", "include": ["73D5", "73D6"], "aliases": ["Crucifixion", "Kreuzigung", "Kruisiging", "Ukrzyżowanie", "Calvary", "Golgotha", "Crucifix"]},
+            {"id": "deposition", "label": "Descent from the Cross", "include": ["73D71"], "aliases": ["Deposition", "Kreuzabnahme", "Kruisafneming", "Zdjęcie z krzyża"]},
+            {"id": "lamentation-pieta", "label": "Lamentation & Pietà", "include": ["73D72"], "aliases": ["Pietà", "Pieta", "Beweinung", "Vesperbild", "Bewening", "Opłakiwanie"]},
+            {"id": "entombment", "label": "The Entombment", "include": ["73D74", "73D75", "73D76"], "aliases": ["Grablegung", "Graflegging", "Złożenie do grobu"]},
+            {"id": "man-of-sorrows", "label": "Man of Sorrows", "include": ["73D73"], "aliases": ["Schmerzensmann", "Imago Pietatis", "Erbärmdebild", "Man van smarten"]},
+            {"id": "instruments-of-the-passion", "label": "Instruments of the Passion", "include": ["73D8"], "aliases": ["Arma Christi", "Leidenswerkzeuge", "Crown of Thorns", "Dornenkrone", "Five Wounds"]}
+          ]
+        },
+        {
+          "id": "resurrection-and-glory",
+          "label": "Resurrection & the Last Things",
+          "children": [
+            {"id": "resurrection", "label": "The Resurrection", "include": ["73E1"], "aliases": ["Auferstehung", "Opstanding", "Zmartwychwstanie", "Easter"]},
+            {"id": "appearances-of-the-risen-christ", "label": "Appearances of the Risen Christ", "include": ["73E3"], "aliases": ["Noli me tangere", "Supper at Emmaus", "Emmaus", "Doubting Thomas", "Ungläubiger Thomas"]},
+            {"id": "ascension-pentecost", "label": "Ascension & Pentecost", "include": ["73E4", "73E5"], "aliases": ["Ascension", "Himmelfahrt Christi", "Hemelvaart", "Pentecost", "Pfingsten", "Pinksteren"]},
+            {"id": "last-judgement", "label": "The Last Judgement", "include": ["11U"], "aliases": ["Jüngstes Gericht", "Weltgericht", "Laatste Oordeel", "Sąd Ostateczny", "Doomsday"]},
+            {"id": "apocalypse", "label": "The Apocalypse (Revelation)", "include": ["73G"], "aliases": ["Revelation", "Apokalypse", "Offenbarung", "Four Horsemen", "Apocalyptic Woman"]},
+            {"id": "heaven-and-hell", "label": "Heaven, Hell & Purgatory", "include": ["11S", "11T"], "aliases": ["Hölle", "Himmel", "Fegefeuer", "Hel", "Purgatory", "Paradise"]}
+          ]
+        },
+        {
+          "id": "old-testament",
+          "label": "Old Testament",
+          "include": ["71"],
+          "children": [
+            {"id": "creation", "label": "The Creation", "include": ["71A1", "71A2", "71A3"], "aliases": ["Schöpfung", "Schepping", "Stworzenie świata", "Garden of Eden", "Creation of Adam"]},
+            {"id": "adam-and-eve", "label": "Adam & Eve: Fall and Expulsion", "include": ["71A4", "71A5", "71A6"], "aliases": ["Sündenfall", "Fall of Man", "Zondeval", "Expulsion from Paradise", "Vertreibung aus dem Paradies", "Adam en Eva"]},
+            {"id": "cain-and-abel", "label": "Cain & Abel", "include": ["71A8"], "aliases": ["Kain und Abel", "Kaïn en Abel", "Brudermord"]},
+            {"id": "noah", "label": "Noah's Ark & the Flood", "include": ["71B3"], "aliases": ["Noah", "Noach", "Sintflut", "Zondvloed", "Arche Noah", "Ark", "Deluge"]},
+            {"id": "tower-of-babel", "label": "The Tower of Babel", "include": ["71B4"], "aliases": ["Turmbau zu Babel", "Toren van Babel", "Wieża Babel"]},
+            {
+              "id": "abraham",
+              "label": "Story of Abraham",
+              "include": ["71C1"],
+              "aliases": ["Abraham", "Lot", "Hagar", "Sodom and Gomorrah"],
+              "children": [
+                {"id": "sacrifice-of-isaac", "label": "Sacrifice of Isaac", "include": ["71C131"], "aliases": ["Opferung Isaaks", "Offer van Isaak", "Binding of Isaac", "Akedah"]},
+                {"id": "lot-sodom", "label": "Lot & Sodom", "include": ["71C123", "71C124", "71C125"], "aliases": ["Lot und seine Töchter", "Lot's wife", "Sodom"]},
+                {"id": "hagar-ishmael", "label": "Hagar & Ishmael", "include": ["71C128"], "aliases": ["Hagar in the Wilderness", "Verstoßung der Hagar"]}
+              ]
+            },
+            {"id": "isaac-and-jacob", "label": "Isaac & Jacob", "include": ["71C2", "71C3"], "aliases": ["Jacob's Ladder", "Jakobsleiter", "Esau", "Rebecca", "Rebekka", "Jacob wrestling"]},
+            {"id": "joseph", "label": "Story of Joseph", "include": ["71D"], "aliases": ["Joseph in Egypt", "Potiphar's Wife", "Joseph und seine Brüder", "Jozef"]},
+            {"id": "moses-exodus", "label": "Moses & the Exodus", "include": ["71E"], "aliases": ["Moses", "Mozes", "Mojżesz", "Exodus", "Red Sea", "Golden Calf", "Goldenes Kalb", "Burning Bush", "Ten Commandments", "Zehn Gebote"]},
+            {"id": "samson", "label": "Samson", "include": ["71F3"], "aliases": ["Simson", "Samson and Delilah", "Simson und Delila", "Samson en Delila"]},
+            {"id": "ruth", "label": "Ruth & Boaz", "include": ["71F6"], "aliases": ["Ruth", "Boas"]},
+            {
+              "id": "david",
+              "label": "Story of David",
+              "include": ["71H"],
+              "aliases": ["King David", "König David", "Koning David", "Saul"],
+              "children": [
+                {"id": "david-and-goliath", "label": "David & Goliath", "include": ["71H14"], "aliases": ["David und Goliath", "David en Goliath", "Dawid i Goliat"]},
+                {"id": "david-and-bathsheba", "label": "David & Bathsheba", "include": ["71H7"], "aliases": ["Bathseba", "Batseba", "Bathsheba at her bath"]}
+              ]
+            },
+            {"id": "solomon", "label": "Story of Solomon", "include": ["71I"], "aliases": ["Judgement of Solomon", "Urteil Salomos", "Salomo", "Queen of Sheba", "Königin von Saba"]},
+            {"id": "elijah-elisha", "label": "Elijah & Elisha", "include": ["71M", "71N"], "aliases": ["Elias", "Elia", "Elisa", "Fiery Chariot"]},
+            {
+              "id": "daniel",
+              "label": "Story of Daniel",
+              "include": ["71P"],
+              "aliases": ["Daniel in the Lions' Den", "Daniel in der Löwengrube", "Belshazzar's Feast"],
+              "children": [
+                {"id": "susanna", "label": "Susanna & the Elders", "include": ["71P41"], "aliases": ["Susanna im Bade", "Suzanna", "Susanna and the Elders"]}
+              ]
+            },
+            {"id": "tobit", "label": "Tobias & the Angel", "include": ["71T"], "aliases": ["Tobit", "Tobias", "Raphael", "Tobias und der Engel"]},
+            {"id": "judith", "label": "Judith & Holofernes", "include": ["71U"], "aliases": ["Judith", "Holofernes", "Judyta"]},
+            {"id": "esther", "label": "Esther", "include": ["71Q"], "aliases": ["Ahasuerus", "Ahasver", "Haman", "Mordecai"]},
+            {"id": "job", "label": "Job", "include": ["71W"], "aliases": ["Hiob", "Hiob", "Book of Job"]},
+            {"id": "jonah", "label": "Jonah & the Whale", "include": ["71V"], "aliases": ["Jona", "Jonas", "Jonah and the Whale", "Jona und der Wal"]}
+          ]
+        },
+        {
+          "id": "saints",
+          "label": "Saints",
+          "include": ["11H"],
+          "children": [
+            {
+              "id": "apostles-evangelists",
+              "label": "Apostles & Evangelists",
+              "children": [
+                {"id": "st-peter", "label": "Saint Peter", "include": ["11H(PETER)", "73F21"], "aliases": ["Petrus", "Sint-Pieter", "Święty Piotr", "Pierre"]},
+                {"id": "st-paul", "label": "Saint Paul", "include": ["11H(PAUL)", "73F22"], "aliases": ["Paulus", "Conversion of Saul", "Bekehrung des Paulus", "Road to Damascus"]},
+                {"id": "st-john-evangelist", "label": "Saint John the Evangelist", "include": ["11H(JOHN)"], "aliases": ["Johannes der Evangelist", "John on Patmos", "Johannes op Patmos"]},
+                {"id": "st-matthew", "label": "Saint Matthew", "include": ["11H(MATTHEW)"], "aliases": ["Matthäus", "Mattheüs"]},
+                {"id": "st-mark", "label": "Saint Mark", "include": ["11H(MARK)"], "aliases": ["Markus", "Marcus"]},
+                {"id": "st-luke", "label": "Saint Luke", "include": ["11H(LUKE)"], "aliases": ["Lukas", "Luke painting the Virgin"]},
+                {"id": "st-james-the-great", "label": "Saint James the Great", "include": ["11H(JAMES THE GREAT)"], "aliases": ["Jakobus der Ältere", "Santiago", "Jacobus"]},
+                {"id": "st-andrew", "label": "Saint Andrew", "include": ["11H(ANDREW)"], "aliases": ["Andreas"]},
+                {"id": "st-bartholomew", "label": "Saint Bartholomew", "include": ["11H(BARTHOLOMEW)"], "aliases": ["Bartholomäus"]},
+                {"id": "st-thomas", "label": "Saint Thomas", "include": ["11H(THOMAS)"], "aliases": ["Thomas the Apostle", "Doubting Thomas"]},
+                {"id": "four-evangelists", "label": "The Four Evangelists", "include": ["11I4"], "aliases": ["Evangelisten", "Evangelist symbols", "Tetramorph"]}
+              ]
+            },
+            {
+              "id": "holy-men",
+              "label": "Holy Men, Martyrs & Founders",
+              "children": [
+                {"id": "st-john-the-baptist", "label": "Saint John the Baptist", "include": ["11H(JOHN THE BAPTIST)", "73C1"], "aliases": ["Johannes der Täufer", "Johannes de Doper", "Jan Chrzciciel", "Salome", "Beheading of John"]},
+                {"id": "st-jerome", "label": "Saint Jerome", "include": ["11H(JEROME)"], "aliases": ["Hieronymus", "Hiëronymus", "Jerome in his study"]},
+                {"id": "st-francis", "label": "Saint Francis of Assisi", "include": ["11H(FRANCIS)"], "aliases": ["Franziskus", "Franciscus", "Stigmatization"]},
+                {"id": "st-antony-abbot", "label": "Saint Antony Abbot", "include": ["11H(ANTONY ABBOT)"], "aliases": ["Antonius", "Temptation of St Anthony", "Versuchung des heiligen Antonius"]},
+                {"id": "st-sebastian", "label": "Saint Sebastian", "include": ["11H(SEBASTIAN)"], "aliases": ["Sebastianus", "Sebastiaan"]},
+                {"id": "st-george", "label": "Saint George & the Dragon", "include": ["11H(GEORGE)"], "aliases": ["Saint George", "Georg", "Sint-Joris", "Święty Jerzy", "dragon slayer"]},
+                {"id": "st-christopher", "label": "Saint Christopher", "include": ["11H(CHRISTOPHER)"], "aliases": ["Christophorus", "Christoffel"]},
+                {"id": "st-nicholas", "label": "Saint Nicholas", "include": ["11H(NICHOLAS)"], "aliases": ["Nikolaus", "Sinterklaas", "Nicolaas"]},
+                {"id": "st-martin", "label": "Saint Martin", "include": ["11H(MARTIN)"], "aliases": ["Martin of Tours", "Sankt Martin", "Sint-Maarten"]},
+                {"id": "st-augustine", "label": "Saint Augustine", "include": ["11H(AUGUSTINE)"], "aliases": ["Augustinus"]},
+                {"id": "st-laurence", "label": "Saint Laurence", "include": ["11H(LAURENCE)"], "aliases": ["Laurentius", "Lawrence"]},
+                {"id": "st-gregory", "label": "Saint Gregory the Great", "include": ["11H(GREGORY)"], "aliases": ["Gregor", "Mass of St Gregory", "Gregoriusmesse"]},
+                {"id": "st-joseph", "label": "Saint Joseph", "include": ["11H(JOSEPH)"], "aliases": ["Josef", "Jozef", "Joseph the Carpenter"]},
+                {"id": "st-dominic", "label": "Saint Dominic", "include": ["11H(DOMINIC)"], "aliases": ["Dominikus"]},
+                {"id": "st-antony-of-padua", "label": "Saint Antony of Padua", "include": ["11H(ANTONY OF PADUA)"], "aliases": ["Antonius von Padua"]},
+                {"id": "st-roch", "label": "Saint Roch", "include": ["11H(ROCH)"], "aliases": ["Rochus", "Rocco"]},
+                {"id": "st-stephen", "label": "Saint Stephen", "include": ["11H(STEPHEN)"], "aliases": ["Stephanus", "Stoning of Stephen"]},
+                {"id": "st-benedict", "label": "Saint Benedict", "include": ["11H(BENEDICT)"], "aliases": ["Benedikt"]}
+              ]
+            },
+            {
+              "id": "holy-women",
+              "label": "Holy Women",
+              "include": ["11HH"],
+              "children": [
+                {"id": "st-mary-magdalene", "label": "Saint Mary Magdalene", "include": ["11HH(MARY MAGDALENE)"], "aliases": ["Maria Magdalena", "Penitent Magdalene", "Magdalena"]},
+                {"id": "st-catherine", "label": "Saint Catherine of Alexandria", "include": ["11HH(CATHERINE)"], "aliases": ["Katharina", "Catharina", "Mystic Marriage of St Catherine"]},
+                {"id": "st-barbara", "label": "Saint Barbara", "include": ["11HH(BARBARA)"], "aliases": ["Barbara"]},
+                {"id": "st-ursula", "label": "Saint Ursula", "include": ["11HH(URSULA)"], "aliases": ["Ursula and the 11,000 virgins"]},
+                {"id": "st-margaret", "label": "Saint Margaret", "include": ["11HH(MARGARET)"], "aliases": ["Margareta", "Margaretha"]},
+                {"id": "st-catherine-of-siena", "label": "Saint Catherine of Siena", "include": ["11HH(CATHERINE OF SIENA)"], "aliases": ["Katharina von Siena"]},
+                {"id": "st-cecilia", "label": "Saint Cecilia", "include": ["11HH(CECILIA)"], "aliases": ["Cäcilia", "patron of music"]},
+                {"id": "st-agnes", "label": "Saint Agnes", "include": ["11HH(AGNES)"], "aliases": ["Agnes"]},
+                {"id": "st-elisabeth-of-hungary", "label": "Saint Elisabeth of Hungary", "include": ["11HH(ELISABETH OF HUNGARY)"], "aliases": ["Elisabeth von Thüringen"]},
+                {"id": "st-dorothea", "label": "Saint Dorothea", "include": ["11HH(DOROTHEA)"], "aliases": ["Dorothy"]},
+                {"id": "st-helena", "label": "Saint Helena", "include": ["11HH(HELENA)"], "aliases": ["Helena", "True Cross"]},
+                {"id": "st-anne", "label": "Saint Anne", "include": ["11HH(ANNA)"], "aliases": ["Anna", "Mother of Mary"]}
+              ]
+            }
+          ]
+        },
+        {
+          "id": "god-angels-demons",
+          "label": "God, Angels & Demons",
+          "children": [
+            {"id": "christ-devotional", "label": "Christ (devotional images)", "include": ["11D"], "aliases": ["Salvator Mundi", "Sacred Heart", "Christus", "Good Shepherd", "Agnus Dei", "Lamb of God"]},
+            {"id": "trinity", "label": "The Holy Trinity", "include": ["11B"], "aliases": ["Dreifaltigkeit", "Gnadenstuhl", "Drie-eenheid", "Trinity"]},
+            {"id": "god-the-father", "label": "God the Father", "include": ["11C"], "aliases": ["Gottvater", "God de Vader"]},
+            {"id": "holy-spirit", "label": "The Holy Spirit", "include": ["11E"], "aliases": ["Heiliger Geist", "Dove of the Holy Spirit"]},
+            {"id": "angels", "label": "Angels", "include": ["11G"], "aliases": ["Engel", "Archangel", "Erzengel", "Michael", "Cherubim", "Seraphim", "music-making angels"]},
+            {"id": "devils-demons", "label": "Devils & Demons", "include": ["11K"], "aliases": ["Teufel", "Duivel", "Satan", "Lucifer", "Demon"]}
+          ]
+        },
+        {
+          "id": "church-worship",
+          "label": "Church & Worship",
+          "children": [
+            {"id": "clergy-church", "label": "Clergy, Monks & the Church", "include": ["11P"], "aliases": ["Pope", "Papst", "Bishop", "Bischof", "Monk", "Mönch", "Nun", "Nonne", "Cardinal"]},
+            {"id": "liturgy-sacraments", "label": "Liturgy, Mass & Sacraments", "include": ["11Q7"], "aliases": ["Mass", "Messe", "Eucharist", "Baptism", "Taufe", "Procession", "Prozession", "Altar"]},
+            {"id": "prayer-devotion", "label": "Prayer, Pilgrimage & Devotion", "include": ["11Q"], "exclude": ["11Q7"], "aliases": ["Prayer", "Gebet", "Pilgrim", "Pilger", "Hermit", "Einsiedler", "Rosary"]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "classical-mythology",
+      "label": "Greek & Roman Mythology",
+      "status": "core",
+      "display_order": 2,
+      "roots": ["9"],
+      "description": "Gods, heroes and metamorphoses of classical myth, plus the legends and famous figures of ancient Greece and Rome.",
+      "children": [
+        {
+          "id": "olympian-gods",
+          "label": "The Gods of Olympus",
+          "children": [
+            {
+              "id": "jupiter",
+              "label": "Jupiter (Zeus)",
+              "include": ["92B1"],
+              "aliases": ["Zeus", "Jupiter", "Jove"],
+              "children": [
+                {"id": "loves-of-jupiter", "label": "Loves of Jupiter", "include": ["92B12"], "aliases": ["Danaë", "Danae", "Leda and the Swan", "Leda", "Europa", "Rape of Europa", "Ganymede", "Callisto", "Io", "Antiope"]}
+              ]
+            },
+            {"id": "juno", "label": "Juno (Hera)", "include": ["92C1"], "aliases": ["Hera", "Juno"]},
+            {"id": "apollo", "label": "Apollo", "include": ["92B3"], "aliases": ["Phoebus", "Apollon", "Phaethon", "Marsyas", "Python"]},
+            {"id": "mercury", "label": "Mercury (Hermes)", "include": ["92B5"], "aliases": ["Hermes", "Merkur", "Mercurius", "Argus"]},
+            {"id": "mars", "label": "Mars (Ares)", "include": ["92B4"], "aliases": ["Ares", "Mars and Venus"]},
+            {"id": "vulcan", "label": "Vulcan (Hephaestus)", "include": ["92B2"], "aliases": ["Hephaistos", "Vulkan", "Forge of Vulcan"]},
+            {"id": "venus", "label": "Venus (Aphrodite)", "include": ["92C4"], "aliases": ["Aphrodite", "Venus and Adonis", "Birth of Venus", "Toilet of Venus"]},
+            {"id": "minerva", "label": "Minerva (Athena)", "include": ["92C2"], "aliases": ["Athena", "Pallas", "Athene"]},
+            {"id": "diana", "label": "Diana (Artemis)", "include": ["92C3"], "aliases": ["Artemis", "Diana and Actaeon", "Diana and Callisto", "Diana hunting"]},
+            {"id": "neptune", "label": "Neptune (Poseidon)", "include": ["92H1"], "aliases": ["Poseidon", "Neptun"]},
+            {"id": "bacchus", "label": "Bacchus (Dionysus) & Bacchanals", "include": ["92L1"], "aliases": ["Dionysus", "Bacchanal", "Bacchanalia", "Silenus", "Ariadne"]},
+            {"id": "ceres-pluto-proserpina", "label": "Ceres, Pluto & Proserpina", "include": ["92M1", "92M2", "92N1"], "aliases": ["Demeter", "Hades", "Persephone", "Rape of Proserpina"]}
+          ]
+        },
+        {
+          "id": "love-and-desire",
+          "label": "Cupid & Love",
+          "children": [
+            {"id": "cupid", "label": "Cupid (Amor, Eros)", "include": ["92D1"], "exclude": ["92D1916", "92D192"], "aliases": ["Amor", "Eros", "Cupido", "Amor vincit omnia"]},
+            {"id": "cupid-and-psyche", "label": "Cupid & Psyche", "include": ["92D192"], "aliases": ["Amor und Psyche", "Psyche"]},
+            {"id": "putti", "label": "Putti & Amoretti", "include": ["92D1916"], "flags": ["decorative"], "aliases": ["Putto", "Putten", "Amoretti", "cherubs", "Erotes"], "note": "Very common as ornament in prints and decorative designs. Kept as its own theme so it doesn't swamp the mythology counts."}
+          ]
+        },
+        {
+          "id": "nature-spirits-sea",
+          "label": "Nymphs, Satyrs & Sea Gods",
+          "children": [
+            {"id": "satyrs-fauns", "label": "Satyrs, Fauns & Sileni", "include": ["92L4"], "aliases": ["Satyr", "Faun", "Silen"]},
+            {"id": "nymphs", "label": "Nymphs", "include": ["92L3"], "aliases": ["Nymphe", "Nimf", "Dryads", "Naiads"]},
+            {"id": "pan", "label": "Pan & Syrinx", "include": ["92L5"], "aliases": ["Pan", "Syrinx"]},
+            {"id": "centaurs", "label": "Centaurs", "include": ["92L7"], "aliases": ["Kentaur", "Centaur", "Nessus", "Chiron"]},
+            {"id": "muses", "label": "The Muses", "include": ["92D4"], "aliases": ["Musen", "Muzen", "Parnassus", "Parnass", "Apollo and the Muses"]},
+            {"id": "sea-deities", "label": "Tritons, Nereids & Galatea", "include": ["92H3", "92I2"], "aliases": ["Triton", "Nereid", "Galatea", "Triumph of Galatea", "Amphitrite"]},
+            {"id": "monsters-medusa", "label": "Medusa & Sea Monsters", "include": ["92I7"], "aliases": ["Medusa", "Gorgon", "Gorgoneion", "Scylla", "Charybdis"]},
+            {"id": "river-gods", "label": "River Gods", "include": ["92K1"], "aliases": ["Flussgott", "Rivergod"]}
+          ]
+        },
+        {
+          "id": "heroes",
+          "label": "Heroes & Heroines",
+          "children": [
+            {"id": "hercules", "label": "Hercules (Heracles)", "include": ["94L"], "aliases": ["Herakles", "Herkules", "Twelve Labours", "Hercules at the Crossroads", "Hydra", "Nemean Lion"]},
+            {"id": "perseus", "label": "Perseus & Andromeda", "include": ["94P"], "aliases": ["Perseus", "Andromeda", "Pegasus"]},
+            {"id": "orpheus", "label": "Orpheus", "include": ["94O"], "aliases": ["Orpheus and Eurydice", "Orpheus charming the animals"]},
+            {"id": "argonauts", "label": "Jason & the Argonauts", "include": ["94A"], "aliases": ["Jason", "Golden Fleece", "Goldenes Vlies", "Medea", "Argo"]},
+            {"id": "theseus", "label": "Theseus & the Minotaur", "include": ["94M"], "aliases": ["Theseus", "Minotaur", "Ariadne", "Labyrinth"]},
+            {"id": "meleager", "label": "Meleager & the Calydonian Boar", "include": ["94N"], "aliases": ["Meleager", "Atalanta", "Calydonian Hunt"]},
+            {"id": "daedalus-icarus", "label": "Daedalus & Icarus", "include": ["95A(DAEDALUS)", "95A(ICARUS)"], "flags": ["featured"], "aliases": ["Icarus", "Ikarus", "Daedalus", "Dädalus", "Fall of Icarus", "Labyrinth"], "note": "The myth the project is named after. A small theme with a strong landing story."},
+            {"id": "narcissus", "label": "Narcissus & Echo", "include": ["95A(NARCISSUS)"], "aliases": ["Narziss", "Narcissus", "Echo"]},
+            {"id": "other-greek-heroes", "label": "Other Greek Heroes & Heroines", "include": ["95"], "exclude": ["95A(DAEDALUS)", "95A(ICARUS)", "95A(NARCISSUS)"], "aliases": ["Niobe", "Achilles", "Pyramus and Thisbe", "Hero and Leander", "Cephalus and Procris"]}
+          ]
+        },
+        {
+          "id": "troy-odyssey-aeneid",
+          "label": "Troy, the Odyssey & the Aeneid",
+          "children": [
+            {"id": "judgement-of-paris", "label": "The Judgement of Paris", "include": ["94C113"], "aliases": ["Parisurteil", "Oordeel van Paris", "Sąd Parysa", "Paris and Helen"]},
+            {"id": "trojan-war", "label": "The Trojan War", "include": ["94C", "94D", "94E", "94F", "94G", "94H", "94K"], "exclude": ["94C113"], "aliases": ["Troy", "Troja", "Achilles", "Hector", "Helen of Troy", "Trojan Horse", "Iliad", "Ilias"]},
+            {"id": "odyssey", "label": "The Odyssey (Ulysses)", "include": ["94I"], "aliases": ["Ulysses", "Odysseus", "Circe", "Penelope", "Polyphemus", "Sirens", "Odyssee"]},
+            {"id": "aeneid", "label": "The Aeneid (Aeneas)", "include": ["96B"], "aliases": ["Aeneas", "Dido", "Dido and Aeneas", "Aeneis"]}
+          ]
+        },
+        {
+          "id": "metamorphoses",
+          "label": "Metamorphoses",
+          "include": ["97"],
+          "children": [
+            {"id": "apollo-and-daphne", "label": "Apollo & Daphne", "include": ["97AA1"], "aliases": ["Daphne", "Apollo und Daphne"]},
+            {"id": "diana-and-actaeon", "label": "Diana & Actaeon", "include": ["97C1"], "aliases": ["Actaeon", "Aktaion"]},
+            {"id": "io", "label": "Io & Argus", "include": ["97CC6"], "aliases": ["Io", "Argus"]}
+          ]
+        },
+        {
+          "id": "creation-titans",
+          "label": "Creation Myths & Titans",
+          "include": ["91"],
+          "children": [
+            {"id": "prometheus", "label": "Prometheus", "include": ["91E4"], "aliases": ["Prometheus bound", "fire"]}
+          ]
+        },
+        {
+          "id": "rome-and-antiquity",
+          "label": "Legends & History of Antiquity",
+          "children": [
+            {"id": "roman-gods-personifications", "label": "Roman Deities & Personifications", "include": ["96A"], "aliases": ["Janus", "Fortuna", "Roma", "Victoria"]},
+            {"id": "founding-of-rome", "label": "Founding Legends of Rome", "include": ["96C", "96D"], "aliases": ["Romulus and Remus", "Capitoline Wolf", "Sabine Women", "Raub der Sabinerinnen", "Horatii"]},
+            {"id": "alexander-the-great", "label": "Alexander the Great", "include": ["98B(ALEXANDER THE GREAT)"], "aliases": ["Alexander", "Alexander der Große", "Bucephalus", "Diogenes and Alexander"]},
+            {"id": "caesar-cleopatra", "label": "Caesar & Cleopatra", "include": ["98B(CAESAR)", "98C(CLEOPATRA)"], "aliases": ["Julius Caesar", "Cleopatra", "Kleopatra", "Antony and Cleopatra"]},
+            {"id": "lucretia", "label": "Lucretia", "include": ["98C(LUCRETIA)"], "aliases": ["Lucrezia", "Lukretia", "Tarquin"]},
+            {"id": "philosophers", "label": "Diogenes, Socrates & Philosophers", "include": ["98B(DIOGENES)", "98B(SOCRATES)"], "aliases": ["Diogenes", "Sokrates", "Plato", "Aristotle"]},
+            {"id": "other-classical-history", "label": "Other Figures of Classical History", "include": ["98"], "exclude": ["98B(ALEXANDER THE GREAT)", "98B(CAESAR)", "98C(CLEOPATRA)", "98C(LUCRETIA)", "98B(DIOGENES)", "98B(SOCRATES)"], "aliases": ["Scipio", "Mucius Scaevola", "Coriolanus", "Artemisia", "Sophonisba", "Zenobia"]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "animals",
+      "label": "Animals",
+      "status": "core",
+      "display_order": 3,
+      "roots": ["25F", "34A", "34B", "34F", "46C1314", "46C131", "47I21", "43C11", "46C132"],
+      "description": "Real and fabulous animals: in the wild, on the farm, at home, in the hunt and in the imagination.",
+      "children": [
+        {
+          "id": "wild-mammals",
+          "label": "Wild Mammals",
+          "children": [
+            {"id": "lions", "label": "Lions", "include": ["25F23(LION)"], "aliases": ["Löwe", "Leeuw", "Lew", "lion"]},
+            {"id": "bears", "label": "Bears", "include": ["25F23(BEAR)"], "aliases": ["Bär", "Beer", "Niedźwiedź"]},
+            {"id": "wolves-foxes", "label": "Wolves & Foxes", "include": ["25F23(WOLF)", "25F23(FOX)", "43C111231"], "aliases": ["Wolf", "Fuchs", "Vos", "Reynard", "Reineke Fuchs", "fox hunting"]},
+            {"id": "other-predators", "label": "Leopards, Tigers & Other Predators", "include": ["25F23"], "exclude": ["25F23(LION)", "25F23(BEAR)", "25F23(WOLF)", "25F23(FOX)"], "aliases": ["Leopard", "Tiger", "Panther", "Lynx", "Weasel"]},
+            {"id": "deer", "label": "Deer & Stags", "include": ["25F24(STAG)", "25F24(DEER)", "43C111241"], "aliases": ["Hirsch", "Hert", "Jeleń", "Reh", "stag hunting"]},
+            {"id": "boars", "label": "Wild Boars", "include": ["25F24(BOAR)", "43C111243"], "aliases": ["Wildschwein", "Keiler", "Everzwijn", "boar hunting"]},
+            {"id": "camels", "label": "Camels", "include": ["25F24(CAMEL)"], "aliases": ["Kamel", "Kameel", "Dromedary"]},
+            {"id": "elephants", "label": "Elephants", "include": ["25F25"], "aliases": ["Elefant", "Olifant", "Słoń"]},
+            {"id": "monkeys", "label": "Monkeys & Apes", "include": ["25F22"], "aliases": ["Affe", "Aap", "Małpa", "Ape"]},
+            {"id": "hares-rabbits", "label": "Hares, Rabbits & Rodents", "include": ["25F26", "43C111261"], "aliases": ["Hase", "Haas", "Kaninchen", "Konijn", "Squirrel", "Eichhörnchen", "Mouse", "Rat"]},
+            {"id": "whales-dolphins", "label": "Whales & Dolphins", "include": ["25F27", "47K11"], "aliases": ["Wal", "Walvis", "Delfin", "Dolfijn", "whaling", "Seal"]}
+          ]
+        },
+        {
+          "id": "horses-farm",
+          "label": "Horses & Farm Animals",
+          "children": [
+            {"id": "horses-and-riding", "label": "Horses and Riding", "include": ["46C1314", "46C131", "46C132"], "exclude": ["46C13142"], "aliases": ["Pferd", "Paard", "Koń", "Reiter", "Ruiter", "horseman", "equestrian", "riding", "Reiten", "Paardrijden", "Jazda konna", "cavalry", "Kavallerie"], "note": "Catch-all for horses and all riding: horses and kindred animals (46C1314), riding a horse, ass or mule (46C131) and riding other animals such as camels or elephants (46C132). Donkeys that aren't being ridden are in their own theme."},
+            {"id": "donkeys", "label": "Donkeys & Mules", "include": ["46C13142"], "aliases": ["Esel", "Ezel", "Osioł", "Ass", "Mule"]},
+            {"id": "cattle", "label": "Cows, Bulls & Oxen", "include": ["47I211"], "aliases": ["Kuh", "Koe", "Krowa", "Stier", "Bull", "Ox", "Ochse", "Rind", "Vee"]},
+            {"id": "sheep", "label": "Sheep & Lambs", "include": ["47I213"], "aliases": ["Schaf", "Schaap", "Owca", "Lamm", "Lam", "Shepherd", "Schäfer"]},
+            {"id": "goats", "label": "Goats", "include": ["47I214"], "aliases": ["Ziege", "Geit", "Koza", "Bock"]},
+            {"id": "pigs", "label": "Pigs", "include": ["47I212"], "aliases": ["Schwein", "Varken", "Świnia", "Sau"]},
+            {"id": "poultry", "label": "Chickens, Geese & Poultry", "include": ["34B232"], "aliases": ["Huhn", "Hahn", "Kip", "Haan", "Kogut", "Rooster", "Cockerel", "Gans"]}
+          ]
+        },
+        {
+          "id": "pets",
+          "label": "Pets & Companions",
+          "children": [
+            {"id": "dogs", "label": "Dogs", "include": ["34B11", "43C1147"], "aliases": ["Hund", "Hond", "Pies", "Chien", "hunting dogs", "Jagdhund", "lapdog"]},
+            {"id": "cats", "label": "Cats", "include": ["34B12"], "aliases": ["Katze", "Kat", "Kot", "Chat", "kitten"]},
+            {"id": "caged-birds", "label": "Caged & House Birds", "include": ["34B13"], "aliases": ["Vogelkäfig", "Kooivogel", "bird in a cage"]}
+          ]
+        },
+        {
+          "id": "birds",
+          "label": "Birds",
+          "include": ["25F3"],
+          "children": [
+            {"id": "eagles", "label": "Eagles", "include": ["25F33(EAGLE)"], "aliases": ["Adler", "Adelaar", "Arend", "Orzeł"]},
+            {"id": "falcons-hawks", "label": "Falcons & Hawks", "include": ["25F33"], "exclude": ["25F33(EAGLE)"], "aliases": ["Falke", "Valk", "Sokół", "Falconry", "Falknerei", "Hawk", "Vulture"]},
+            {"id": "owls", "label": "Owls", "include": ["25F34"], "aliases": ["Eule", "Uil", "Sowa", "Owl"]},
+            {"id": "doves-pigeons", "label": "Doves & Pigeons", "include": ["25F39(DOVE)", "34B231"], "aliases": ["Taube", "Duif", "Gołąb", "dove of peace"]},
+            {"id": "swans-ducks-water-birds", "label": "Swans, Ducks & Water Birds", "include": ["25F36"], "aliases": ["Schwan", "Zwaan", "Łabędź", "Ente", "Eend", "Pelican", "Pelikan", "Goose"]},
+            {"id": "storks-herons", "label": "Storks, Herons & Cranes", "include": ["25F37"], "aliases": ["Storch", "Ooievaar", "Bocian", "Reiher", "Kranich"]},
+            {"id": "peacocks-parrots", "label": "Peacocks & Parrots", "include": ["25F35"], "aliases": ["Pfau", "Pauw", "Paw", "Papagei", "Papegaai", "Papuga"]},
+            {"id": "songbirds", "label": "Songbirds", "include": ["25F32"], "aliases": ["Singvogel", "Zangvogel", "Nightingale", "Goldfinch", "Distelfink", "Sparrow"]}
+          ]
+        },
+        {
+          "id": "small-creatures",
+          "label": "Reptiles, Fish & Small Creatures",
+          "children": [
+            {"id": "snakes", "label": "Snakes", "include": ["25F42"], "aliases": ["Schlange", "Slang", "Wąż", "Serpent", "Viper"]},
+            {"id": "turtles-lizards", "label": "Turtles, Tortoises & Lizards", "include": ["25F41", "25F43", "25F44"], "aliases": ["Schildkröte", "Schildpad", "Eidechse", "Hagedis", "Crocodile", "Krokodil"]},
+            {"id": "frogs", "label": "Frogs & Toads", "include": ["25F5"], "aliases": ["Frosch", "Kikker", "Kröte", "Pad", "Salamander"]},
+            {"id": "fish", "label": "Fish", "include": ["25F6"], "aliases": ["Fisch", "Vis", "Ryba", "Carp", "Pike"]},
+            {
+              "id": "insects",
+              "label": "Insects",
+              "include": ["25F711"],
+              "aliases": ["Insekt", "Insect", "Owad", "Bee", "Biene", "Fly", "Fliege", "Beetle", "Käfer"],
+              "children": [
+                {"id": "butterflies", "label": "Butterflies & Moths", "include": ["25F711(BUTTERFLY)", "25F711(MOTH)"], "aliases": ["Schmetterling", "Vlinder", "Motyl", "Moth", "Caterpillar"]}
+              ]
+            },
+            {"id": "spiders-crustaceans", "label": "Spiders, Crabs & Lobsters", "include": ["25F713", "25F716"], "aliases": ["Spinne", "Spin", "Krebs", "Kreeft", "Crab", "Lobster", "Scorpion"]},
+            {"id": "shells-snails", "label": "Shells, Snails & Molluscs", "include": ["25F72"], "aliases": ["Schnecke", "Slak", "Muschel", "Schelp", "Oyster", "Auster", "Octopus"]}
+          ]
+        },
+        {
+          "id": "fabulous-creatures",
+          "label": "Fabulous Creatures",
+          "include": ["25FF"],
+          "children": [
+            {"id": "dragons", "label": "Dragons & Hydras", "include": ["25FF411", "25FF42"], "aliases": ["Drache", "Draak", "Smok", "Dragon", "Hydra", "Basilisk", "Lindwurm"]},
+            {"id": "unicorns", "label": "Unicorns", "include": ["25FF241"], "aliases": ["Einhorn", "Eenhoorn", "Jednorożec", "Licorne"]},
+            {"id": "griffins", "label": "Griffins", "include": ["25FF231"], "aliases": ["Greif", "Griffioen", "Gryf", "Griffon"]},
+            {"id": "double-headed-eagle", "label": "Double-headed Eagle", "include": ["25FF332"], "aliases": ["Doppeladler", "Dubbelkoppige adelaar", "Reichsadler", "heraldic eagle"]},
+            {"id": "fabulous-sea-creatures", "label": "Mermaids & Sea Creatures", "include": ["25FF6"], "aliases": ["Meerjungfrau", "Zeemeermin", "Syrena", "Mermaid", "Sea monster", "Siren"]}
+          ]
+        },
+        {
+          "id": "people-and-animals",
+          "label": "People & Animals",
+          "children": [
+            {"id": "hunting", "label": "Hunting", "include": ["43C11"], "aliases": ["Jagd", "Jacht", "Polowanie", "Chase", "Hunt", "Hunter", "Jäger"]},
+            {"id": "animals-threatening-man", "label": "Animals Attacking People", "include": ["34F"], "aliases": ["animal attack", "wild animals"]},
+            {"id": "taming-training", "label": "Taming & Training Animals", "include": ["34A"], "aliases": ["Dressur", "Animal trainer", "Menagerie"]}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "allegory-symbols",
+      "label": "Allegory & Symbols",
+      "status": "core",
+      "display_order": 4,
+      "description": "Personified ideas, such as virtues and vices, the seasons and senses, Fortune, Time and Death, and the symbolic language that makes them readable.",
+      "children": [
+        {"id": "virtues", "label": "The Virtues", "include": ["11M"], "aliases": ["Tugenden", "Deugden", "Faith Hope and Charity", "Glaube Liebe Hoffnung", "Prudence", "Justice", "Temperance", "Fortitude", "Caritas"]},
+        {"id": "vices-sins", "label": "Vices & the Seven Deadly Sins", "include": ["11N"], "aliases": ["Todsünden", "Hoofdzonden", "Sloth", "Envy", "Pride", "Greed", "Avaritia", "Superbia"]},
+        {"id": "vanitas", "label": "Vanitas", "include": ["11R5", "11R7"], "aliases": ["Memento mori", "Vergänglichkeit", "Vergankelijkheid", "skull", "Totenkopf", "soap bubbles", "Homo bulla"]},
+        {"id": "death-dance-of-death", "label": "Death & the Dance of Death", "include": ["31F2", "31F3"], "aliases": ["Totentanz", "Dodendans", "Danse macabre", "Death as a skeleton", "Sensenmann", "Grim Reaper"]},
+        {"id": "fortune", "label": "Fortune & the Wheel of Fortune", "include": ["54F"], "aliases": ["Fortuna", "Glücksrad", "Rad van Fortuin", "Luck", "Fate"]},
+        {"id": "father-time", "label": "Time & Eternity", "include": ["23A"], "aliases": ["Father Time", "Chronos", "Saturn", "Chronos", "Zeit", "Tijd", "hourglass", "Sanduhr"]},
+        {"id": "four-seasons", "label": "The Four Seasons", "include": ["23D", "23E4", "23F4"], "aliases": ["Jahreszeiten", "Jaargetijden", "Pory roku", "Winter", "Spring", "Summer", "Autumn", "Winterlandschaft"]},
+        {"id": "twelve-months", "label": "The Twelve Months & Labours", "include": ["23K"], "aliases": ["Monatsbilder", "Labours of the Months", "Maanden", "calendar"]},
+        {"id": "five-senses", "label": "The Five Senses", "include": ["31A3", "31AA3"], "aliases": ["Fünf Sinne", "Vijf zintuigen", "Sight", "Hearing", "Smell", "Taste", "Touch"]},
+        {"id": "four-elements", "label": "The Four Elements", "include": ["21"], "aliases": ["Vier Elemente", "Vier elementen", "Fire", "Water", "Air", "Earth"]},
+        {"id": "zodiac", "label": "The Zodiac", "include": ["23O"], "aliases": ["Tierkreis", "Dierenriem", "Zodiak", "Sternzeichen", "astrology"]},
+        {"id": "continents", "label": "The Four Continents", "include": ["25B"], "aliases": ["Erdteile", "Werelddelen", "Africa", "America", "Asia", "Europe"]},
+        {"id": "liberal-arts", "label": "The Liberal Arts", "include": ["49C1"], "aliases": ["Artes liberales", "Freie Künste", "Vrije kunsten", "Grammar", "Rhetoric", "Astronomy", "Geometry"]},
+        {"id": "temperaments", "label": "The Four Temperaments", "include": ["32A1"], "aliases": ["Temperamente", "Melancholy", "Melancholie", "Sanguine", "Choleric", "Phlegmatic"]}
+      ]
+    },
+    {
+      "id": "landscape-nature",
+      "label": "Landscape & Nature",
+      "status": "core",
+      "display_order": 5,
+      "description": "Mountains, rivers and seas, forests and flowers, sky and weather: the natural world as subject.",
+      "children": [
+        {"id": "mountains", "label": "Mountains", "include": ["25H11"], "aliases": ["Berge", "Gebirge", "Bergen", "Góry", "Alps", "Alpen"]},
+        {"id": "rivers-lakes", "label": "Rivers & Lakes", "include": ["25H21", "25H22"], "aliases": ["Fluss", "Rivier", "Rzeka", "See", "Meer", "Rhine", "Rhein", "waterfall"]},
+        {"id": "seascapes-coasts", "label": "Seascapes & Coasts", "include": ["25H23", "25H13"], "aliases": ["Seestück", "Zeegezicht", "Marine", "Küste", "Kust", "beach", "Strand"]},
+        {"id": "forests", "label": "Forests & Woods", "include": ["25H15"], "aliases": ["Wald", "Bos", "Las", "woodland"]},
+        {"id": "fields-pastures", "label": "Fields & Pastures", "include": ["25H17", "25H18"], "aliases": ["Wiese", "Weide", "Felder", "Akker", "meadow"]},
+        {"id": "ideal-landscapes", "label": "Ideal & Arcadian Landscapes", "include": ["25HH"], "aliases": ["Ideallandschaft", "Arcadia", "Arkadien", "pastoral"]},
+        {"id": "winter-landscapes", "label": "Winter Landscapes", "include": ["23F41", "26D"], "aliases": ["Winterlandschaft", "Winterlandschap", "ice", "skating", "snow", "Schnee"]},
+        {"id": "trees", "label": "Trees", "include": ["25G3"], "aliases": ["Baum", "Boom", "Drzewo", "Oak", "Eiche", "Willow"]},
+        {"id": "flowers", "label": "Flowers", "include": ["25G41"], "aliases": ["Blumen", "Bloemen", "Kwiaty", "Rose", "Tulip", "Tulpe", "Lily", "flower still life"]},
+        {"id": "fruit", "label": "Fruit", "include": ["25G21"], "aliases": ["Obst", "Früchte", "Fruit", "Owoce", "Grapes", "Apple"]},
+        {"id": "sky-weather", "label": "Sky, Clouds & Storms", "include": ["26A", "26B", "26C", "26E"], "aliases": ["Wolken", "Wolken", "Sturm", "Storm", "Gewitter", "Rain", "Regen", "Wind", "Rainbow"]},
+        {"id": "sun-moon-stars", "label": "Sun, Moon & Stars", "include": ["24"], "aliases": ["Sonne", "Mond", "Sterne", "Zon", "Maan", "Sterren", "eclipse", "night sky"]}
+      ]
+    }
+  ]
+}
