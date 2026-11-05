@@ -1,1 +1,793 @@
-{}
+{
+ "_reviewed": "2026-11-05: proposals from scripts/find_wikidata_subjects.py, false matches removed by hand",
+ "aeneid": [
+  {
+   "qid": "Q82732",
+   "label": "Aeneas",
+   "description": "Trojan hero, son of Anchises and Aphrodite",
+   "term": "Aeneas",
+   "depicts": 163
+  },
+  {
+   "qid": "Q905162",
+   "label": "Dido",
+   "description": "legendary founder and first queen of Carthage",
+   "term": "Dido",
+   "depicts": 61
+  }
+ ],
+ "apollo-and-daphne": [
+  {
+   "qid": "Q194015",
+   "label": "Daphne",
+   "description": "Greek mythological figure",
+   "term": "Daphne",
+   "depicts": 44
+  }
+ ],
+ "argonauts": [
+  {
+   "qid": "Q31931611",
+   "label": "Golden Fleece",
+   "description": "insignia worn by knights of the Order of the Golden Fleece",
+   "term": "Goldenes Vlies",
+   "depicts": 139
+  },
+  {
+   "qid": "Q174278",
+   "label": "Medea",
+   "description": "daughter of King Aeëtes of Colchis in Greek mythology",
+   "term": "Medea",
+   "depicts": 38
+  },
+  {
+   "qid": "Q176758",
+   "label": "Jason",
+   "description": "Greek mythological hero, son of Aeson",
+   "term": "Jason",
+   "depicts": 26
+  }
+ ],
+ "butterflies": [
+  {
+   "qid": "Q11946202",
+   "label": "butterfly",
+   "description": "group of insects in the order Lepidoptera",
+   "term": "Butterflies",
+   "depicts": 262
+  },
+  {
+   "qid": "Q28319",
+   "label": "Lepidoptera",
+   "description": "order of insects that includes butterflies and moths",
+   "term": "Motyl",
+   "depicts": 69
+  }
+ ],
+ "caesar-cleopatra": [
+  {
+   "qid": "Q635",
+   "label": "Cleopatra",
+   "description": "Queen of Ptolemaic Kingdom of Egypt from 51 to 30 BCE",
+   "term": "Kleopatra",
+   "depicts": 139
+  },
+  {
+   "qid": "Q1048",
+   "label": "Julius Caesar",
+   "description": "Roman general and dictator",
+   "term": "Caesar",
+   "depicts": 95
+  }
+ ],
+ "cain-and-abel": [
+  {
+   "qid": "Q313421",
+   "label": "Abel",
+   "description": "male human biblical figure in Genesis 4, son of Adam and Eve",
+   "term": "Abel",
+   "depicts": 61
+  },
+  {
+   "qid": "Q205365",
+   "label": "Cain",
+   "description": "brother-murderer of Abel in Abrahamic religions",
+   "term": "Cain",
+   "depicts": 56
+  },
+  {
+   "qid": "Q717996",
+   "label": "Cain and Abel",
+   "description": "persons of the Bible, the first two sons of Adam and Eve",
+   "term": "Kain und Abel",
+   "depicts": 17
+  }
+ ],
+ "camels": [
+  {
+   "qid": "Q106695054",
+   "label": "camel",
+   "description": "type of livestock; animal with one or two humps",
+   "term": "Camels",
+   "depicts": 154
+  },
+  {
+   "qid": "Q71516",
+   "label": "Camelus dromedarius",
+   "description": "a large camel of the genus Camelus with one hump on its back",
+   "term": "Dromedary",
+   "depicts": 48
+  }
+ ],
+ "cupid": [
+  {
+   "qid": "Q5011",
+   "label": "Cupid",
+   "description": "Roman deity, counterpart of Eros",
+   "term": "Cupido",
+   "depicts": 400
+  },
+  {
+   "qid": "Q121973",
+   "label": "Eros",
+   "description": "Greek god of love and sex",
+   "term": "Eros",
+   "depicts": 313
+  }
+ ],
+ "daedalus-icarus": [
+  {
+   "qid": "Q34041",
+   "label": "Icarus",
+   "description": "Greek mythological figure, son of Daedalus",
+   "term": "Ikarus",
+   "depicts": 37
+  }
+ ],
+ "devils-demons": [
+  {
+   "qid": "Q6674",
+   "label": "devil",
+   "description": "mythical personification of evil",
+   "term": "Duivel",
+   "depicts": 148
+  },
+  {
+   "qid": "Q35230",
+   "label": "Satan",
+   "description": "entity in the Abrahamic religions that tells others to do sinful actions",
+   "term": "Lucifer",
+   "depicts": 35
+  }
+ ],
+ "donkeys": [
+  {
+   "qid": "Q19707",
+   "label": "donkey",
+   "description": "subspecies of mammal (donkey as a domesticated subspecies); beast of burden, similar to a horse, but smaller",
+   "term": "Ass",
+   "depicts": 30
+  }
+ ],
+ "double-headed-eagle": [
+  {
+   "qid": "Q622964",
+   "label": "double-headed eagle",
+   "description": "symbol in heraldry and vexillology",
+   "term": "Dubbelkoppige adelaar",
+   "depicts": 73
+  },
+  {
+   "qid": "Q2139378",
+   "label": "Reichsadler",
+   "description": "heraldic eagle used by the Holy Roman Emperors and in modern coats of arms of Germany, including those of the Second German Empire, the Weimar Republic, the \"Third Reich\" and the Federal Republic of Germany since 1945 (Bundesadler, \"Federal Eagle\")",
+   "term": "Reichsadler",
+   "depicts": 17
+  }
+ ],
+ "elephants": [
+  {
+   "qid": "Q7378",
+   "label": "elephant",
+   "description": "large terrestrial mammals from Africa and Asia",
+   "term": "Olifant",
+   "depicts": 382
+  }
+ ],
+ "elijah-elisha": [
+  {
+   "qid": "Q133507",
+   "label": "Elijah",
+   "description": "Biblical prophet",
+   "term": "Elijah",
+   "depicts": 98
+  },
+  {
+   "qid": "Q206238",
+   "label": "Elisha",
+   "description": "Biblical Prophet who came after Elijah",
+   "term": "Elisha",
+   "depicts": 22
+  }
+ ],
+ "fabulous-sea-creatures": [
+  {
+   "qid": "Q182559",
+   "label": "mermaid",
+   "description": "legendary aquatic creature with the upper body of a female human and the fin of a fish",
+   "term": "Mermaids",
+   "depicts": 80
+  }
+ ],
+ "father-time": [
+  {
+   "qid": "Q134388",
+   "label": "Saturn",
+   "description": "god in ancient Roman mythology",
+   "term": "Saturn",
+   "depicts": 223
+  },
+  {
+   "qid": "Q2325522",
+   "label": "Father Time",
+   "description": "personification of time passing",
+   "term": "Father Time",
+   "depicts": 15
+  }
+ ],
+ "forests": [
+  {
+   "qid": "Q3241565",
+   "label": "woodland",
+   "description": "broadly, land covered with wooded plants",
+   "term": "Woods",
+   "depicts": 99
+  }
+ ],
+ "fortune": [
+  {
+   "qid": "Q1970348",
+   "label": "luck",
+   "description": "concept that defines the experience of notably positive, negative, or improbable events",
+   "term": "Fortune",
+   "depicts": 324
+  },
+  {
+   "qid": "Q4654",
+   "label": "Fortuna",
+   "description": "Roman goddess of fortune",
+   "term": "Fortuna",
+   "depicts": 48
+  }
+ ],
+ "four-evangelists": [
+  {
+   "qid": "Q472773",
+   "label": "four evangelists",
+   "description": "authors of the four canonical Christian gospels as an artistic theme",
+   "term": "Evangelisten",
+   "depicts": 34
+  },
+  {
+   "qid": "Q1381418",
+   "label": "evangelist portrait",
+   "description": "type of miniature in manuscripts",
+   "term": "Tetramorph",
+   "depicts": 24
+  }
+ ],
+ "frogs": [
+  {
+   "qid": "Q3116510",
+   "label": "frog",
+   "description": "informal grouping of amphibians including toads",
+   "term": "Frogs",
+   "depicts": 127
+  },
+  {
+   "qid": "Q53636",
+   "label": "Anura",
+   "description": "order of short bodied, tailless amphibians",
+   "term": "Frosch",
+   "depicts": 47
+  }
+ ],
+ "griffins": [
+  {
+   "qid": "Q130223",
+   "label": "griffin",
+   "description": "mythical creature with the body of a lion and head and wings of an eagle",
+   "term": "Griffon",
+   "depicts": 148
+  },
+  {
+   "qid": "Q528305",
+   "label": "griffin",
+   "description": "heraldic animal",
+   "term": "Griffon",
+   "depicts": 22
+  }
+ ],
+ "hares-rabbits": [
+  {
+   "qid": "Q9394",
+   "label": "rabbit",
+   "description": "mammals of the family Leporidae",
+   "term": "Rabbits",
+   "depicts": 253
+  }
+ ],
+ "heaven-and-hell": [
+  {
+   "qid": "Q564",
+   "label": "hell",
+   "description": "religious or mythological place of (often eternal) suffering",
+   "term": "Hell",
+   "depicts": 121
+  },
+  {
+   "qid": "Q4489450",
+   "label": "heaven",
+   "description": "common religious and cosmologic place, typically where god(s) reside",
+   "term": "Heaven",
+   "depicts": 66
+  }
+ ],
+ "horses-and-riding": [
+  {
+   "qid": "Q726",
+   "label": "horse",
+   "description": "domesticated four-footed mammal from the equine family",
+   "term": "Horses",
+   "depicts": 400
+  },
+  {
+   "qid": "Q179226",
+   "label": "equestrianism",
+   "description": "horse riding",
+   "term": "Riding",
+   "depicts": 400
+  }
+ ],
+ "io": [
+  {
+   "qid": "Q189821",
+   "label": "Argus Panoptes",
+   "description": "giant with hundred eyes in Greek mythology",
+   "term": "Argus",
+   "depicts": 24
+  },
+  {
+   "qid": "Q179014",
+   "label": "Io",
+   "description": "nymph seduced by Zeus in Greek mythology",
+   "term": "Io",
+   "depicts": 21
+  }
+ ],
+ "jonah": [
+  {
+   "qid": "Q2468262",
+   "label": "Jonah",
+   "description": "Biblical and Quranic prophet",
+   "term": "Jonah",
+   "depicts": 26
+  }
+ ],
+ "judith": [
+  {
+   "qid": "Q26454627",
+   "label": "Judith",
+   "description": "biblical character of the Book of Judith",
+   "term": "Judith",
+   "depicts": 177
+  },
+  {
+   "qid": "Q625748",
+   "label": "Holofernes",
+   "description": "figure in the Book of Judith; invading general of Nebuchadnezzar, beheaded by Judith",
+   "term": "Holofernes",
+   "depicts": 72
+  }
+ ],
+ "juno": [
+  {
+   "qid": "Q125046",
+   "label": "Juno",
+   "description": "ancient Roman goddess",
+   "term": "Juno",
+   "depicts": 129
+  },
+  {
+   "qid": "Q38012",
+   "label": "Hera",
+   "description": "Greek goddess, wife and sister of Zeus",
+   "term": "Hera",
+   "depicts": 59
+  }
+ ],
+ "meleager": [
+  {
+   "qid": "Q321541",
+   "label": "Meleager",
+   "description": "son of Oeneus in Greek mythology, king of Calydon",
+   "term": "Meleager",
+   "depicts": 46
+  },
+  {
+   "qid": "Q190323",
+   "label": "Atalanta",
+   "description": "Greek mythological character, the only female Argonaut",
+   "term": "Atalanta",
+   "depicts": 35
+  }
+ ],
+ "monkeys": [
+  {
+   "qid": "Q1367",
+   "label": "monkey",
+   "description": "common idea of an animal of the \"higher primates\" (the simians in English excluding apes)",
+   "term": "Ape",
+   "depicts": 358
+  }
+ ],
+ "narcissus": [
+  {
+   "qid": "Q179256",
+   "label": "Narcissus",
+   "description": "hunter in Greek mythology",
+   "term": "Narcissus",
+   "depicts": 52
+  }
+ ],
+ "neptune": [
+  {
+   "qid": "Q3954",
+   "label": "Neptune",
+   "description": "Roman god of water, particularly the sea, considered equivalent to the Greek Poseidon",
+   "term": "Neptun",
+   "depicts": 174
+  },
+  {
+   "qid": "Q41127",
+   "label": "Poseidon",
+   "description": "one of the twelve Olympians presiding over the sea, storms, earthquakes and horses",
+   "term": "Poseidon",
+   "depicts": 53
+  }
+ ],
+ "nymphs": [
+  {
+   "qid": "Q373916",
+   "label": "nymph",
+   "description": "minor female nature deity in Greek and Roman mythology; personifications of nature",
+   "term": "Nimf",
+   "depicts": 400
+  },
+  {
+   "qid": "Q182037",
+   "label": "naiad",
+   "description": "female spirit or nymph in Greek mythology",
+   "term": "Naiads",
+   "depicts": 35
+  }
+ ],
+ "odyssey": [
+  {
+   "qid": "Q47231",
+   "label": "Odysseus",
+   "description": "legendary Greek king of Ithaca",
+   "term": "Odysseus",
+   "depicts": 130
+  },
+  {
+   "qid": "Q187602",
+   "label": "Circe",
+   "description": "enchantress-goddess in Greek mythology",
+   "term": "Circe",
+   "depicts": 27
+  },
+  {
+   "qid": "Q165769",
+   "label": "Penelope",
+   "description": "wife of Odysseus in Greek mythology",
+   "term": "Penelope",
+   "depicts": 15
+  }
+ ],
+ "orpheus": [
+  {
+   "qid": "Q174353",
+   "label": "Orpheus",
+   "description": "legendary musician, poet, and prophet in ancient Greek religion and myth",
+   "term": "Orpheus",
+   "depicts": 156
+  }
+ ],
+ "owls": [
+  {
+   "qid": "Q8021345",
+   "label": "owl",
+   "description": "common name denoting a group of nocturnal birds",
+   "term": "Owl",
+   "depicts": 167
+  }
+ ],
+ "pan": [
+  {
+   "qid": "Q846129",
+   "label": "Syrinx",
+   "description": "nymph transformed into hollow water reeds in Greek mythology",
+   "term": "Syrinx",
+   "depicts": 24
+  }
+ ],
+ "peacocks-parrots": [
+  {
+   "qid": "Q15548309",
+   "label": "parrot",
+   "description": "common name for some Psittaciformes",
+   "term": "Papagei",
+   "depicts": 164
+  }
+ ],
+ "philosophers": [
+  {
+   "qid": "Q868",
+   "label": "Aristotle",
+   "description": "Greek philosopher",
+   "term": "Aristotle",
+   "depicts": 52
+  },
+  {
+   "qid": "Q913",
+   "label": "Socrates",
+   "description": "5th-century BCE Greek philosopher",
+   "term": "Socrates",
+   "depicts": 41
+  },
+  {
+   "qid": "Q59180",
+   "label": "Diogenes of Sinope",
+   "description": "4th-century BC Greek Cynic philosopher",
+   "term": "Diogenes",
+   "depicts": 39
+  },
+  {
+   "qid": "Q859",
+   "label": "Plato",
+   "description": "4th-century BCE Greek philosopher",
+   "term": "Plato",
+   "depicts": 28
+  }
+ ],
+ "putti": [
+  {
+   "qid": "Q284865",
+   "label": "putto",
+   "description": "figure in a work of art depicted as a chubby male child, usually nude and sometimes winged",
+   "term": "Putti",
+   "depicts": 400
+  }
+ ],
+ "satyrs-fauns": [
+  {
+   "qid": "Q163709",
+   "label": "satyr",
+   "description": "goat-like male companions of Pan and Dionysus, in Greek mythology",
+   "term": "Satyrs",
+   "depicts": 400
+  },
+  {
+   "qid": "Q223194",
+   "label": "faun",
+   "description": "mythological creature",
+   "term": "Fauns",
+   "depicts": 123
+  }
+ ],
+ "snakes": [
+  {
+   "qid": "Q2102",
+   "label": "snake",
+   "description": "limbless, scaly, elongate reptile",
+   "term": "Serpent",
+   "depicts": 400
+  }
+ ],
+ "songbirds": [
+  {
+   "qid": "Q25341",
+   "label": "passerines",
+   "description": "order of birds",
+   "term": "Zangvogel",
+   "depicts": 22
+  }
+ ],
+ "spiders-crustaceans": [
+  {
+   "qid": "Q1357",
+   "label": "Spider",
+   "description": "order of arachnids",
+   "term": "Spiders",
+   "depicts": 20
+  },
+  {
+   "qid": "Q115128259",
+   "label": "spider",
+   "description": "common concept of an animal with eight legs and jaws",
+   "term": "Spiders",
+   "depicts": 16
+  }
+ ],
+ "st-agnes": [
+  {
+   "qid": "Q210096",
+   "label": "Agnes of Rome",
+   "description": "Christian martyr",
+   "term": "Saint Agnes",
+   "depicts": 68
+  }
+ ],
+ "st-dorothea": [
+  {
+   "qid": "Q242274",
+   "label": "Dorothea of Caesarea",
+   "description": "Catholic saint",
+   "term": "Dorothy",
+   "depicts": 37
+  }
+ ],
+ "st-helena": [
+  {
+   "qid": "Q170164",
+   "label": "Helena Augusta",
+   "description": "saint, first wife of Roman emperor Constantius Chlorus, and mother of Emperor Constantine the Great (250-330)",
+   "term": "Helena",
+   "depicts": 64
+  }
+ ],
+ "st-mark": [
+  {
+   "qid": "Q31966",
+   "label": "Mark the Evangelist",
+   "description": "credited author of the Gospel of Mark and Christian saint; traditionally identified with John Mark (20-68)",
+   "term": "Marcus",
+   "depicts": 273
+  }
+ ],
+ "st-roch": [
+  {
+   "qid": "Q152457",
+   "label": "Saint Roch",
+   "description": "Christian saint (c.1348 - c.1376)",
+   "term": "Rochus",
+   "depicts": 168
+  }
+ ],
+ "st-stephen": [
+  {
+   "qid": "Q161775",
+   "label": "Saint Stephen",
+   "description": "Deacon, martyr, and saint",
+   "term": "Stephen",
+   "depicts": 200
+  }
+ ],
+ "st-ursula": [
+  {
+   "qid": "Q369691",
+   "label": "Saint Ursula",
+   "description": "Frankish saint",
+   "term": "Ursula",
+   "depicts": 113
+  }
+ ],
+ "storks-herons": [
+  {
+   "qid": "Q25365",
+   "label": "Gruidae",
+   "description": "family of birds",
+   "term": "Cranes",
+   "depicts": 38
+  },
+  {
+   "qid": "Q28507",
+   "label": "stork",
+   "description": "family of birds; type of bird with long neck, long legs and a big beak",
+   "term": "Storks",
+   "depicts": 21
+  }
+ ],
+ "temperaments": [
+  {
+   "qid": "Q192077",
+   "label": "melancholia",
+   "description": "cultural and philosophical concept describing a state of mood or temperament",
+   "term": "Melancholie",
+   "depicts": 21
+  }
+ ],
+ "turtles-lizards": [
+  {
+   "qid": "Q32945370",
+   "label": "turtle",
+   "description": "reptile with a shell, including tortoises, terrapins, and sea turtles (for the taxon use Q223044)",
+   "term": "Turtles",
+   "depicts": 88
+  },
+  {
+   "qid": "Q15629245",
+   "label": "lizard",
+   "description": "common name for some reptiles",
+   "term": "Hagedis",
+   "depicts": 69
+  },
+  {
+   "qid": "Q223044",
+   "label": "Testudines",
+   "description": "order of reptiles characterized by a shell",
+   "term": "Tortoises",
+   "depicts": 32
+  }
+ ],
+ "vanitas": [
+  {
+   "qid": "Q733095",
+   "label": "vanitas",
+   "description": "genre of symbolic work of art",
+   "term": "Vanitas",
+   "depicts": 17
+  }
+ ],
+ "whales-dolphins": [
+  {
+   "qid": "Q7369",
+   "label": "dolphin",
+   "description": "marine mammal, closely related to whales and porpoises",
+   "term": "Dolphins",
+   "depicts": 196
+  }
+ ],
+ "winter-landscapes": [
+  {
+   "qid": "Q779272",
+   "label": "ice skating",
+   "description": "activity on ice, either outdoors or indoors at a skating rink",
+   "term": "skating",
+   "depicts": 320
+  },
+  {
+   "qid": "Q23392",
+   "label": "ice",
+   "description": "water frozen into the solid state",
+   "term": "ice",
+   "depicts": 121
+  }
+ ],
+ "wolves-foxes": [
+  {
+   "qid": "Q8331",
+   "label": "fox",
+   "description": "common name for various small to medium-sized omnivorous mammals belonging to the family Canidae",
+   "term": "Foxes",
+   "depicts": 185
+  }
+ ],
+ "zodiac": [
+  {
+   "qid": "Q40540",
+   "label": "zodiac",
+   "description": "sector of sky representing the twelve traditional zodiac signs",
+   "term": "Sternzeichen",
+   "depicts": 43
+  },
+  {
+   "qid": "Q1795024",
+   "label": "occidental astrological sign",
+   "description": "one of the twelve 30° sectors of the ecliptic, associated to their cultural symbols as defined by occidental astrology",
+   "term": "Sternzeichen",
+   "depicts": 16
+  }
+ ]
+}

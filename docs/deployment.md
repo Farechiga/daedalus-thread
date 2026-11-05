@@ -26,6 +26,26 @@ GitHub Pages can't run the API, so it only works for the static frontend.
 The `Dockerfile` has **not been test-built yet**, because Docker isn't installed on the development machine. The first deploy
 will exercise it.
 
+## Launch on Fly.io (chosen host)
+
+`fly.toml` is in the repo. Fly builds the image on its own builders, so no local Docker is needed. The build and runtime
+were verified locally from exactly the image's inputs: database built in about 30 s, all endpoints 200, about 435 MB of
+memory, views warm in about 15 s.
+
+```sh
+brew install flyctl
+fly auth login                 # or: fly auth signup (needs a payment method; one 1 GB machine is about $6/month)
+fly launch --copy-config --no-deploy --name daedalus-thread --region ord
+fly deploy --remote-only       # first build downloads ICARUS (~630 MB) and builds the DB inside the image
+fly certs add daedalus-thread.com
+fly certs add www.daedalus-thread.com
+fly ips list                   # the IPv4 (shared) and IPv6 addresses for DNS
+```
+
+**GitHub Pages must give up the domain.** Pages (enabled 2026-11-05 with a `CNAME` file) can only serve static files, so it
+shows the README rather than the app. Before switching DNS, remove the custom domain under the repository's Settings →
+Pages, or disable Pages, and delete the `CNAME` file.
+
 ## Pointing daedalus-thread.com (Squarespace Domains)
 
 The domain is **daedalus-thread.com**, registered at Squarespace Domains. It currently uses Squarespace nameservers and

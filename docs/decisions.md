@@ -2,6 +2,15 @@
 
 Newest first. Each entry records what was decided, why, and where it is implemented.
 
+## 2026-11-05 (night): More sources, layout, launch
+
+| # | Decision | Implementation |
+|---|---|---|
+| D25 | **Curated Wikidata subjects for themes the Iconclass bridge misses.** Name search plus depicts counts, then a manual review: 96 subjects kept for 59 themes and 41 false matches rejected (e.g. "beer" for Bears, "Hitler" for Wolves, "piano" for Spiders). A painting depicting one inherits the theme's first notation. | `taxonomy/wikidata_subjects.json`, `scripts/find_wikidata_subjects.py` |
+| D26 | **Fondazione Zeri** (CC BY-NC 4.0, accepted by the owner: the site is non-commercial). 10,171 artworks with Zeri's own Iconclass links. Artists by ULAN/Wikidata. Attribution is in "About the data". | `scripts/import_zeri.py` |
+| D27 | **Art Institute of Chicago** (CC0). Subject terms are mapped to themes through theme names and aliases and the labels of Wikidata subjects with Iconclass. Prints, photographs and film are dropped, and so are works already harvested from Wikidata (P4610). | `scripts/fetch_aic.py` |
+| D28 | **Host: Fly.io**, one always-on 1 GB machine, with the database built inside the image. GitHub Pages can't run the API. | `fly.toml`, `docs/deployment.md` |
+
 ## 2026-11-05 (later): Fame, "Notable works", teal palette
 
 | # | Decision | Implementation |

@@ -99,7 +99,7 @@ def curated_subjects(tax):
     out = collections.defaultdict(set)
     if os.path.exists(path):
         for nid, cands in json.load(open(path, encoding="utf-8")).items():
-            if nid in tax.nodes and Taxonomy.include(tax.nodes[nid]):
+            if not nid.startswith("_") and nid in tax.nodes and Taxonomy.include(tax.nodes[nid]):
                 for c in cands:
                     out[c["qid"]].add(Taxonomy.include(tax.nodes[nid])[0])
     return out
