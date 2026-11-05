@@ -329,15 +329,16 @@ class Queries:
         where, args = f.where("a")
         order = {"date": "a.date_start IS NULL, a.date_start, a.rid", "title": "a.title IS NULL, a.title COLLATE NOCASE",
                  "random": "(a.rid * 2654435761) % 1000003"}.get(sort, "a.rid")
+        order = "a.link_https DESC, " + order  # works whose source link is plain http go to the back of every sort
         rows = self.db.execute(
             f"SELECT a.rid, a.id, a.title, a.date_text, a.date_start, a.date_end, a.century, a.object_type, a.source_id, "
-            f"a.source_url, a.date_semantics, (SELECT group_concat(c.display_name, '; ') FROM artwork_creator ac "
+            f"a.source_url, a.date_semantics, a.link_https, (SELECT group_concat(c.display_name, '; ') FROM artwork_creator ac "
             f"JOIN creator c ON c.id = ac.creator_id WHERE ac.artwork_rid = a.rid AND c.kind != 'anonymous') "
             f"FROM artwork a WHERE {where} ORDER BY {order} LIMIT ? OFFSET ?", args + [limit, offset]).fetchall()
         return {"offset": offset, "limit": limit, "items": [{
             "id": r[1], "title": r[2], "date": r[3], "start": r[4], "end": r[5], "century": r[6],
             "type": self.types[r[7]][1] if r[7] in self.types else r[7], "source": self.sources[r[8]][1],
-            "url": r[9], "reproduction": r[10] == "reproduction", "creators": r[11]} for r in rows]}
+            "url": r[9], "reproduction": r[10] == "reproduction", "secure": bool(r[11]), "creators": r[12]} for r in rows]}
 
     def artwork(self, aid):
         a = self.db.execute("SELECT * FROM artwork WHERE id = ?", (aid,)).fetchone()

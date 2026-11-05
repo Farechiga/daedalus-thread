@@ -36,6 +36,7 @@ CREATE TABLE artwork (
   id TEXT NOT NULL UNIQUE,           -- ICARUS identifier (preserved)
   source_id TEXT NOT NULL REFERENCES source(id),
   source_url TEXT,                   -- link out to the record (and its image) at the source
+  link_https INTEGER,                -- 1 if source_url is https; plain-http links sort last and carry a warning
   title TEXT,                        -- first title; all titles in artwork_title
   holding TEXT,                      -- meta/collection: holding institution (raw)
   object_type TEXT REFERENCES object_type(id),
@@ -154,7 +155,7 @@ def main():
     rows = {k: [] for k in ("artwork", "title", "ac", "ai", "aio", "an")}
 
     def flush():
-        db.executemany("INSERT INTO artwork VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows["artwork"])
+        db.executemany("INSERT INTO artwork VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows["artwork"])
         db.executemany("INSERT INTO artwork_title(artwork_rid, position, title) VALUES (?,?,?)", rows["title"])
         db.executemany("INSERT INTO artwork_creator VALUES (?,?,?,?,?)", rows["ac"])
         db.executemany("INSERT INTO artwork_iconclass VALUES (?,?)", rows["ai"])
@@ -226,7 +227,8 @@ def main():
             rows["title"].append((rid, pos, title))
 
         rows["artwork"].append((
-            rid, rec["id"], sid, rec["url"], rec["title"][0] if rec["title"] else None,
+            rid, rec["id"], sid, rec["url"], int((rec["url"] or "").lower().startswith("https://")),
+            rec["title"][0] if rec["title"] else None,
             rec["collection"][0] if rec["collection"] else None, otype,
             " | ".join(rec["instance_of"]) or None, " | ".join(rec["genre"]) or None,
             " | ".join(rec["time"]) or None,
