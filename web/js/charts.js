@@ -47,6 +47,34 @@ export function rankedBars(items, { onPick, width = 520, labelWidth = 190, rowH 
   return svg;
 }
 
+/** Thin donut. items: [{label, n, sel?, other?}] in display order; slice i gets class c{i} (nine colours in CSS; later slices and 'other' share a neutral).
+ *  The centre shows `centre` = {value, caption}. Non-"other" slices are clickable. */
+export function donut(items, { onPick, centre = {}, size = 200, thickness = 16 } = {}) {
+  const total = items.reduce((sum, d) => sum + d.n, 0) || 1;
+  const r = size / 2, r0 = r - thickness, c = r;
+  const svg = el("svg", { viewBox: `0 0 ${size} ${size}`, role: "img", class: "donut" });
+  const pt = (rad, a) => `${(c + rad * Math.sin(a)).toFixed(2)},${(c - rad * Math.cos(a)).toFixed(2)}`;
+  // a sliver stays visible and clickable: a minimum sweep, then rescale so the ring closes exactly
+  const raw = items.map((d) => Math.max((2 * Math.PI * d.n) / total, 0.014));
+  const k = (2 * Math.PI - 1e-4) / raw.reduce((sum, x) => sum + x, 0);
+  let a0 = 0;
+  items.forEach((d, i) => {
+    const a1 = a0 + raw[i] * k;
+    const big = a1 - a0 > Math.PI ? 1 : 0;
+    const g = hit(svg, `${d.label}: ${fmt.format(d.n)} (${pct(d.n, total)}%)`, d.other ? null : onPick, d);
+    g.classList.add("slice");
+    if (d.sel) g.classList.add("sel");
+    el("path", { class: d.other || i > 8 ? "c-other" : `c${i}`,
+      d: `M${pt(r, a0)}A${r},${r} 0 ${big} 1 ${pt(r, a1)}L${pt(r0, a1)}A${r0},${r0} 0 ${big} 0 ${pt(r0, a0)}Z` }, g);
+    a0 = a1;
+  });
+  const v = el("text", { x: c, y: c + 4, "text-anchor": "middle", class: "dv" }, svg);
+  v.textContent = centre.value ?? fmt.format(total);
+  const cap = el("text", { x: c, y: c + 24, "text-anchor": "middle", class: "dc" }, svg);
+  cap.textContent = truncate(centre.caption ?? "artworks", 22);
+  return svg;
+}
+
 /** Century columns. data: [[century, n]], extra: [[century, n]] (approximate, drawn soft and stacked). */
 export function timeline(data, { extra = [], selected, onPick, width = 980, height = 210 } = {}) {
   const all = new Map();
@@ -212,6 +240,7 @@ function base(basemap, selected) {
 }
 
 /** Classed log scale for country counts: decade classes (1–9, 10–99, …) so a 60:1 spread still reads.
+ *  Half-decades (1–2, 3–9, 10–29, …) when the range is narrow.
  *  Returns { classes: [{lo, hi, color}], color(n) }. */
 export function countryScale(values) {
   const max = Math.max(1, ...values);
@@ -224,10 +253,12 @@ export function countryScale(values) {
     for (const p of decades) edges.push(p, p * 3);
     edges = edges.filter((b) => b <= max);
   }
+  // at most five classes (the lowest merge), coloured from the top of the five-step ramp down, so the
+  // highest class is always the darkest teal and a narrow range still starts visibly above the land colour
+  edges = edges.length > 5 ? [1, ...edges.slice(-4)] : edges;
   const classes = edges.map((lo, i) => {
     const hi = i + 1 < edges.length ? edges[i + 1] : Infinity;
-    const t = edges.length === 1 ? 1 : 0.18 + 0.82 * (i / (edges.length - 1));
-    return { lo, hi, color: `color-mix(in oklab, var(--heat-1) ${Math.round(t * 100)}%, var(--heat-0))` };
+    return { lo, hi, color: `var(--ramp-${5 - edges.length + i + 1})` };
   });
   return { classes, color: (n) => (n > 0 ? classes.findLast((c) => n >= c.lo).color : null) };
 }

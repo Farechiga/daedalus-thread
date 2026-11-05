@@ -1,4 +1,4 @@
-import { artCentres, centuryLabel, choropleth, countryScale, fmt, pct, prism, rankedBars, themeHeatmap, timeline, treemap } from "./charts.js";
+import { artCentres, centuryLabel, choropleth, countryScale, donut, fmt, pct, prism, rankedBars, themeHeatmap, timeline, treemap } from "./charts.js";
 
 const $ = (s) => document.querySelector(s);
 const PARAMS = ["node", "century", "creator", "type", "source", "country", "code", "q", "ds", "notable", "repro", "nat"];
@@ -79,7 +79,6 @@ async function load() {
 function render() {
   renderSegments();
   renderThemes();
-  renderStatus();
   renderTimeline();
   renderArtists();
   renderTreemap();
@@ -88,6 +87,7 @@ function render() {
   renderMediaFilter();
   renderSources();
   renderMap();
+  renderStatus();  // after the charts, which register display labels (countries, artists, subjects) for the chips
   $("#repro-toggle").checked = state.repro;
   $("#nat-toggle").checked = state.nat;
   renderDatasetSwitch();
@@ -140,6 +140,9 @@ function renderStatus() {
   const chips = [];
   const add = (label, change) => chips.push(h("span", { class: "chip" }, label,
     h("button", { "aria-label": `Remove filter ${label}`, onclick: () => navigate(change) }, "×")));
+  // the theme focus leads the chain (below the segment level); removing it steps up one level
+  if (view.focus && view.path.length > 1) add(view.focus.label,
+    { node: [view.path[view.path.length - 2].id, ...state.node.slice(1)] });
   state.node.slice(1).forEach((n, i) => add(`Also: ${labels["node:" + n] || n}`,
     { node: state.node.filter((_, j) => j !== i + 1) }));
   if (state.century !== null) add(`Century: ${centuryLabel(state.century)}`, { century: null });
@@ -151,6 +154,8 @@ function renderStatus() {
   if (state.q) add(`Title contains: “${state.q}”`, { q: null });
   if (state.repro) add("Documentary photos included", { repro: false });
   $("#chips").replaceChildren(...chips);
+  $("#chain-n").textContent = `${fmt.format(view.n)} ${view.n === 1 ? "work" : "works"}`;
+  $("#chips").lastElementChild?.scrollIntoView?.({ block: "nearest", inline: "end" });
   const c = view.coverage;
   $("#summary").replaceChildren(...[h("strong", {}, fmt.format(view.n)), `artworks`,
     view.focus ? ` in ${view.focus.label}` : " in the collection",
@@ -250,19 +255,35 @@ function renderMediaFilter() {
   $("#media-filter").replaceChildren(btn(null, "All media", total), ...types.map((t) => btn(t.id, t.label, t.n)));
 }
 
+// Thin donut plus a legend that doubles as the click target list (slices are small; rows are easy to hit).
+function donutChart(items, { onPick, centre }) {
+  const total = items.reduce((sum, d) => sum + d.n, 0);
+  const row = (d, i) => [h("i", { class: d.other || i > 8 ? "c-other" : `c${i}`, "aria-hidden": "true" }), h("span", { class: "lab" }, d.label),
+    h("span", { class: "num" }, fmt.format(d.n)), h("span", { class: "pc" }, d.n && pct(d.n, total) < 1 ? "<1%" : `${pct(d.n, total)}%`)];
+  return h("div", { class: "donut-wrap" }, donut(items, { onPick, centre }),
+    h("ol", { class: "donut-legend" }, items.map((d, i) => h("li", {}, d.other ? h("span", { class: "row" }, row(d, i))
+      : h("button", { class: "row", "aria-pressed": String(!!d.sel), onclick: () => onPick(d) }, row(d, i))))));
+}
+
 function renderTypes() {
+  const items = view.types.filter((t) => t.n > 0).map((t) => ({ ...t, sel: t.id === state.type }));
+  const sel = items.find((t) => t.sel);
   card("#c-types", view.n ? `n = ${fmt.format(view.n)}` : "",
-    view.types.length ? rankedBars(view.types.map((t) => ({ ...t, sel: t.id === state.type })), { width: widthOf("#c-types"), labelWidth: Math.min(190, widthOf("#c-types") * 0.42),
-      onPick: (t) => navigate({ type: state.type === t.id ? null : t.id }) }) : empty("—"),
-    { text: "Object types are normalised from each source's own (multilingual) terms." });
+    items.length ? donutChart(items, { onPick: (t) => navigate({ type: state.type === t.id ? null : t.id }),
+      centre: sel ? { value: fmt.format(sel.n), caption: sel.label } : { caption: "artworks" } }) : empty("—"),
+    { text: "Object types are normalised from each source's own (multilingual) terms." + (sel ? " Other kinds are shown for comparison." : "") });
 }
 
 function renderSources() {
   const top = view.sources[0];
   const dominated = top && view.n >= 50 && top.n / view.n > 0.5;
+  const shown = view.sources.slice(0, 9).map((s) => ({ ...s, sel: s.id === state.source }));
+  const rest = view.sources.slice(9);
+  if (rest.length) shown.push({ label: `${rest.length} other collection${rest.length > 1 ? "s" : ""}`, n: rest.reduce((sum, s) => sum + s.n, 0), other: true });
+  const sel = shown.find((s) => s.sel);
   card("#c-sources", view.n ? `n = ${fmt.format(view.n)}` : "",
-    view.sources.length ? rankedBars(view.sources.slice(0, 10).map((s) => ({ ...s, sel: s.id === state.source })), { width: widthOf("#c-sources"), labelWidth: Math.min(190, widthOf("#c-sources") * 0.42),
-      onPick: (s) => navigate({ source: state.source === s.id ? null : s.id }) }) : empty("—"),
+    shown.length ? donutChart(shown, { onPick: (s) => navigate({ source: state.source === s.id ? null : s.id }),
+      centre: sel ? { value: fmt.format(sel.n), caption: sel.label } : { caption: shown.length === 1 ? "one collection" : `${view.sources.length} collections` } }) : empty("—"),
     dominated ? { text: `${pct(top.n, view.n)}% of this selection comes from one source, so patterns may reflect that collection's focus.`, warn: true } : null);
 }
 
@@ -343,9 +364,9 @@ async function openArtwork(id) {
   const geoLines = located.map((c) => h("li", {}, h("span", { class: "alt-title" }, c.name), " — ",
     c.geo.proxy === "birthplace" ? `born ${c.geo.place ? c.geo.place + ", " : ""}${c.geo.country_name}` : `${c.geo.country_name} (by nationality; birthplace unknown)`,
     h("br"), h("code", {}, [c.geo.evidence, c.geo.confidence ? `${c.geo.confidence} confidence` : null].filter(Boolean).join(" · ")), " ",
-    c.geo.ulan ? h("a", { href: `https://vocab.getty.edu/page/ulan/${c.geo.ulan}`, target: "_blank", rel: "noopener" }, "ULAN") : null,
+    c.geo.ulan ? h("a", { href: `https://vocab.getty.edu/page/ulan/${c.geo.ulan}`, target: "_blank", rel: "noopener noreferrer" }, "ULAN") : null,
     c.geo.ulan && c.geo.wikidata ? " · " : null,
-    c.geo.wikidata ? h("a", { href: `https://www.wikidata.org/wiki/${c.geo.wikidata}`, target: "_blank", rel: "noopener" }, "Wikidata") : null));
+    c.geo.wikidata ? h("a", { href: `https://www.wikidata.org/wiki/${c.geo.wikidata}`, target: "_blank", rel: "noopener noreferrer" }, "Wikidata") : null));
   const eyebrow = [a.object_type_label, a.century !== null && a.century !== undefined ? centuryLabel(a.century) : null, a.source.name].filter(Boolean).join(" · ");
   const wd = a.dataset === "wikidata";
   d.querySelector("#drawer-body").replaceChildren(...[

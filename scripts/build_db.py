@@ -36,8 +36,18 @@ EXTRA_SOURCE_ROWS = [("wikidata", "Wikidata (paintings)", None, "www.wikidata.or
                      ("aic", "Art Institute of Chicago", "US", "www.artic.edu"),
                      ("zeri", "Fondazione Federico Zeri (photo archive)", "IT", "catalogo.fondazionezeri.unibo.it"),
                      ("joconde", "Joconde (Musées de France)", "FR", "pop.culture.gouv.fr")]
+# Hosts whose http:// record links also work over https (tested 2026-11-05: same record page, status 200).
+# The others either have no https (VKK, Emblematica, PAUart) or no longer serve the records at all.
+HTTPS_HOSTS = {"www.rijksmuseum.nl", "www.museen.thueringen.de"}
 CREATOR_FILES = ("creator_geo.tsv", "wikidata_creators.tsv", "met_creators.tsv", "aic_creators.tsv", "zeri_creators.tsv",
                  "joconde_creators.tsv")  # dates/creators describe a documentary photograph (decision log, open item)
+
+def secure(url):
+    """Upgrade a plain-http link to https where the host is known to serve the same page securely."""
+    if url and url.startswith("http://") and url[7:].split("/", 1)[0] in HTTPS_HOSTS:
+        return "https://" + url[7:]
+    return url
+
 
 SCHEMA = """
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
@@ -248,8 +258,9 @@ def main():
         for pos, title in enumerate(rec["title"]):
             rows["title"].append((rid, pos, title))
 
+        url = secure(rec["url"])
         rows["artwork"].append((
-            rid, rec["id"], sid, rec["url"], int((rec["url"] or "").lower().startswith("https://")),
+            rid, rec["id"], sid, url, int((url or "").lower().startswith("https://")),
             rec["title"][0] if rec["title"] else None,
             rec["collection"][0] if rec["collection"] else None, otype,
             " | ".join(rec["instance_of"]) or None, " | ".join(rec["genre"]) or None,
