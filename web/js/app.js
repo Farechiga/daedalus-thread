@@ -1,17 +1,19 @@
-import { centuryLabel, fmt, heatmap, pct, rankedBars, timeline, treemap } from "./charts.js";
+import { artCentres, cartogram, centuryLabel, fmt, heatmap, pct, rankedBars, timeline, treemap } from "./charts.js";
 
 const $ = (s) => document.querySelector(s);
-const PARAMS = ["node", "century", "creator", "type", "source", "code", "q", "repro"];
-const state = { node: [], century: null, creator: null, type: null, source: null, code: null, q: null, repro: false };
+const PARAMS = ["node", "century", "creator", "type", "source", "country", "code", "q", "repro", "nat"];
+const FLAGS = ["repro", "nat"]; // display preferences that change the measure; kept across fresh searches
+const state = { node: [], century: null, creator: null, type: null, source: null, country: null, code: null, q: null, repro: false, nat: false };
 const labels = {}; // remembered display labels for chips: "creator:123" -> "Albrecht Dürer"
-let meta = null, view = null, resultsOffset = 0, requestId = 0;
+let meta = null, view = null, basemap = null, resultsOffset = 0, requestId = 0;
+let mapMode = (() => { try { return localStorage.getItem("dt.mapMode") || "countries"; } catch { return "countries"; } })();
 
 // ---------- URL <-> state ----------
 function toQuery(s = state) {
   const p = new URLSearchParams();
   for (const n of s.node) p.append("node", n);
   for (const k of PARAMS.slice(1)) {
-    if (k === "repro") { if (s.repro) p.set("repro", "1"); continue; }
+    if (FLAGS.includes(k)) { if (s[k]) p.set(k, "1"); continue; }
     if (s[k] !== null && s[k] !== undefined && s[k] !== "") p.set(k, s[k]);
   }
   return p.toString();
@@ -20,7 +22,7 @@ function fromQuery(qs) {
   const p = new URLSearchParams(qs);
   state.node = p.getAll("node");
   for (const k of PARAMS.slice(1)) state[k] = p.get(k);
-  state.repro = p.get("repro") === "1";
+  for (const k of FLAGS) state[k] = p.get(k) === "1";
   for (const k of ["century", "creator"]) state[k] = state[k] === null ? null : Number(state[k]);
 }
 function navigate(change, { replace = false } = {}) {
@@ -86,6 +88,7 @@ function render() {
   renderSources();
   renderMap();
   $("#repro-toggle").checked = state.repro;
+  $("#nat-toggle").checked = state.nat;
 }
 
 function renderSegments() {
@@ -96,7 +99,7 @@ function renderSegments() {
 }
 
 function blank(extra = {}) {
-  return { node: [], century: null, creator: null, type: null, source: null, code: null, q: null, ...extra };
+  return { node: [], century: null, creator: null, type: null, source: null, country: null, code: null, q: null, ...extra };
 }
 
 function renderThemes() {
@@ -140,6 +143,7 @@ function renderStatus() {
   if (state.creator !== null) add(`Artist: ${labels["creator:" + state.creator] || "#" + state.creator}`, { creator: null });
   if (state.type) add(`Object: ${meta.object_types.find((t) => t.id === state.type)?.label || state.type}`, { type: null });
   if (state.source) add(`Source: ${meta.sources.find((s) => s.id === state.source)?.name || state.source}`, { source: null });
+  if (state.country) add(`Artist born in: ${labels["country:" + state.country] || state.country}${state.nat ? " (or national of)" : ""}`, { country: null });
   if (state.code) add(`Subject: ${labels["code:" + state.code] || state.code}`, { code: null });
   if (state.q) add(`Title contains: “${state.q}”`, { q: null });
   $("#chips").replaceChildren(...chips);
@@ -226,10 +230,41 @@ function renderSources() {
 }
 
 function renderMap() {
-  card("#c-map", "artist-country attribution: pending enrichment",
-    h("div", { class: "empty" },
-      h("p", {}, "Artist birthplaces and nationalities are being reconciled with Wikidata and the Getty ULAN."),
-      h("p", {}, `${pct(view.coverage.named_creator, view.n)}% of this selection has a named artist that can be mapped once enrichment lands.`)));
+  const g = view.geo;
+  for (const b of document.querySelectorAll("#c-map .seg button")) b.setAttribute("aria-pressed", String(b.dataset.mode === mapMode));
+  for (const c of g.countries) labels["country:" + c.code] = c.name;
+  const measure = g.include_nationality ? "with an artist located by birthplace or nationality" : "with an artist of known birthplace";
+  if (!g.n) {
+    card("#c-map", g.eligible ? nline(0, g.eligible, ` ${measure}`) : "", empty("No artworks in this selection have a located artist."));
+    return;
+  }
+  const pick = (code) => navigate({ country: state.country === code ? null : code });
+  const svg = mapMode === "centres"
+    ? artCentres(basemap, g.places, { selected: state.country, onPick: (p) => pick(p.country) })
+    : cartogram(basemap, g.countries, { selected: state.country, showProxy: g.include_nationality, onPick: (c) => pick(c.code) });
+  const inView = g.countries.filter((c) => c.in_view);
+  const beyond = g.countries.filter((c) => !c.in_view);
+  const list = (rows) => h("ol", {}, rows.map((c) => h("li", {}, h("button", { "aria-pressed": String(c.code === state.country), onclick: () => pick(c.code) },
+    h("span", {}, c.name), h("span", { class: "num" }, fmt.format(c.n))))));
+  const side = h("div", { class: "map-side" },
+    mapMode === "countries"
+      ? h("div", { class: "legend" }, h("span", {}, h("i"), "Circle area = artworks"),
+          g.include_nationality ? h("span", {}, h("i", { class: "proxy" }), "via nationality") : null)
+      : h("div", { class: "legend" }, h("span", {}, h("i"), "Artists' birthplaces")),
+    mapMode === "centres"
+      ? [h("h4", {}, "Leading art centres"), h("ol", {}, g.places.filter((p) => p.in_view).slice(0, 10).map((p) => h("li", {},
+          h("button", { onclick: () => pick(p.country), title: `Filter to artists born in ${labels["country:" + p.country] || p.country}` },
+            h("span", {}, p.name), h("span", { class: "num" }, fmt.format(p.n))))))]
+      : [h("h4", {}, "Countries"), list(inView.slice(0, 12))],
+    beyond.length ? [h("h4", {}, "Beyond the map"), list(beyond.slice(0, 8))] : null);
+  const notes = [`${fmt.format(g.named_not_located)} by named artists not yet located`, `${fmt.format(g.anonymous_only)} anonymous`,
+    `${fmt.format(g.no_creator)} with no creator recorded`];
+  if (g.multi_country) notes.push(`${fmt.format(g.multi_country)} have artists from several countries and count once in each`);
+  if (g.excluded_reproductions) notes.push(`${fmt.format(g.excluded_reproductions)} documentary photographs excluded`);
+  const low = g.n / g.eligible < 0.25;
+  card("#c-map", nline(g.n, g.eligible, ` ${measure}`), h("div", { class: "map-wrap" }, svg, side), {
+    text: (low ? "Low coverage: read these proportions with care. " : "") + notes.join(" · ") +
+      ". Present-day borders; birthplaces from Wikidata and the Getty ULAN.", warn: low });
 }
 
 // ---------- results & drawer ----------
@@ -262,6 +297,13 @@ async function openArtwork(id) {
     c.qualifier ? h("span", { class: "life" }, ` (${c.qualifier})`) : null,
     c.life ? h("span", { class: "life" }, ` ${c.life}`) : null]) : ["Artist unknown"];
   const roles = a.creators.filter((c) => c.kind === "institution" || c.kind === "qualifier");
+  const located = named.filter((c) => c.geo && c.geo.country);
+  const geoLines = located.map((c) => h("li", {}, h("span", { class: "alt-title" }, c.name), " — ",
+    c.geo.proxy === "birthplace" ? `born ${c.geo.place ? c.geo.place + ", " : ""}${c.geo.country_name}` : `${c.geo.country_name} (by nationality; birthplace unknown)`,
+    h("br"), h("code", {}, [c.geo.evidence, c.geo.confidence ? `${c.geo.confidence} confidence` : null].filter(Boolean).join(" · ")), " ",
+    c.geo.ulan ? h("a", { href: `https://vocab.getty.edu/page/ulan/${c.geo.ulan}`, target: "_blank", rel: "noopener" }, "ULAN") : null,
+    c.geo.ulan && c.geo.wikidata ? " · " : null,
+    c.geo.wikidata ? h("a", { href: `https://www.wikidata.org/wiki/${c.geo.wikidata}`, target: "_blank", rel: "noopener" }, "Wikidata") : null));
   const eyebrow = [a.object_type_label, a.century !== null && a.century !== undefined ? centuryLabel(a.century) : null, a.source.name].filter(Boolean).join(" · ");
   d.querySelector("#drawer-body").replaceChildren(...[
     h("p", { class: "eyebrow" }, eyebrow),
@@ -276,6 +318,7 @@ async function openArtwork(id) {
       h("dt", {}, "Held by"), h("dd", {}, a.holding || "—"),
       h("dt", {}, "Source"), h("dd", {}, a.source.name),
       h("dt", {}, "ICARUS id"), h("dd", {}, h("code", {}, a.id))),
+    geoLines.length ? [h("h3", {}, "Where the artists were born"), h("ul", {}, geoLines)] : null,
     a.titles.length > 1 ? [h("h3", {}, "Also titled"), h("ul", {}, a.titles.slice(1).map((t) => h("li", { class: "alt-title" }, t)))] : null,
     h("h3", {}, "Themes"),
     a.themes.length ? h("ul", {}, a.themes.map((p) => h("li", {}, h("button", { class: "linkish", onclick: () => { closeDrawer(); navigate(blank({ node: [p.at(-1).id] })); } },
@@ -293,7 +336,7 @@ document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#dra
 // ---------- search ----------
 const input = $("#q"), box = $("#suggest");
 let sugTimer = null, sugItems = [], sugIndex = -1;
-const KIND_LABEL = { segment: "Segments", theme: "Themes", subject: "Iconclass subjects", artist: "Artists", object_type: "Kinds of object", source: "Source collections" };
+const KIND_LABEL = { segment: "Segments", theme: "Themes", subject: "Iconclass subjects", artist: "Artists", country: "Artists born in", object_type: "Kinds of object", source: "Source collections" };
 input.addEventListener("input", () => { clearTimeout(sugTimer); sugTimer = setTimeout(suggest, 120); });
 input.addEventListener("keydown", (e) => {
   if (e.key === "ArrowDown" || e.key === "ArrowUp") {
@@ -335,7 +378,7 @@ async function suggest() {
 }
 function hideSuggest() { box.hidden = true; input.setAttribute("aria-expanded", "false"); sugIndex = -1; }
 function hasFilters() {
-  return state.node.length > 1 || [state.century, state.creator, state.type, state.source, state.code, state.q].some((v) => v !== null && v !== undefined && v !== "");
+  return state.node.length > 1 || [state.century, state.creator, state.type, state.source, state.country, state.code, state.q].some((v) => v !== null && v !== undefined && v !== "");
 }
 // A search always starts over: every pick replaces the whole filter state (decision D9).
 function pick(item) {
@@ -345,6 +388,7 @@ function pick(item) {
   else if (item.kind === "artist") { labels["creator:" + item.ref] = item.label; navigate(blank({ creator: Number(item.ref) })); }
   else if (item.kind === "object_type") navigate(blank({ type: item.ref }));
   else if (item.kind === "source") navigate(blank({ source: item.ref }));
+  else if (item.kind === "country") { labels["country:" + item.ref] = item.label; navigate(blank({ country: item.ref })); }
   else if (item.kind === "title") navigate(blank({ q: item.ref }));
 }
 
@@ -352,6 +396,14 @@ function pick(item) {
 $("#back-btn").addEventListener("click", () => history.back());
 $("#reset-btn").addEventListener("click", () => navigate(blank({ node: view.path.length ? [view.path[0].id] : [] })));
 $("#repro-toggle").addEventListener("change", (e) => navigate({ repro: e.target.checked }, { replace: true }));
+$("#nat-toggle").addEventListener("change", (e) => navigate({ nat: e.target.checked }, { replace: true }));
+for (const b of document.querySelectorAll("#c-map .seg button")) {
+  b.addEventListener("click", () => {
+    mapMode = b.dataset.mode;
+    try { localStorage.setItem("dt.mapMode", mapMode); } catch { /* private mode */ }
+    renderMap();
+  });
+}
 $("#info-btn").addEventListener("click", () => { renderInfo(); $("#info").showModal(); });
 
 function renderInfo() {
@@ -365,6 +417,8 @@ function renderInfo() {
       h("li", {}, "Iconclass codes describe what is visible, including details. A lion in a St Jerome counts under Lions."),
       h("li", {}, "Dates come from each source's own text. Only dates that fall in a single century are placed on the timeline. Wider spans of 50 years or less are shown pale, as approximate."),
       h("li", {}, "Works with several artists (e.g. designer, engraver, publisher) count once for each artist."),
+      h("li", {}, "Artist geography uses present-day borders. Each artist's birthplace comes from Wikidata (via the Getty ULAN identifier) or the ULAN itself, and is placed in today's country, so Rubens, born in Siegen, counts under Germany. Nationality is used only if you switch it on, and is shown as a lighter ring. Names were matched to ULAN by name and life dates. Doubtful matches are left unlocated rather than guessed."),
+      h("li", {}, "The map covers Europe and the Mediterranean, where over 99% of located artists were born. The rest are listed as “Beyond the map”."),
       h("li", {}, "PAUart records are photographs of artworks. Their dates and creators describe the photograph, so they are left out of the date and artist charts unless you include them."),
       h("li", {}, "These are distributions within the ICARUS collections, not definitive histories of art.")),
     h("h3", {}, "Sources"),
@@ -374,7 +428,7 @@ function renderInfo() {
 
 // ---------- boot ----------
 (async function boot() {
-  meta = await api("meta");
+  [meta, basemap] = await Promise.all([api("meta"), fetch("/assets/basemap.json").then((r) => r.json())]);
   for (const s of meta.segments) labels["node:" + s.id] = s.label;
   fromQuery(location.search);
   if (!location.search) {

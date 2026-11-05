@@ -51,12 +51,25 @@
 
       <div class="grid">
         <article class="card chart wide" id="c-timeline"><header><h3>When</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart wide" id="c-map">
+          <header>
+            <h3>Where the artists were born</h3>
+            <div class="map-controls">
+              <div class="seg" role="group" aria-label="Map view">
+                <button type="button" data-mode="countries" aria-pressed="true">Countries</button>
+                <button type="button" data-mode="centres" aria-pressed="false">Art centres</button>
+              </div>
+              <label class="toggle"><input type="checkbox" id="nat-toggle"> Use nationality where birthplace is unknown</label>
+            </div>
+            <p class="n"></p>
+          </header>
+          <div class="body"></div>
+        </article>
         <article class="card chart" id="c-artists"><header><h3>Most frequent artists</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-treemap"><header><h3>Theme proportions</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart wide" id="c-heatmap"><header><h3>Themes across the centuries</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-subjects"><header><h3>Most frequent Iconclass subjects</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-types"><header><h3>Kinds of object</h3><p class="n"></p></header><div class="body"></div></article>
-        <article class="card chart" id="c-map"><header><h3>Where the artists came from</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-sources"><header><h3>Source collections</h3><p class="n"></p></header><div class="body"></div></article>
       </div>
 

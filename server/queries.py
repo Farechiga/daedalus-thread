@@ -20,7 +20,7 @@ class BadRequest(ValueError):
 class Filters:
     """Parsed, validated filter state. Built from query parameters."""
 
-    def __init__(self, params, known_nodes, known_types, known_sources):
+    def __init__(self, params, known_nodes, known_types, known_sources, known_countries=()):
         get = lambda k: (params.get(k) or [None])[0]  # noqa: E731
         self.nodes = [n for n in params.get("node", []) if n][:MAX_NODES]
         for n in self.nodes:
@@ -39,6 +39,13 @@ class Filters:
             raise BadRequest("bad code")
         self.q = (get("q") or "").strip()[:100] or None
         self.repro = get("repro") in ("1", "true")
+        self.nat = get("nat") in ("1", "true")  # also count nationality proxies (brief section 6)
+        self.country = get("country")
+        if self.country and self.country not in known_countries:
+            raise BadRequest(f"unknown country: {self.country}")
+
+    def proxies(self):
+        return ("birthplace", "nationality") if self.nat else ("birthplace",)
 
     def as_dict(self):
         return {k: v for k, v in vars(self).items() if v not in (None, [], False)}
@@ -65,6 +72,11 @@ class Filters:
             clauses.append(f"{alias}.rid IN (SELECT xi.artwork_rid FROM iconclass_ancestor xa "
                            f"JOIN artwork_iconclass xi ON xi.notation = xa.notation WHERE xa.ancestor = ?)")
             args.append(self.code)
+        if self.country:
+            marks = ",".join("?" * len(self.proxies()))
+            clauses.append(f"{alias}.rid IN (SELECT gac.artwork_rid FROM creator_geo g JOIN artwork_creator gac "
+                           f"ON gac.creator_id = g.creator_id WHERE g.country_code = ? AND g.proxy IN ({marks}))")
+            args += [self.country, *self.proxies()]
         if self.q:
             clauses.append(f"{alias}.rid IN (SELECT t.artwork_rid FROM artwork_title t WHERE t.id IN "
                            f"(SELECT rowid FROM title_fts WHERE title_fts MATCH ?))")
@@ -125,10 +137,13 @@ class Queries:
         self.types = {r[0]: r for r in db.execute("SELECT id, label, position, records FROM object_type")}
         self.sources = {r[0]: r for r in db.execute("SELECT id, name, country, host, records FROM source")}
         self.meta = {k: json.loads(v) for k, v in db.execute("SELECT key, value FROM meta")}
+        self.countries = {r[0]: {"code": r[0], "name": r[1], "iso2": r[2], "continent": r[3], "in_view": bool(r[4]),
+                                 "ax": r[5], "ay": r[6]} for r in db.execute(
+            "SELECT code, name, iso2, continent, in_view, ax, ay FROM country")}
         self.total = self.meta["records"]
 
     def filters(self, params):
-        return Filters(params, self.nodes, self.types, self.sources)
+        return Filters(params, self.nodes, self.types, self.sources, self.countries)
 
     # ---------- static-ish ----------
     def meta_payload(self):
@@ -169,7 +184,45 @@ class Queries:
         out["heatmap"] = self.heatmap(f, focus, where, args)
         out["subjects"] = self.top_subjects(where, args, n)
         out["coverage"] = self.coverage(where, args, n)
+        out["geo"] = self.geo(f, where, args, n)
+        out["coverage"]["artist_country"] = out["geo"]["n"]
         return out
+
+    def geo(self, f, where, args, n, max_places=160):
+        """Artist-country attribution for the filtered set (decision D3: an artwork counts once per country
+        of each of its creators). Reproductions are excluded unless f.repro."""
+        obj = self._object_clause(f)
+        prox = f.proxies()
+        marks = ",".join("?" * len(prox))
+        base = (f"FROM artwork a JOIN artwork_creator ac ON ac.artwork_rid = a.rid JOIN creator_geo g ON g.creator_id = ac.creator_id "
+                f"WHERE {where}{obj} AND g.country_code IS NOT NULL AND g.proxy IN ({marks})")
+        bargs = args + list(prox)
+        countries = []
+        for code, k, k_birth in self.db.execute(
+                f"SELECT g.country_code, count(DISTINCT a.rid), count(DISTINCT CASE WHEN g.proxy = 'birthplace' THEN a.rid END) "
+                f"{base} GROUP BY 1 ORDER BY 2 DESC", bargs):
+            c = self.countries.get(code, {"name": code, "in_view": False, "ax": None, "ay": None, "iso2": None})
+            countries.append({"code": code, "name": c["name"], "iso2": c["iso2"], "n": k, "n_birthplace": k_birth,
+                              "in_view": c["in_view"], "ax": c["ax"], "ay": c["ay"]})
+        located, multi = self.db.execute(
+            f"SELECT count(*), sum(nc > 1) FROM (SELECT a.rid, count(DISTINCT g.country_code) nc {base} GROUP BY a.rid)",
+            bargs).fetchone()
+        stats = self.db.execute(
+            f"SELECT count(*), sum(a.n_named_creators > 0), sum(a.n_creators > 0 AND a.n_named_creators = 0) "
+            f"FROM artwork a WHERE {where}{obj}", args).fetchone()
+        eligible, named, anon_only = stats[0], stats[1] or 0, stats[2] or 0
+        places = [{"id": r[0], "name": r[1], "country": r[2], "x": r[3], "y": r[4], "in_view": bool(r[5]), "n": r[6]}
+                  for r in self.db.execute(
+            f"SELECT b.id, b.name, b.country_code, b.x, b.y, b.in_view, count(DISTINCT a.rid) k FROM artwork a "
+            f"JOIN artwork_creator ac ON ac.artwork_rid = a.rid JOIN creator_geo g ON g.creator_id = ac.creator_id "
+            f"JOIN birthplace b ON b.id = g.birthplace_id WHERE {where}{obj} AND g.proxy = 'birthplace' "
+            f"GROUP BY b.id ORDER BY k DESC LIMIT ?", args + [max_places])]
+        located = located or 0
+        return {"n": located, "eligible": eligible, "countries": countries, "places": places,
+                "multi_country": multi or 0, "include_nationality": f.nat,
+                "named_not_located": named - located if named >= located else 0,
+                "anonymous_only": anon_only, "no_creator": eligible - named - anon_only,
+                "excluded_reproductions": n - eligible}
 
     def tree(self, f, focus, where, args):
         kids = self.children.get(focus, []) if focus else self.children.get(None, [])
@@ -295,10 +348,15 @@ class Queries:
         rid = rec.pop("rid")
         rec["titles"] = [t for (t,) in self.db.execute(
             "SELECT title FROM artwork_title WHERE artwork_rid = ? ORDER BY position", (rid,))]
-        rec["creators"] = [{"raw": r[0], "qualifier": r[1], "id": r[2], "name": r[3], "kind": r[4], "life": r[5]}
+        rec["creators"] = [{"raw": r[0], "qualifier": r[1], "id": r[2], "name": r[3], "kind": r[4], "life": r[5],
+                            "geo": {"country": r[6], "country_name": self.countries.get(r[6], {}).get("name"), "proxy": r[7],
+                                    "evidence": r[8], "confidence": r[9], "place": r[10], "ulan": r[11], "wikidata": r[12],
+                                    "born": r[13], "died": r[14], "match": r[15]} if r[15] else None}
                            for r in self.db.execute(
-            "SELECT ac.raw_name, ac.qualifier, c.id, c.display_name, c.kind, c.life_dates FROM artwork_creator ac "
-            "LEFT JOIN creator c ON c.id = ac.creator_id WHERE ac.artwork_rid = ? ORDER BY ac.position", (rid,))]
+            "SELECT ac.raw_name, ac.qualifier, c.id, c.display_name, c.kind, c.life_dates, g.country_code, g.proxy, g.evidence, "
+            "g.geo_confidence, b.name, g.ulan_id, g.wikidata_qid, g.birth_year, g.death_year, g.match_status "
+            "FROM artwork_creator ac LEFT JOIN creator c ON c.id = ac.creator_id LEFT JOIN creator_geo g ON g.creator_id = c.id "
+            "LEFT JOIN birthplace b ON b.id = g.birthplace_id WHERE ac.artwork_rid = ? ORDER BY ac.position", (rid,))]
         rec["subjects"] = [{"code": r[0], "label": r[1], "label_short": short_label(r[1])} for r in self.db.execute(
             "SELECT ai.notation, i.label_en FROM artwork_iconclass ai LEFT JOIN iconclass i ON i.notation = ai.notation "
             "WHERE ai.artwork_rid = ? ORDER BY ai.notation", (rid,))]
@@ -317,7 +375,7 @@ class Queries:
         if len(q) < 2:
             return {"q": q, "groups": []}
         groups = {}
-        order = ["segment", "theme", "subject", "artist", "object_type", "source"]
+        order = ["segment", "theme", "subject", "artist", "country", "object_type", "source"]
         sql = ("SELECT s.kind, s.ref, s.label, s.detail, s.weight, s.terms, bm25({t}) FROM {t} JOIN suggest s ON s.id = {t}.rowid "
                "WHERE {t} MATCH ? ORDER BY bm25({t}) LIMIT 400")
         rows = self.db.execute(sql.format(t="suggest_fts"), (fts_query(q),)).fetchall()

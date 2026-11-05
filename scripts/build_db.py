@@ -8,6 +8,7 @@ for missing fields; every column is nullable and charts choose their own eligibl
 """
 import argparse
 import collections
+import csv
 import json
 import os
 import sqlite3
@@ -72,6 +73,15 @@ CREATE TABLE taxonomy_node (
 );
 CREATE TABLE artwork_node (node_id TEXT NOT NULL, artwork_rid INTEGER NOT NULL, is_other INTEGER,
   PRIMARY KEY (node_id, artwork_rid)) WITHOUT ROWID;
+CREATE TABLE country (code TEXT PRIMARY KEY, name TEXT, iso2 TEXT, continent TEXT, subregion TEXT,
+  in_view INTEGER, ax REAL, ay REAL);
+CREATE TABLE birthplace (id INTEGER PRIMARY KEY, name TEXT, country_code TEXT, lat REAL, lon REAL, x REAL, y REAL, in_view INTEGER);
+CREATE TABLE creator_geo (               -- Phase 3 enrichment (data/enrichment/creator_geo.tsv)
+  creator_id INTEGER PRIMARY KEY, country_code TEXT, proxy TEXT,   -- proxy: 'birthplace' | 'nationality'
+  evidence TEXT, geo_confidence TEXT, match_status TEXT, match_method TEXT, match_confidence TEXT,
+  ulan_id TEXT, wikidata_qid TEXT, ulan_name TEXT, birth_year INTEGER, death_year INTEGER,
+  birthplace_id INTEGER, nationality TEXT, notes TEXT
+);
 CREATE TABLE suggest (id INTEGER PRIMARY KEY, kind TEXT, ref TEXT, label TEXT, detail TEXT, terms TEXT, weight INTEGER);
 """
 
@@ -88,6 +98,8 @@ CREATE INDEX ai_artwork ON artwork_iconclass(artwork_rid);
 CREATE INDEX aio_artwork ON artwork_iconclass_original(artwork_rid);
 CREATE INDEX an_artwork ON artwork_node(artwork_rid, node_id);
 CREATE INDEX tn_parent ON taxonomy_node(parent_id, position);
+CREATE INDEX cg_country ON creator_geo(country_code, proxy, creator_id);
+CREATE INDEX cg_place ON creator_geo(birthplace_id);
 CREATE VIRTUAL TABLE suggest_fts USING fts5(terms, content='suggest', content_rowid='id',
   tokenize='unicode61 remove_diacritics 2', prefix='1 2 3');
 CREATE VIRTUAL TABLE suggest_tri USING fts5(terms, content='suggest', content_rowid='id',
@@ -272,6 +284,9 @@ def main():
                    [(t["id"], t["label"], i, type_count[t["id"]]) for i, t in enumerate(typer.types)])
     log("taxonomy, sources, object types")
 
+    load_geography(db, creators)
+    log("geography (countries, birthplaces, creator attribution)")
+
     build_suggest(db, ic, tax, node_count, creators)
     log("suggest table")
 
@@ -292,6 +307,44 @@ def main():
     db.close()
     os.replace(tmp, args.out)
     log(f"done -> {args.out} ({os.path.getsize(args.out) / 1e6:.0f} MB)")
+
+
+def load_geography(db, creators):
+    """Countries and anchors from the basemap, plus creator attribution from the enrichment TSV (if present)."""
+    from etl.geo import Countries, Viewport
+    countries, view = Countries(), Viewport(width=1000)
+    basemap_path = os.path.join(ROOT, "web", "assets", "basemap.json")
+    basemap = json.load(open(basemap_path)) if os.path.exists(basemap_path) else {"anchors": {}, "in_view": []}
+    db.executemany("INSERT INTO country VALUES (?,?,?,?,?,?,?,?)", [
+        (code, i["name"], i["iso2"], i["continent"], i["subregion"], int(code in basemap["in_view"]),
+         *(basemap["anchors"].get(code) or (None, None))) for code, i in countries.info.items()])
+    path = os.path.join(ROOT, "data", "enrichment", "creator_geo.tsv")
+    if not os.path.exists(path):
+        log("no data/enrichment/creator_geo.tsv: artist geography left empty (run scripts/enrich_creators.py)")
+        return
+    ids = {key: e[0] for key, e in creators.items()}
+    places, rows = {}, []
+    with open(path, encoding="utf-8", newline="") as fh:
+        for r in csv.DictReader(fh, delimiter="\t"):
+            cid = ids.get(r["name_key"])
+            if cid is None:
+                continue
+            pid = None
+            if r["birth_lat"] and r["birth_lon"]:
+                lat, lon = float(r["birth_lat"]), float(r["birth_lon"])
+                key = (r["birth_place"], round(lat, 2), round(lon, 2))
+                if key not in places:
+                    x, y = view.project(lon, lat)
+                    places[key] = (len(places) + 1, r["birth_place"], r["country_code"] or None, lat, lon, x, y,
+                                   int(view.contains(lon, lat)))
+                pid = places[key][0]
+            rows.append((cid, r["country_code"] or None, r["proxy_type"] or None, r["evidence_source"] or None,
+                         r["geo_confidence"] or None, r["status"], r["match_method"] or None, r["match_confidence"] or None,
+                         r["ulan_id"] or None, r["wikidata_qid"] or None, r["ulan_name"] or None,
+                         int(r["ulan_birth"]) if r["ulan_birth"] else None, int(r["ulan_death"]) if r["ulan_death"] else None,
+                         pid, r["nationality"] or None, r["notes"] or None))
+    db.executemany("INSERT INTO birthplace VALUES (?,?,?,?,?,?,?,?)", list(places.values()))
+    db.executemany("INSERT INTO creator_geo VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows)
 
 
 def build_suggest(db, ic, tax, node_count, creators):
@@ -325,6 +378,17 @@ def build_suggest(db, ic, tax, node_count, creators):
         variants = [v for v, _ in e[5].most_common(12)]
         rows.append(("artist", str(e[0]), display, e[2] if e[2] != "person" else e[3],
                      " ; ".join([display] + variants), e[4]))
+    # countries of birth (multilingual names from Natural Earth), weighted by artworks
+    from etl.geo import Countries
+    props = {f["properties"]["ADM0_A3"]: f["properties"] for f in Countries().features}
+    for code, n in db.execute(
+            "SELECT g.country_code, count(DISTINCT ac.artwork_rid) FROM creator_geo g JOIN artwork_creator ac "
+            "ON ac.creator_id = g.creator_id WHERE g.proxy = 'birthplace' GROUP BY 1").fetchall():
+        p = props.get(code, {})
+        names = [p.get(k) for k in ("NAME", "NAME_LONG", "NAME_EN", "NAME_DE", "NAME_NL", "NAME_FR", "NAME_IT", "NAME_PL", "NAME_ES")]
+        extra = {"NLD": ["Holland"], "GBR": ["Britain", "England", "Scotland"], "DEU": ["Deutschland"], "BEL": ["Flanders", "Vlaanderen"]}
+        terms = [t for t in dict.fromkeys(names + extra.get(code, [])) if t]
+        rows.append(("country", code, p.get("NAME", code), None, " ; ".join(terms), n))
     for sid, name, n in db.execute("SELECT id, name, records FROM source"):
         rows.append(("source", sid, name, None, name, n))
     for tid, label, n in db.execute("SELECT id, label, records FROM object_type"):

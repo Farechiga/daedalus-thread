@@ -142,6 +142,46 @@ svg .tm text { fill: var(--surface); font-size: 12px; pointer-events: none; }
 svg .heat rect { stroke: var(--surface); stroke-width: 1; }
 svg .heat .hit:hover rect { stroke: var(--gold); stroke-width: 2; }
 
+/* ---------- map ---------- */
+.map-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; flex: 1; justify-content: flex-end; }
+#c-map header { align-items: center; }
+#c-map header .n { flex-basis: 100%; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; }
+.seg button { border: 0; background: none; border-radius: 999px; padding: 4px 12px; font-size: 13px; cursor: pointer; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--navy); color: var(--surface); }
+.map-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 220px; gap: 18px; align-items: start; }
+.map-wrap svg.map { border-radius: 8px; max-height: 720px; overflow: hidden; }
+.chart svg.map { overflow: hidden; }
+svg.map .sea { fill: color-mix(in oklab, var(--bg) 70%, var(--accent-soft)); }
+svg.map path, svg.map circle, svg.map line { vector-effect: non-scaling-stroke; }
+svg.map .land path { fill: var(--surface); stroke: color-mix(in oklab, var(--line) 60%, var(--muted)); stroke-width: .6; }
+svg.map .land path.sel { fill: var(--gold-soft); }
+svg.map .leaders line { stroke: var(--muted); stroke-width: .8; opacity: .6; }
+svg.map .leaders circle { fill: var(--muted); opacity: .7; }
+svg.map .dorling circle.outer { fill: var(--bar); fill-opacity: .88; stroke: var(--surface); stroke-width: 1.5; }
+svg.map .dorling circle.outer.proxy { fill: var(--bar-hi); fill-opacity: .45; }
+svg.map .dorling circle.core { fill: var(--bar); fill-opacity: .92; }
+svg.map .dorling .hit:hover circle.outer, svg.map .dorling .hit:focus circle.outer { stroke: var(--gold); stroke-width: 2.5; }
+svg.map .dorling .sel circle.outer, svg.map .dorling .sel circle.core { fill: var(--gold); fill-opacity: 1; }
+svg.map .dorling text { fill: var(--surface); pointer-events: none; }
+svg.map .dorling text.cc { font: 600 12px var(--sans); }
+svg.map .dorling text.cn { font: 11px var(--sans); font-variant-numeric: tabular-nums; opacity: .9; }
+svg.map .dorling .sel text { fill: var(--navy); }
+svg.map .centres circle { fill: var(--bar); fill-opacity: .55; stroke: var(--surface); stroke-width: .8; }
+svg.map .centres .hit:hover circle { fill-opacity: .9; stroke: var(--gold); stroke-width: 2; }
+svg.map .centres .sel circle { fill: var(--gold); fill-opacity: .85; }
+svg.map .centre-labels text.pl { font: italic 13px var(--serif); fill: var(--navy); paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+.map-side { font-size: 13px; }
+.map-side h4 { font: 600 10.5px var(--sans); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin: 0 0 6px; }
+.map-side ol { list-style: none; margin: 0 0 14px; padding: 0; }
+.map-side li button { width: 100%; display: flex; justify-content: space-between; gap: 8px; border: 0; background: none; padding: 3px 0; cursor: pointer; text-align: left; border-bottom: 1px solid var(--line); }
+.map-side li button:hover { color: var(--accent); }
+.map-side li button[aria-pressed="true"] { color: var(--gold-ink); font-weight: 600; }
+.map-side .num { font-variant-numeric: tabular-nums; color: var(--muted); }
+.map-side .legend { display: flex; gap: 10px; align-items: center; color: var(--muted); margin-bottom: 12px; }
+.map-side .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--bar); vertical-align: -2px; margin-right: 4px; }
+.map-side .legend i.proxy { background: color-mix(in oklab, var(--bar-hi) 45%, var(--surface)); }
+
 /* ---------- the works: a catalogue set in type alone ---------- */
 .results { padding: 22px 24px 18px; }
 .results > header { display: flex; justify-content: space-between; align-items: end; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--navy); margin-bottom: 4px; }
@@ -204,6 +244,8 @@ dialog td.num, dialog th.num { text-align: right; font-variant-numeric: tabular-
   .statusbar, .summary, .toggle { overflow-wrap: anywhere; }
   .themes { position: static; max-height: none; }
   .grid { grid-template-columns: 1fr; }
+  .map-wrap { grid-template-columns: 1fr; }
+  .map-controls { justify-content: flex-start; }
   .top { flex-wrap: wrap; padding: 10px 16px; gap: 10px; }
   .brand .logo { width: 38px; height: 38px; }
   .wordmark { font-size: 20px; }

@@ -2,6 +2,32 @@
 
 Newest first. Each entry records what was decided, why, and where it is implemented.
 
+## 2026-11-04 (night): Artist geography and the map
+
+| # | Decision | Implementation |
+|---|---|---|
+| D12 | **Artist reconciliation is ULAN-keyed, with Wikidata for birthplaces.** ICARUS has no authority IDs. Names are matched to ULAN offline in four tiers: exact token-set name, then generation markers stripped ("(I)", "d. Ä."), then a one-token spelling variant that must also fit the life dates, then a prominence tie-break among homonyms. Every candidate is checked against the artworks' dates, and ULAN placeholder spans (>110 years) count as undated. Wikidata birthplaces come via ULAN ID (P245 → P19 → P625). Homonyms with no clear winner stay `ambiguous`, unless all of them were born in the same country. | `scripts/enrich_creators.py` → `data/enrichment/creator_geo.tsv` (committed) |
+| D13 | **Present-day country by geometry.** Birthplace coordinates are placed in Natural Earth 10m polygons. Without coordinates, ULAN's present-day nation in the place string is used. Nationality is a proxy only, through a conservative map that leaves ambiguous labels such as Netherlandish or Prussian unmapped. It is off by default and shown as a lighter ring when switched on (brief §6). | `etl/geo.py`, `taxonomy/nationality_countries.json` |
+| D14 | **Map frame: Europe and the Mediterranean.** 99.3% of located artist credits fall inside it. The rest appear in a "Beyond the map" list. The projection is Lambert azimuthal equal-area centred at 12°E 50°N. | `etl/geo.py: Viewport`, `scripts/build_basemap.py` |
+| D15 | **Two map views instead of a shaded map.** (1) *Countries*: a Dorling cartogram, with circle area ∝ artworks, collision-relaxed, and leader lines to the true location. This fixes small-but-huge countries such as the Netherlands and Belgium. (2) *Art centres*: proportional circles at birth cities, auto-framed to the area holding 97% of the selection's artworks. | `web/js/charts.js: cartogram(), artCentres()` |
+
+Coverage after enrichment (artist credits, person and master creators):
+
+- 65.0% located by birthplace
+- 5.4% by nationality proxy
+- 2.1% ambiguous
+- 0.8% matched with no place
+- 26.7% unmatched (mostly print publishers and firms, photographers, and rare names)
+
+Of 35,132 creators, 16,249 have a country. In Christian Art, 42% of eligible artworks have a located artist (45% with nationality).
+
+Gaps to close:
+
+- The largest unmatched names, e.g. Jan Sadeler, Chrispyn de Passe, Balthasar Caimox, Raffael Santi/Sanzio.
+- 138 Wikidata/ULAN birthplace conflicts to review (`notes` column).
+- The nationality map's unmapped labels (`summary.json`).
+- Firms that are still classed as persons (e.g. "Riffarth & Co").
+
 ## 2026-11-04 (later): Brand, search and catalogue design
 
 | # | Decision | Implementation |

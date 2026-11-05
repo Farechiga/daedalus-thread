@@ -168,3 +168,115 @@ function squarify(items, x, y, w, h) {
   }
   return out;
 }
+
+// ---------------------------------------------------------------- maps
+// basemap: {width, height, countries:[{code, name, d}]} in projected pixel space (LAEA, Europe).
+function base(basemap, selected) {
+  const svg = el("svg", { viewBox: `0 0 ${basemap.width} ${basemap.height}`, role: "img", class: "map" });
+  el("rect", { x: 0, y: 0, width: basemap.width, height: basemap.height, class: "sea" }, svg);
+  const land = el("g", { class: "land" }, svg);
+  for (const c of basemap.countries) el("path", { d: c.d, class: c.code === selected ? "sel" : null }, land);
+  return svg;
+}
+
+/** Dorling cartogram: one circle per country, area ∝ artworks, relaxed so circles do not overlap.
+ *  items: [{code, name, n, n_birthplace, ax, ay}]. A lighter outer ring shows nationality proxies. */
+export function cartogram(basemap, items, { selected, onPick, maxR = 104, showProxy = false } = {}) {
+  const svg = base(basemap, selected);
+  const data = items.filter((d) => d.ax !== null && d.n > 0);
+  if (!data.length) return svg;
+  const max = Math.max(...data.map((d) => d.n));
+  const nodes = data.map((d) => ({ ...d, x: d.ax, y: d.ay, r: Math.max(3.5, maxR * Math.sqrt(d.n / max)) }))
+    .sort((a, b) => b.r - a.r);
+  // relaxation: separate overlapping circles, with a weak spring back to each country's own location
+  for (let it = 0; it < 220; it++) {
+    for (let i = 0; i < nodes.length; i++) {
+      for (let j = i + 1; j < nodes.length; j++) {
+        const a = nodes[i], b = nodes[j];
+        let dx = b.x - a.x, dy = b.y - a.y;
+        let dist = Math.hypot(dx, dy) || 0.01;
+        const min = a.r + b.r + 2;
+        if (dist < min) {
+          const push = (min - dist) / 2, ux = dx / dist, uy = dy / dist;
+          const wa = b.r / (a.r + b.r), wb = a.r / (a.r + b.r);
+          a.x -= ux * push * wa * 2; a.y -= uy * push * wa * 2;
+          b.x += ux * push * wb * 2; b.y += uy * push * wb * 2;
+        }
+      }
+    }
+    const k = it < 160 ? 0.04 : 0.015;
+    for (const n of nodes) { n.x += (n.ax - n.x) * k; n.y += (n.ay - n.y) * k; }
+  }
+  const leaders = el("g", { class: "leaders" }, svg);
+  const g = el("g", { class: "dorling" }, svg);
+  for (const n of nodes) {
+    if (Math.hypot(n.x - n.ax, n.y - n.ay) > n.r * 0.55) {
+      el("line", { x1: n.ax, y1: n.ay, x2: n.x, y2: n.y }, leaders);
+      el("circle", { cx: n.ax, cy: n.ay, r: 2 }, leaders);
+    }
+  }
+  for (const n of nodes) {
+    const proxy = n.n - (n.n_birthplace ?? n.n);
+    const label = `${n.name}: ${fmt.format(n.n)} artworks` + (showProxy && proxy ? ` (${fmt.format(n.n_birthplace)} by birthplace, +${fmt.format(proxy)} by nationality)` : "");
+    const node = hit(g, label, onPick, n);
+    if (n.code === selected) node.classList.add("sel");
+    el("circle", { cx: n.x, cy: n.y, r: n.r, class: showProxy && proxy ? "outer proxy" : "outer" }, node);
+    if (showProxy && proxy) el("circle", { cx: n.x, cy: n.y, r: n.r * Math.sqrt(n.n_birthplace / n.n), class: "core" }, node);
+    if (n.r >= 15) {
+      el("text", { x: n.x, y: n.y + (n.r >= 26 ? -2 : 4), "text-anchor": "middle", class: "cc" }, node).textContent =
+        n.r >= 34 ? n.name : (n.iso2 || n.code);
+      if (n.r >= 26) el("text", { x: n.x, y: n.y + 13, "text-anchor": "middle", class: "cn" }, node).textContent = fmt.format(n.n);
+    }
+  }
+  return svg;
+}
+
+/** Art centres: proportional circles at artists' birthplaces. places: [{id, name, country, x, y, n}] */
+export function artCentres(basemap, places, { selected, onPick, maxR = 30, labels = 14 } = {}) {
+  const svg = base(basemap, selected);
+  const data = places.filter((p) => p.in_view && p.n > 0);
+  if (!data.length) return svg;
+  const frame = autoFrame(basemap, data);
+  svg.setAttribute("viewBox", `${frame.x} ${frame.y} ${frame.w} ${frame.h}`);
+  const zoom = frame.w / basemap.width;           // < 1 when zoomed in: keep circles and labels a constant size
+  const max = Math.max(...data.map((p) => p.n));
+  const g = el("g", { class: "centres" }, svg);
+  const sized = data.map((p) => ({ ...p, r: Math.max(1.6, maxR * Math.sqrt(p.n / max)) * zoom })).sort((a, b) => b.r - a.r);
+  for (const p of sized) {
+    const node = hit(g, `${p.name}: ${fmt.format(p.n)} artworks by artists born here`, onPick, p);
+    if (p.country === selected) node.classList.add("sel");
+    el("circle", { cx: p.x, cy: p.y, r: p.r }, node);
+  }
+  // labels for the largest centres, skipping any that would collide
+  const placed = [];
+  const lg = el("g", { class: "centre-labels" }, svg);
+  for (const p of sized.slice(0, labels * 2)) {
+    if (placed.length >= labels) break;
+    const w = (p.name.length * 6.6 + 8) * zoom, h = 15 * zoom;
+    const box = { x: p.x + p.r + 3 * zoom, y: p.y - h / 2, w, h };
+    if (box.x + w > frame.x + frame.w) box.x = p.x - p.r - 3 * zoom - w;
+    if (placed.some((b) => box.x < b.x + b.w && b.x < box.x + box.w && box.y < b.y + b.h && b.y < box.y + box.h)) continue;
+    placed.push(box);
+    el("text", { x: box.x + 2 * zoom, y: box.y + 11.5 * zoom, class: "pl", style: `font-size:${13 * zoom}px;stroke-width:${3 * zoom}px` }, lg).textContent = p.name;
+  }
+  return svg;
+}
+
+/** Smallest frame (basemap aspect ratio) holding 97% of the artworks, padded; never tighter than 35% of the map. */
+function autoFrame(basemap, data) {
+  const total = data.reduce((s, p) => s + p.n, 0);
+  const byN = [...data].sort((a, b) => b.n - a.n);
+  const kept = [];
+  let acc = 0;
+  for (const p of byN) { kept.push(p); acc += p.n; if (acc >= total * 0.97) break; }
+  let x0 = Math.min(...kept.map((p) => p.x)), x1 = Math.max(...kept.map((p) => p.x));
+  let y0 = Math.min(...kept.map((p) => p.y)), y1 = Math.max(...kept.map((p) => p.y));
+  const aspect = basemap.height / basemap.width;
+  let w = Math.max(x1 - x0, (y1 - y0) / aspect, basemap.width * 0.35) * 1.22;
+  w = Math.min(w, basemap.width);
+  const h = w * aspect;
+  let x = (x0 + x1) / 2 - w / 2, y = (y0 + y1) / 2 - h / 2;
+  x = Math.max(0, Math.min(x, basemap.width - w));
+  y = Math.max(0, Math.min(y, basemap.height - h));
+  return { x, y, w, h };
+}

@@ -43,6 +43,8 @@ Requires Python 3.11+ and about 6 GB of disk. No third-party packages are needed
 scripts/fetch_sources.sh               # download ICARUS metadata, Getty ULAN/TGN/AAT, Iconclass, Natural Earth (~5 GB unpacked)
 python3 scripts/profile_icarus.py      # dataset profile -> data/profile/profile.json (~11 s)
 python3 scripts/evaluate_taxonomy.py   # validate and measure taxonomy/segments.json (~9 s)
+python3 scripts/enrich_creators.py     # artist -> ULAN/Wikidata -> present-day country (needs data/db; ~5 min first run)
+python3 scripts/build_basemap.py       # Europe + Mediterranean basemap for the map views
 python3 scripts/format_taxonomy.py     # normalize segments.json layout after editing
 ```
 

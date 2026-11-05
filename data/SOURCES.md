@@ -12,12 +12,20 @@ reproducible with `scripts/fetch_sources.sh`. Fetched 2026-11-04.
 | Getty AAT, relational tables | `raw/getty/aat/` | `aat_rel_0126` (Jan 2026 final release) | ODC-By 1.0 | Optional: nationality terms (ULAN `NATIONALITY` uses AAT-style codes) and object types |
 | Natural Earth admin-0 countries | `raw/naturalearth/` | 5.2.0-pre (GitHub `nvkelso/natural-earth-vector` master) | Public domain | Present-day country boundaries: 10m for point-in-polygon, 50m/110m for the map |
 
+Derived and committed:
+
+| Output | Built by | Inputs | License note |
+|---|---|---|---|
+| `enrichment/creator_geo.tsv` | `scripts/enrich_creators.py` (batch, about 5 min on first run, cached afterwards) | ICARUS creators, Getty ULAN (Jan 2026), Wikidata SPARQL (CC0; responses cached in `cache/wikidata/`), Natural Earth | ULAN-derived fields: ODC-By, so attribute Getty |
+| `../web/assets/basemap.json` | `scripts/build_basemap.py` | Natural Earth 1:50m | Public domain |
+
 Not downloaded on purpose:
 
 - **ICARUS images** (`images.zip` + `images.z01`–`z04`, ~118 GB): out of initial scope per the brief.
   Records reference them through `ref/image/path`, for example `e0/c1/e0c1afaf0f97.jpg`.
 - **Wikidata**: there is no bulk download. A full dump is >100 GB, and only the distinct ICARUS creators are needed.
-  Phase 3 queries `https://query.wikidata.org/sparql` in batches and caches responses under `data/cache/wikidata/`.
+  `scripts/enrich_creators.py` queries `https://query.wikidata.org/sparql` in batches of 200 ULAN ids. Responses are cached
+  per id in `data/cache/wikidata/ulan_birthplaces.json`.
 - **Getty LOD N-Triples dumps** (`vocab.getty.edu/dataset/*/full.zip`): returned HTTP 500 at fetch time.
   Getty has stopped publishing XML and relational releases, so the Jan 2026 relational tables are the last ones.
   Future refreshes will need the monthly N-Triples dumps or the SPARQL endpoint.

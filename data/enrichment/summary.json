@@ -1,0 +1,84 @@
+{
+ "generated": "2026-11-04 20:45",
+ "creators": 35132,
+ "artwork_credits": 353072,
+ "creators_by_outcome": {
+  "birthplace": 13534,
+  "nationality": 2715,
+  "unmatched": 17414,
+  "ambiguous": 970,
+  "matched_no_place": 499
+ },
+ "credits_by_outcome": {
+  "birthplace": [
+   229554,
+   65.0
+  ],
+  "unmatched": [
+   94325,
+   26.7
+  ],
+  "nationality": [
+   18968,
+   5.4
+  ],
+  "ambiguous": [
+   7399,
+   2.1
+  ],
+  "matched_no_place": [
+   2826,
+   0.8
+  ]
+ },
+ "unmapped_nationalities_by_credits": [
+  [
+   "undetermined",
+   1390
+  ],
+  [
+   "Netherlandish",
+   746
+  ],
+  [
+   "British (modern)",
+   631
+  ],
+  [
+   "International",
+   32
+  ],
+  [
+   "Eastern European",
+   11
+  ],
+  [
+   "Luxembourgeois",
+   5
+  ],
+  [
+   "Scandinavian",
+   5
+  ],
+  [
+   "Scottish (Scots, Scotsman)",
+   2
+  ],
+  [
+   "Northern European",
+   1
+  ],
+  [
+   "Dalmatian",
+   1
+  ],
+  [
+   "Algerian",
+   1
+  ],
+  [
+   "Krahn",
+   1
+  ]
+ ]
+}
