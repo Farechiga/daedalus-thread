@@ -1,0 +1,63 @@
+name_key	display_name	n_artworks	status	match_method	match_confidence	ulan_id	ulan_name	ulan_birth	ulan_death	wikidata_qid	country_code	country_name	proxy_type	evidence_source	geo_confidence	birth_place	birth_lat	birth_lon	nationality	notes	candidates	links
+wd:Q1121895	Pastorino dei Pastorini	0	matched	wikidata_identifier	high	500031810		1508	1592	Q1121895	ITA	Italy	birthplace	wikidata	high	Castelnuovo Berardenga	43.347222222	11.504166666				3
+wd:Q1135967	Giovanni Paolo Cavagna	0	matched	wikidata_identifier	high	500027076		1550	1627	Q1135967	ITA	Italy	birthplace	wikidata	high	Bergamo	45.695	9.67				5
+wd:Q114357	Alonso Berruguete	0	matched	wikidata_identifier	high	500004642		1486	1561	Q114357	ESP	Spain	birthplace	wikidata	high	Paredes de Nava	42.152777777	-4.694444444				28
+wd:Q1190124	Deodato Guinaccia	0	matched	wikidata_identifier	high	500082675		1510	1585	Q1190124	ITA	Italy	birthplace	wikidata	high	Naples	40.835833333	14.248611111				8
+wd:Q12470044	Martin Theophil Polak	0	matched	wikidata_identifier	high	500120454		1570	1639	Q12470044	UKR	Ukraine	birthplace	wikidata	high	Lviv	49.841952	24.0315921				6
+wd:Q1364424	Guillaume de Marcillat	0	matched	wikidata_identifier	high	500120245		1470	1529	Q1364424	FRA	France	birthplace	wikidata	high	La Châtre	46.582222222	1.987222222				11
+wd:Q1375207	Europa Anguissola	0	matched	wikidata_identifier	high	500099676		1600	1600	Q1375207	ITA	Italy	birthplace	wikidata	high	Cremona	45.133333333	10.024722222				4
+wd:Q1381399	Evangelista da Pian di Meleto	0	matched	wikidata_identifier	high	500031972		1458	1549	Q1381399	ITA	Italy	birthplace	wikidata	high	Piandimeleto	43.7242	12.412783333				8
+wd:Q1441999	Giulio Angolo del Moro	0	matched	wikidata_identifier	high	500024704		1555	1618	Q1441999	ITA	Italy	birthplace	wikidata	high	Verona	45.438611111	10.992777777				5
+wd:Q16853719	Lorentino d'Andrea	0	matched	wikidata_identifier	high	500050718		1430	1506	Q16853719	ITA	Italy	birthplace	wikidata	high	Arezzo	43.463055555	11.878055555				3
+wd:Q16853782	Marco Mazzaroppi	0	matched	wikidata_identifier	high	500019850		1550	1620	Q16853782	ITA	Italy	birthplace	wikidata	high	Cassino	41.491666666	13.833333333				3
+wd:Q1748309	Camillo Filippi	0	matched	wikidata_identifier	high	500011737		1500	1574	Q1748309	ITA	Italy	birthplace	wikidata	high	Ferrara	44.839166666	11.6175				8
+wd:Q1780837	Pietro del Po	0	matched	wikidata_identifier	high	500018300		1616	1692	Q1780837	ITA	Italy	birthplace	wikidata	high	Palermo	38.115658055	13.361261944				9
+wd:Q181980	Girolamo da Treviso the Younger	0	matched	wikidata_identifier	high	500008148		1497	1544	Q181980	ITA	Italy	birthplace	wikidata	high	Treviso	45.665833333	12.245555555				14
+wd:Q18218151	Sebastiano Vini	0	matched	wikidata_identifier	high	500018835		1530	1602	Q18218151	ITA	Italy	birthplace	wikidata	high	Verona	45.438611111	10.992777777				4
+wd:Q1896999	Mariano Riccio	0	matched	wikidata_identifier	high	500053848		1510	1593	Q1896999	ITA	Italy	birthplace	wikidata	high	Messina	38.193611111	15.554166666				5
+wd:Q1988115	Francesco Allegrini da Gubbio	0	matched	wikidata_identifier	high	500115272		1587	1663	Q1988115	ITA	Italy	birthplace	wikidata	high	Gubbio	43.35300701	12.57928848				5
+wd:Q20706369	Giovan Battista Bertucci il Giovane	0	matched	wikidata_identifier	high	500075358		1539	1614	Q20706369	ITA	Italy	birthplace	wikidata	high	Faenza	44.285555555	11.883333333				3
+wd:Q2070815	Antonio Boselli	0	matched	wikidata_identifier	high	500042227		1496	1536	Q2070815	ITA	Italy	birthplace	wikidata	high	San Giovanni Bianco	45.866666666	9.65				5
+wd:Q2087745	Philippe Thomassin	0	matched	wikidata_identifier	high	500059890		1562	1622	Q2087745	FRA	France	birthplace	wikidata	high	Troyes	48.298888888	4.078055555				5
+wd:Q20948782	Giovanni Battista Rovedata	0	matched	wikidata_identifier	high	500107022				Q20948782	ITA	Italy	birthplace	wikidata	high	Verona	45.438611111	10.992777777				2
+wd:Q2115672	Pseudo-Boltraffio	0	matched	wikidata_identifier	high			1450	1580	Q2115672												2
+wd:Q21851468	Tommaso Lunetti	0	matched	wikidata_identifier	high	500007007		1490	1564	Q21851468	ITA	Italy	birthplace	wikidata	high	Florence	43.771388888	11.254166666				2
+wd:Q2516970	Giuseppe Valeriano	0	matched	wikidata_identifier	high	500007375		1526	1596	Q2516970	ITA	Italy	birthplace	wikidata	high	L'Aquila	42.354008333	13.391991666				6
+wd:Q2758548	Panfilo Nuvolone	0	matched	wikidata_identifier	high	500016806		1580	1651	Q2758548	ITA	Italy	birthplace	wikidata	high	Cremona	45.133333333	10.024722222				7
+wd:Q2805262	Alessandro Ardente	0	matched	wikidata_identifier	high	500015832		1505	1595	Q2805262	ITA	Italy	birthplace	wikidata	high	Faenza	44.285555555	11.883333333				5
+wd:Q286685	Girolamo da Ponte	0	matched	wikidata_identifier	high	500014228		1566	1621	Q286685	ITA	Italy	birthplace	wikidata	high	Bassano del Grappa	45.766666666	11.734166666				4
+wd:Q2895734	Benedetto Nucci	0	matched	wikidata_identifier	high	500056206		1515	1587	Q2895734	ITA	Italy	birthplace	wikidata	high	Gubbio	43.35300701	12.57928848				4
+wd:Q2898912	Bernardino da Asola	0	matched	wikidata_identifier	high	500018762		1490	1540	Q2898912	ITA	Italy	birthplace	wikidata	high	Asola	45.216666666	10.416666666				4
+wd:Q296265	Filippino Lippi	0	matched	wikidata_identifier	high	500018029		1457	1504	Q296265	ITA	Italy	birthplace	wikidata	high	Prato	43.880813888	11.096561111				49
+wd:Q3073287	Flaminio Allegrini	0	matched	wikidata_identifier	high	500006387		1587	1663	Q3073287	ITA	Italy	birthplace	wikidata	high	Rome	41.893055555	12.482777777				2
+wd:Q3080966	Francesco Floriani	0	matched	wikidata_identifier	high	500046332		1500	1586	Q3080966	ITA	Italy	birthplace	wikidata	high	Udine	46.066666666	13.233333333				4
+wd:Q3104441	Gervasio Gatti	0	matched	wikidata_identifier	high	500032297		1549	1631	Q3104441	ITA	Italy	birthplace	wikidata	high	Cremona	45.133333333	10.024722222				5
+wd:Q3107066	Giovanni Battista Fiammeri	0	matched	wikidata_identifier	high	500010670		1530	1605	Q3107066	ITA	Italy	birthplace	wikidata	high	Florence	43.771388888	11.254166666				4
+wd:Q3107192	Giovanni Francesco Surchi	0	matched	wikidata_identifier	high	500006235		1505	1590	Q3107192	ITA	Italy	birthplace	wikidata	high	Ferrara	44.839166666	11.6175				4
+wd:Q3107266	Giovanni Maria Zaffoni	0	matched	wikidata_identifier	high	500029108		1500	1564	Q3107266	ITA	Italy	birthplace	wikidata	high	Pordenone	45.9626	12.6563				5
+wd:Q3107520	Giovanni da Asola	0	matched	wikidata_identifier	high	500013367		1482	1531	Q3107520	ITA	Italy	birthplace	wikidata	high	Brescia	45.538888888	10.220280555				4
+wd:Q3107688	Girolamo Imparato	0	matched	wikidata_identifier	high	500005934		1550	1621	Q3107688	ITA	Italy	birthplace	wikidata	high	Naples	40.835833333	14.248611111				5
+wd:Q3107703	Girolamo Tessari	0	matched	wikidata_identifier	high	500009168		1480	1561	Q3107703	ITA	Italy	birthplace	wikidata	high	Padua	45.407777777	11.873333333				4
+wd:Q3108002	Giuseppe Caletti	0	matched	wikidata_identifier	high	500006705		1600	1660	Q3108002	ITA	Italy	birthplace	wikidata	high	Cremona	45.133333333	10.024722222				3
+wd:Q3154227	Ippolito Borghese	0	matched	wikidata_identifier	high	500023863		1568	1627	Q3154227	ITA	Italy	birthplace	wikidata	high	Sigillo	43.3315789	12.74093055				6
+wd:Q3218547	Lattanzio Pagani	0	matched	wikidata_identifier	high	500028208		1520	1582	Q3218547	ITA	Italy	birthplace	wikidata	high	Monterubbiano	43.08535	13.7168				3
+wd:Q326959	Girolamo Alibrandi	0	matched	wikidata_identifier	high	500003555		1470	1524	Q326959	ITA	Italy	birthplace	wikidata	high	Messina	38.193611111	15.554166666				10
+wd:Q3382688	Pier Paolo Menzocchi	0	matched	wikidata_identifier	high			1532	1589	Q3382688	ITA	Italy	birthplace	wikidata	high	Forlì	44.222777777	12.041388888				3
+wd:Q338410	Bernardino Fungai	0	matched	wikidata_identifier	high	500028157		1460	1516	Q338410	ITA	Italy	birthplace	wikidata	high	Siena	43.318333333	11.331388888				10
+wd:Q3432160	Rinaldo Mantovano	0	matched	wikidata_identifier	high	500008394		1501	1600	Q3432160	ITA	Italy	birthplace	wikidata	high	Mantua	45.156388888	10.791111111				5
+wd:Q3484535	Simone Barabino	0	matched	wikidata_identifier	high	500011263		1585	1660	Q3484535	ITA	Italy	birthplace	wikidata	high	Genoa	44.407222222	8.933888888				4
+wd:Q357807	Lorenzo Costa	0	matched	wikidata_identifier	high	500115131		1460	1535	Q357807	ITA	Italy	birthplace	wikidata	high	Ferrara	44.839166666	11.6175				36
+wd:Q3712944	Domenico Carpinoni	0	matched	wikidata_identifier	high	500022294		1566	1658	Q3712944	ITA	Italy	birthplace	wikidata	high	Clusone	45.883333333	9.95				4
+wd:Q3766660	Giovanni Battista Fiorini	0	matched	wikidata_identifier	high	500026833			1600	Q3766660												3
+wd:Q3838206	Luca Mombello	0	matched	wikidata_identifier	high	500023109		1518	1588	Q3838206	ITA	Italy	birthplace	wikidata	high	Orzivecchi	45.416666666	9.966666666				3
+wd:Q3960325	Sigismondo Scarsella	0	matched	wikidata_identifier	high	500003757		1530	1614	Q3960325	ITA	Italy	birthplace	wikidata	high	Ferrara	44.839166666	11.6175				3
+wd:Q3961210	Simone de Magistris	0	matched	wikidata_identifier	high	500006828		1538	1611	Q3961210	ITA	Italy	birthplace	wikidata	high	Caldarola	43.138169444	13.225138888				4
+wd:Q3992696	Tommaso de Aleni	0	matched	wikidata_identifier	high	500006482		1401	1600	Q3992696	ITA	Italy	birthplace	wikidata	high	Cremona	45.133333333	10.024722222				5
+wd:Q4716386	Alessandro Oliverio	0	matched	wikidata_identifier	high	500018940		1500	1544	Q4716386	ITA	Italy	birthplace	wikidata	high	Bergamo	45.695	9.67				3
+wd:Q5448743	Filippo da Verona	0	matched	wikidata_identifier	high	500029075				Q5448743	ITA	Italy	birthplace	wikidata	high	Verona	45.438611111	10.992777777				3
+wd:Q5479627	Francesco del Prato	0	matched	wikidata_identifier	high	500124207		1512	1562	Q5479627	ITA	Italy	birthplace	wikidata	high	Florence	43.771388888	11.254166666				2
+wd:Q6789676	Matteo Ingoli	0	matched	wikidata_identifier	high	500025540		1587	1631	Q6789676	ITA	Italy	birthplace	wikidata	high	Ravenna	44.416111111	12.201666666				3
+wd:Q927064	Matteo Perez d'Aleccio	0	matched	wikidata_identifier	high	500032460		1547	1616	Q927064	ITA	Italy	birthplace	wikidata	high	Alezio	40.066666666	18.05				10
+wd:Q952664	Andrea di Mariotto del Minga	0	matched	wikidata_identifier	high	500005133		1540	1596	Q952664	ITA	Italy	birthplace	wikidata	high	Florence	43.771388888	11.254166666				4
+wd:Q964293	Roberto da Montevarchi	0	matched	wikidata_identifier	high			1460	1522	Q964293	ITA	Italy	birthplace	wikidata	high	Montevarchi	43.523397222	11.567866666				4
+wd:Q983350	Giovanni da Udine	0	matched	wikidata_identifier	high	500004700		1487	1564	Q983350	ITA	Italy	birthplace	wikidata	high	Udine	46.066666666	13.233333333				19

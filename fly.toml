@@ -1,0 +1,30 @@
+# Fly.io app for daedalus-thread.com. Deploy: fly deploy --remote-only (no local Docker needed).
+# The image builds the SQLite database from source data during the build (see Dockerfile).
+app = "daedalus-thread"
+primary_region = "ord"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  HOST = "0.0.0.0"
+  PORT = "8080"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "off"     # keep one machine warm: views are precomputed at start (~15 s)
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    grace_period = "90s"
+    interval = "30s"
+    method = "GET"
+    path = "/api/meta"
+    timeout = "10s"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

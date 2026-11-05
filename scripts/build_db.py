@@ -28,9 +28,13 @@ ROOT = os.path.join(os.path.dirname(__file__), "..")
 RAW = os.path.join(ROOT, "data", "raw")
 LANGS = ("en", "de", "nl", "fr", "it", "pl")
 REPRODUCTION_SOURCES = {"pauart"}
-EXTRA_SOURCES = [("wikidata_paintings.jsonl.gz", "wikidata"), ("met_objects.jsonl.gz", "met")]
+EXTRA_SOURCES = [("wikidata_paintings.jsonl.gz", "wikidata"), ("met_objects.jsonl.gz", "met"),
+                 ("aic_objects.jsonl.gz", "aic"), ("zeri_objects.jsonl.gz", "zeri")]
 EXTRA_SOURCE_ROWS = [("wikidata", "Wikidata (paintings)", None, "www.wikidata.org"),
-                     ("met", "The Metropolitan Museum of Art", "US", "www.metmuseum.org")]  # dates/creators describe a documentary photograph (decision log, open item)
+                     ("met", "The Metropolitan Museum of Art", "US", "www.metmuseum.org"),
+                     ("aic", "Art Institute of Chicago", "US", "www.artic.edu"),
+                     ("zeri", "Fondazione Federico Zeri (photo archive)", "IT", "catalogo.fondazionezeri.unibo.it")]
+CREATOR_FILES = ("creator_geo.tsv", "wikidata_creators.tsv", "met_creators.tsv", "aic_creators.tsv", "zeri_creators.tsv")  # dates/creators describe a documentary photograph (decision log, open item)
 
 SCHEMA = """
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
@@ -412,7 +416,7 @@ def compute_fame(db):
         for r in csv.DictReader(open(p, encoding="utf-8"), delimiter="\t"):
             artist[r["wikidata_qid"]] = int(r["sitelinks"]) if r.get("visual_artist", "1") == "1" else 0
     # artists first seen in the Wikidata/Met harvests carry their own sitelinks; they are credited painters/makers
-    for f in ("wikidata_creators.tsv", "met_creators.tsv"):
+    for f in CREATOR_FILES[1:]:
         p = os.path.join(enr, f)
         if os.path.exists(p):
             for r in csv.DictReader(open(p, encoding="utf-8"), delimiter="\t"):
@@ -456,7 +460,7 @@ def compute_fame(db):
 
 def load_wikidata_creators():
     out = {}
-    for f in ("wikidata_creators.tsv", "met_creators.tsv"):
+    for f in CREATOR_FILES[1:]:
         path = os.path.join(ROOT, "data", "enrichment", f)
         if os.path.exists(path):
             for r in csv.DictReader(open(path, encoding="utf-8", newline=""), delimiter="\t"):
@@ -473,7 +477,7 @@ def load_geography(db, creators):
     db.executemany("INSERT INTO country VALUES (?,?,?,?,?,?,?,?)", [
         (code, i["name"], i["iso2"], i["continent"], i["subregion"], int(code in basemap["in_view"]),
          *(basemap["anchors"].get(code) or (None, None))) for code, i in countries.info.items()])
-    paths = [os.path.join(ROOT, "data", "enrichment", f) for f in ("creator_geo.tsv", "wikidata_creators.tsv", "met_creators.tsv")]
+    paths = [os.path.join(ROOT, "data", "enrichment", f) for f in CREATOR_FILES]
     paths = [p for p in paths if os.path.exists(p)]
     if not paths:
         log("no data/enrichment/*.tsv: artist geography left empty (run scripts/enrich_creators.py)")

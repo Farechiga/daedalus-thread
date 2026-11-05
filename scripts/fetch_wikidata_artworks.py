@@ -93,6 +93,30 @@ def subject_notations(ic):
     return out
 
 
+def curated_subjects(tax):
+    """taxonomy/wikidata_subjects.json (reviewed proposals): subject QID -> the theme's first Iconclass notation."""
+    path = os.path.join(ROOT, "taxonomy", "wikidata_subjects.json")
+    out = collections.defaultdict(set)
+    if os.path.exists(path):
+        for nid, cands in json.load(open(path, encoding="utf-8")).items():
+            if nid in tax.nodes and Taxonomy.include(tax.nodes[nid]):
+                for c in cands:
+                    out[c["qid"]].add(Taxonomy.include(tax.nodes[nid])[0])
+    return out
+
+
+def cached_rows(kind, var):
+    """All rows already cached for `kind`, grouped by the value of ?var (per-item reuse across batch layouts)."""
+    out = collections.defaultdict(list)
+    d = os.path.join(RAW, kind)
+    if os.path.isdir(d):
+        for name in os.listdir(d):
+            for b in json.load(open(os.path.join(d, name))):
+                if var in b:
+                    out[qid(b[var]["value"])].append(b)
+    return out
+
+
 def harvest_paintings(subjects, batch=25, collection=None):
     """subject QID -> set(artwork QID): paintings by default, or any object held by `collection`."""
     found = collections.defaultdict(set)
@@ -115,9 +139,11 @@ def harvest_paintings(subjects, batch=25, collection=None):
 
 def painting_details(qids, batch=150):
     det = {}
-    ids = sorted(qids)
-    for i in range(0, len(ids), batch):
-        chunk = ids[i:i + batch]
+    have = cached_rows("painting_details", "w")
+    ids = sorted(q for q in qids if q not in have)
+    log(f"pass 2: {len(qids) - len(ids)} paintings already cached, {len(ids)} to fetch")
+    chunks = [ids[i:i + batch] for i in range(0, len(ids), batch)] + [["__cached__"]]
+    for i, chunk in enumerate(chunks):
 
         def q(keys):
             values = " ".join(f"wd:{k}" for k in keys)
@@ -129,7 +155,8 @@ def painting_details(qids, batch=150):
                 "OPTIONAL { ?w wdt:P195 ?coll . OPTIONAL { ?coll wdt:P17 ?collCountry } } "
                 "OPTIONAL { ?w wdt:P18 ?img } OPTIONAL { ?w wdt:P350 ?rkd } "
                 "SERVICE wikibase:label { bd:serviceParam wikibase:language \"%s\". } }" % (values, LANGS))
-        for b in cached("painting_details", chunk, q):
+        rows = [b for w in qids if w in have for b in have[w]] if chunk == ["__cached__"] else cached("painting_details", chunk, q)
+        for b in rows:
             w = qid(b["w"]["value"])
             d = det.setdefault(w, {"qid": w, "title": None, "links": 0, "creators": [], "times": [], "collections": {},
                                    "image": None, "rkd": set(), "met": None, "classes": []})
@@ -152,16 +179,17 @@ def painting_details(qids, batch=150):
                 d["image"] = b["img"]["value"].replace("http://", "https://", 1)
             if "rkd" in b:
                 d["rkd"].add(b["rkd"]["value"])
-        if (i // batch) % 40 == 0:
-            log(f"pass 2: {min(i + batch, len(ids))}/{len(ids)} paintings")
+        if i % 40 == 0:
+            log(f"pass 2: {min((i + 1) * batch, len(ids))}/{len(ids)} new paintings")
     return det
 
 
 def creator_details(qids, batch=150):
     det = {}
-    ids = sorted(qids)
-    for i in range(0, len(ids), batch):
-        chunk = ids[i:i + batch]
+    have = cached_rows("creator_details", "c")
+    ids = sorted(q for q in qids if q not in have)
+    chunks = [ids[i:i + batch] for i in range(0, len(ids), batch)] + [["__cached__"]]
+    for i, chunk in enumerate(chunks):
 
         def q(keys):
             values = " ".join(f"wd:{k}" for k in keys)
@@ -171,7 +199,8 @@ def creator_details(qids, batch=150):
                 "OPTIONAL { ?c wdt:P19 ?bp . OPTIONAL { ?bp wdt:P625 ?coord } } "
                 "OPTIONAL { ?c wdt:P569 ?birth } OPTIONAL { ?c wdt:P570 ?death } OPTIONAL { ?c wdt:P245 ?ulan } "
                 "SERVICE wikibase:label { bd:serviceParam wikibase:language \"%s\". } }" % (values, LANGS))
-        for b in cached("creator_details", chunk, q):
+        rows = [b for c in qids if c in have for b in have[c]] if chunk == ["__cached__"] else cached("creator_details", chunk, q)
+        for b in rows:
             c = qid(b["c"]["value"])
             d = det.setdefault(c, {"qid": c, "name": None, "links": 0, "place": None, "lon": None, "lat": None,
                                    "birth": None, "death": None, "ulan": None, "human": False})
@@ -186,8 +215,8 @@ def creator_details(qids, batch=150):
                     m = re.match(r"^(-?\d+)-", b[k]["value"])
                     d[k] = int(m.group(1)) if m else None
             d["ulan"] = d["ulan"] or b.get("ulan", {}).get("value")
-        if (i // batch) % 20 == 0:
-            log(f"pass 3: {min(i + batch, len(ids))}/{len(ids)} creators")
+        if i % 20 == 0:
+            log(f"pass 3: {min((i + 1) * batch, len(ids))}/{len(ids)} new creators")
     return det
 
 
@@ -241,6 +270,8 @@ def main():
     notes = subject_notations(ic)
     # keep only subjects that reach at least one taxonomy theme
     useful = {s: codes for s, codes in notes.items() if any(tax.match([c])[0] for c in codes)}
+    for s, codes in curated_subjects(tax).items():  # reviewed subjects for themes the Iconclass bridge misses
+        useful.setdefault(s, set()).update(codes)
     subjects = sorted(useful)[: args.max_subjects or None]
     log(f"{len(notes)} Wikidata subjects with Iconclass; {len(useful)} reach a theme; harvesting {len(subjects)}")
 

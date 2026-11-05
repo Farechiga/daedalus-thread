@@ -40,7 +40,7 @@ class Filters:
         self.q = (get("q") or "").strip()[:100] or None
         self.repro = get("repro") in ("1", "true")
         self.nat = get("nat") in ("1", "true")  # also count nationality proxies (brief section 6)
-        self.ds = get("ds") if get("ds") in ("icarus", "wikidata", "met") else None  # which collections; None = all
+        self.ds = get("ds") if get("ds") in ("icarus", "wikidata", "met", "aic", "zeri") else None  # which collections; None = all
         # default view is Everything; ?notable=1 narrows to the better-known part (fame still orders the catalogue)
         self.all = get("notable") not in ("1", "true")
         self.country = get("country")
