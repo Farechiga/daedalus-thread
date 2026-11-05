@@ -8,6 +8,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <meta name="theme-color" content="#022e3a">
+  <script>try { var p = localStorage.getItem("dt.palette"); if (p && p !== "teal") document.documentElement.dataset.palette = p; } catch (e) {}</script>
   <link rel="stylesheet" href="/css/app.css">
   <script type="module" src="/js/app.js"></script>
 </head>
@@ -56,6 +57,15 @@
       <h2 id="themes-h" class="focus-title">Themes</h2>
       <p class="focus-desc" id="focus-desc"></p>
       <ol class="theme-list" id="theme-list"></ol>
+      <div class="palette-switch" id="palette-switch" role="radiogroup" aria-label="Colour palette">
+        <span class="seg-label">Palette</span>
+        <button type="button" role="radio" data-palette="teal" aria-checked="true" title="Teal: one calm hue">
+          <span class="sw" aria-hidden="true"><b style="background:#bfdcd7"></b><b style="background:#3e9c8d"></b><b style="background:#006d67"></b></span>Teal</button>
+        <button type="button" role="radio" data-palette="fresco" aria-checked="false" title="Fresco: muted pigments (lapis, sinopia, terre verte)">
+          <span class="sw" aria-hidden="true"><b style="background:#3f5f8a"></b><b style="background:#a0533d"></b><b style="background:#6e8460"></b></span>Fresco</button>
+        <button type="button" role="radio" data-palette="enamel" aria-checked="false" title="Enamel: jewel tones (ultramarine, carmine, emerald)">
+          <span class="sw" aria-hidden="true"><b style="background:#2747c9"></b><b style="background:#c2253f"></b><b style="background:#0c8a5b"></b></span>Enamel</button>
+      </div>
     </aside>
 
     <section class="content">

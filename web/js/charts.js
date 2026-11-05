@@ -171,10 +171,12 @@ export function themeHeatmap(rows, cells, { timeline: tl, selected, onCell, onCo
   return Object.assign(svg, { hiddenRows: live.length - shown.length });
 }
 
+// three-stop sequential ramp (heat-0 -> heat-mid -> heat-1), so multi-hue palettes pass through their middle hue
 function mix(t) {
   if (t <= 0) return "var(--heat-0)";
-  const a = Math.round(15 + 85 * Math.sqrt(t));
-  return `color-mix(in oklab, var(--heat-1) ${a}%, var(--heat-0))`;
+  const a = 0.15 + 0.85 * Math.sqrt(t);
+  return a <= 0.5 ? `color-mix(in oklab, var(--heat-mid) ${Math.round(a * 200)}%, var(--heat-0))`
+    : `color-mix(in oklab, var(--heat-1) ${Math.round((a - 0.5) * 200)}%, var(--heat-mid))`;
 }
 
 /** Squarified treemap of items [{id,label,n}] */
@@ -188,8 +190,9 @@ export function treemap(items, { onPick, width = 520, height = 300 } = {}) {
     const g = hit(svg, `${r.label}: ${fmt.format(r.n)}`, onPick, r);
     g.classList.add("tm");
     const shade = 100 - 45 * (i / Math.max(1, rects.length - 1));
+    // multi-colour palettes give each tile its own hue (--tm-i); Teal falls back to shades of one hue
     el("rect", { x: r.x, y: r.y, width: Math.max(0, r.w), height: Math.max(0, r.h),
-      fill: `color-mix(in oklab, var(--bar-hi) ${shade}%, var(--navy))` }, g);
+      style: `fill:var(--tm-${i % 9}, color-mix(in oklab, var(--bar-hi) ${shade}%, var(--navy)))` }, g);
     if (r.w > 60 && r.h > 26) {
       const t = el("text", { x: r.x + 6, y: r.y + 16 }, g);
       t.textContent = truncate(r.label, Math.floor(r.w / 7));

@@ -77,6 +77,8 @@ async function load() {
 }
 
 function render() {
+  const seg = view.path?.[0]?.id;  // multi-colour palettes tint bars by segment
+  if (seg) document.documentElement.dataset.segment = seg; else delete document.documentElement.dataset.segment;
   renderSegments();
   renderThemes();
   renderTimeline();
@@ -97,7 +99,7 @@ function render() {
 function renderSegments() {
   const current = view.path[0]?.id;
   $("#segments").replaceChildren(...meta.segments.map((s) =>
-    h("button", { "aria-current": s.id === current ? "true" : "false", onclick: () => navigate(blank({ node: [s.id] })) },
+    h("button", { "data-seg": s.id, "aria-current": s.id === current ? "true" : "false", onclick: () => navigate(blank({ node: [s.id] })) },
       s.label, h("small", {}, `${fmt.format(s.n)} artworks`))));
 }
 
@@ -469,6 +471,18 @@ function pick(item) {
 }
 
 // ---------- controls & info ----------
+// ---------- colour palette (a per-viewer preference, remembered in this browser) ----------
+const PALETTES = ["teal", "fresco", "enamel"];
+function setPalette(name, rerender = true) {
+  if (!PALETTES.includes(name)) name = "teal";
+  if (name === "teal") delete document.documentElement.dataset.palette; else document.documentElement.dataset.palette = name;
+  for (const b of document.querySelectorAll("#palette-switch button")) b.setAttribute("aria-checked", String(b.dataset.palette === name));
+  try { localStorage.setItem("dt.palette", name); } catch { /* storage unavailable: the choice lasts this visit */ }
+  if (rerender && view) render();  // SVG colours that are computed in JS pick up the new variables
+}
+for (const b of document.querySelectorAll("#palette-switch button")) b.addEventListener("click", () => setPalette(b.dataset.palette));
+setPalette(document.documentElement.dataset.palette || "teal", false);
+
 $("#back-btn").addEventListener("click", () => history.back());
 $("#reset-btn").addEventListener("click", () => navigate(blank({ node: view.path.length ? [view.path[0].id] : [] })));
 $("#repro-toggle").addEventListener("change", (e) => navigate({ repro: e.target.checked }, { replace: true }));
