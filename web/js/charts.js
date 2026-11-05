@@ -179,54 +179,126 @@ function base(basemap, selected) {
   return svg;
 }
 
-/** Dorling cartogram: one circle per country, area ∝ artworks, relaxed so circles do not overlap.
- *  items: [{code, name, n, n_birthplace, ax, ay}]. A lighter outer ring shows nationality proxies. */
-export function cartogram(basemap, items, { selected, onPick, maxR = 104, showProxy = false } = {}) {
-  const svg = base(basemap, selected);
-  const data = items.filter((d) => d.ax !== null && d.n > 0);
-  if (!data.length) return svg;
-  const max = Math.max(...data.map((d) => d.n));
-  const nodes = data.map((d) => ({ ...d, x: d.ax, y: d.ay, r: Math.max(3.5, maxR * Math.sqrt(d.n / max)) }))
-    .sort((a, b) => b.r - a.r);
-  // relaxation: separate overlapping circles, with a weak spring back to each country's own location
-  for (let it = 0; it < 220; it++) {
-    for (let i = 0; i < nodes.length; i++) {
-      for (let j = i + 1; j < nodes.length; j++) {
-        const a = nodes[i], b = nodes[j];
-        let dx = b.x - a.x, dy = b.y - a.y;
-        let dist = Math.hypot(dx, dy) || 0.01;
-        const min = a.r + b.r + 2;
-        if (dist < min) {
-          const push = (min - dist) / 2, ux = dx / dist, uy = dy / dist;
-          const wa = b.r / (a.r + b.r), wb = a.r / (a.r + b.r);
-          a.x -= ux * push * wa * 2; a.y -= uy * push * wa * 2;
-          b.x += ux * push * wb * 2; b.y += uy * push * wb * 2;
-        }
+/** Classed log scale for country counts: decade classes (1–9, 10–99, …) so a 60:1 spread still reads.
+ *  Returns { classes: [{lo, hi, color}], color(n) }. */
+export function countryScale(values) {
+  const max = Math.max(1, ...values);
+  // decades (1, 10, 100, ...); half-decades (3, 30, ...) only when the range is too narrow for 4 classes
+  const decades = [];
+  for (let p = 1; p <= max; p *= 10) decades.push(p);
+  let edges = decades;
+  if (decades.length < 4) {
+    edges = [];
+    for (const p of decades) edges.push(p, p * 3);
+    edges = edges.filter((b) => b <= max);
+  }
+  const classes = edges.map((lo, i) => {
+    const hi = i + 1 < edges.length ? edges[i + 1] : Infinity;
+    const t = edges.length === 1 ? 1 : 0.18 + 0.82 * (i / (edges.length - 1));
+    return { lo, hi, color: `color-mix(in oklab, var(--heat-1) ${Math.round(t * 100)}%, var(--heat-0))` };
+  });
+  return { classes, color: (n) => (n > 0 ? classes.findLast((c) => n >= c.lo).color : null) };
+}
+
+let uid = 0;
+const ringCache = new WeakMap();
+/** Parse the basemap's "Mx,yLx,y...Z" paths into rings of points (cached per basemap). */
+function ringsOf(basemap) {
+  if (!ringCache.has(basemap)) {
+    const map = new Map();
+    for (const c of basemap.countries) {
+      map.set(c.code, c.d.split("Z").filter(Boolean).map((part) =>
+        part.replace(/^M/, "").split("L").map((pt) => pt.split(",").map(Number))));
+    }
+    ringCache.set(basemap, map);
+  }
+  return ringCache.get(basemap);
+}
+
+function countryLabel(n, d, showProxy) {
+  const proxy = d.n - (d.n_birthplace ?? d.n);
+  return `${d.name}: ${fmt.format(d.n)} artworks` +
+    (showProxy && proxy ? ` (${fmt.format(d.n_birthplace)} by birthplace, +${fmt.format(proxy)} by nationality)` : "");
+}
+
+/** Choropleth: national areas filled by classed intensity. items: [{code, name, n, n_birthplace}] */
+export function choropleth(basemap, items, { selected, onPick, scale, showProxy = false } = {}) {
+  const svg = base(basemap, null);
+  const byCode = new Map(items.map((d) => [d.code, d]));
+  const g = el("g", { class: "choro" }, svg);
+  for (const c of basemap.countries) {
+    const d = byCode.get(c.code);
+    if (!d || !d.n) continue;
+    const node = hit(g, countryLabel(c, d, showProxy), onPick, d);
+    if (c.code === selected) node.classList.add("sel");
+    el("path", { d: c.d, style: `fill:${scale.color(d.n)}` }, node);
+  }
+  return svg;
+}
+
+/** Prism map: the same filled countries, raised in proportion to artworks on a tilted map.
+ *  Side walls are drawn back-to-front (painter's algorithm), so nearer prisms hide those behind. */
+export function prism(basemap, items, { selected, onPick, scale, showProxy = false, tilt = 0.55, maxH = 64, labels = 6 } = {}) {
+  const rings = ringsOf(basemap);
+  const top = maxH + 24;
+  const W = basemap.width, H = Math.round(basemap.height * tilt + top + 8);
+  const svg = el("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", class: "map raised" });
+  el("rect", { x: 0, y: 0, width: W, height: H, class: "sea" }, svg);
+  const byCode = new Map(items.map((d) => [d.code, d]));
+  const max = Math.max(1, ...items.filter((d) => d.ax !== null).map((d) => d.n));
+  const sy = (y) => y * tilt + top;
+  const flat = el("g", { class: "land" }, svg);
+  const shapes = [];
+  for (const c of basemap.countries) {
+    const d = byCode.get(c.code);
+    const pts = rings.get(c.code).map((r) => r.map(([x, y]) => [x, sy(y)]));
+    const h = d && d.n ? Math.max(1.5, (maxH * d.n) / max) : 0;
+    if (!h) { el("path", { d: pts.map((r) => "M" + r.map((p) => p.join(",")).join("L") + "Z").join("") }, flat); continue; }
+    shapes.push({ c, d, pts, h, south: Math.max(...pts.flat().map((p) => p[1])) });
+  }
+  shapes.sort((a, b) => a.south - b.south); // north (far) first
+  const defs = el("defs", {}, svg);
+  const g = el("g", { class: "prisms" }, svg);
+  for (const s of shapes) {
+    const node = hit(g, countryLabel(s.c, s.d, showProxy), onPick, s.d);
+    if (s.c.code === selected) node.classList.add("sel");
+    const color = scale.color(s.d.n);
+    // Walls facing the viewer (south) only; the top face hides the rest. One smooth vertical gradient per
+    // country (lit near the top, darker at the base) reads as solid volume without striping on jagged coasts.
+    let walls = "";
+    for (const r of s.pts) {
+      let area = 0;
+      for (let i = 0; i < r.length - 1; i++) area += r[i][0] * r[i + 1][1] - r[i + 1][0] * r[i][1];
+      const sign = area > 0 ? 1 : -1;
+      for (let i = 0; i < r.length - 1; i++) {
+        const [x1, y1] = r[i], [x2, y2] = r[i + 1];
+        const dx = x2 - x1;
+        if (!dx && y1 === y2) continue;
+        if ((dx * sign) < 0) continue; // outward normal points north: hidden
+        walls += `M${x1},${y1}L${x2},${y2}L${x2},${y2 - s.h}L${x1},${y1 - s.h}Z`;
       }
     }
-    const k = it < 160 ? 0.04 : 0.015;
-    for (const n of nodes) { n.x += (n.ax - n.x) * k; n.y += (n.ay - n.y) * k; }
-  }
-  const leaders = el("g", { class: "leaders" }, svg);
-  const g = el("g", { class: "dorling" }, svg);
-  for (const n of nodes) {
-    if (Math.hypot(n.x - n.ax, n.y - n.ay) > n.r * 0.55) {
-      el("line", { x1: n.ax, y1: n.ay, x2: n.x, y2: n.y }, leaders);
-      el("circle", { cx: n.ax, cy: n.ay, r: 2 }, leaders);
+    if (walls) {
+      const id = `wall-${s.c.code}-${uid++}`;
+      const grad = el("linearGradient", { id, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
+      el("stop", { offset: "0%", style: `stop-color:color-mix(in oklab, ${color} 80%, #000)` }, grad);
+      el("stop", { offset: "100%", style: `stop-color:color-mix(in oklab, ${color} 45%, #000)` }, grad);
+      el("path", { d: walls, class: "wall", fill: `url(#${id})` }, node);
     }
+    el("path", { d: s.pts.map((r) => "M" + r.map(([x, y]) => `${x},${y - s.h}`).join("L") + "Z").join(""), class: "top", style: `fill:${color}` }, node);
   }
-  for (const n of nodes) {
-    const proxy = n.n - (n.n_birthplace ?? n.n);
-    const label = `${n.name}: ${fmt.format(n.n)} artworks` + (showProxy && proxy ? ` (${fmt.format(n.n_birthplace)} by birthplace, +${fmt.format(proxy)} by nationality)` : "");
-    const node = hit(g, label, onPick, n);
-    if (n.code === selected) node.classList.add("sel");
-    el("circle", { cx: n.x, cy: n.y, r: n.r, class: showProxy && proxy ? "outer proxy" : "outer" }, node);
-    if (showProxy && proxy) el("circle", { cx: n.x, cy: n.y, r: n.r * Math.sqrt(n.n_birthplace / n.n), class: "core" }, node);
-    if (n.r >= 15) {
-      el("text", { x: n.x, y: n.y + (n.r >= 26 ? -2 : 4), "text-anchor": "middle", class: "cc" }, node).textContent =
-        n.r >= 34 ? n.name : (n.iso2 || n.code);
-      if (n.r >= 26) el("text", { x: n.x, y: n.y + 13, "text-anchor": "middle", class: "cn" }, node).textContent = fmt.format(n.n);
-    }
+  // labels above the tallest prisms
+  const lg = el("g", { class: "prism-labels" }, svg);
+  const placed = [];
+  for (const s of [...shapes].sort((a, b) => b.d.n - a.d.n)) {
+    if (placed.length >= labels) break;
+    if (s.d.ax === null) continue;
+    const x = s.d.ax, y = sy(s.d.ay) - s.h - 6;
+    const w = Math.max(s.d.name.length * 7.2, 40), box = { x: x - w / 2, y: y - 13, w, h: 28 };
+    if (placed.some((b) => box.x < b.x + b.w && b.x < box.x + box.w && box.y < b.y + b.h && b.y < box.y + box.h)) continue;
+    placed.push(box);
+    el("text", { x, y, "text-anchor": "middle", class: "pn" }, lg).textContent = s.d.name;
+    el("text", { x, y: y + 13, "text-anchor": "middle", class: "pv" }, lg).textContent = fmt.format(s.d.n);
   }
   return svg;
 }

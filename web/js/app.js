@@ -1,4 +1,4 @@
-import { artCentres, cartogram, centuryLabel, fmt, heatmap, pct, rankedBars, timeline, treemap } from "./charts.js";
+import { artCentres, centuryLabel, choropleth, countryScale, fmt, heatmap, pct, prism, rankedBars, timeline, treemap } from "./charts.js";
 
 const $ = (s) => document.querySelector(s);
 const PARAMS = ["node", "century", "creator", "type", "source", "country", "code", "q", "repro", "nat"];
@@ -239,18 +239,22 @@ function renderMap() {
     return;
   }
   const pick = (code) => navigate({ country: state.country === code ? null : code });
-  const svg = mapMode === "centres"
-    ? artCentres(basemap, g.places, { selected: state.country, onPick: (p) => pick(p.country) })
-    : cartogram(basemap, g.countries, { selected: state.country, showProxy: g.include_nationality, onPick: (c) => pick(c.code) });
+  const scale = countryScale(g.countries.filter((c) => c.in_view).map((c) => c.n));
+  const opts = { selected: state.country, showProxy: g.include_nationality, scale, onPick: (c) => pick(c.code) };
+  const svg = mapMode === "centres" ? artCentres(basemap, g.places, { selected: state.country, onPick: (p) => pick(p.country) })
+    : mapMode === "raised" ? prism(basemap, g.countries, opts) : choropleth(basemap, g.countries, opts);
+  const range = (c) => c.hi === Infinity ? `${fmt.format(c.lo)}+` : `${fmt.format(c.lo)}–${fmt.format(c.hi - 1)}`;
+  const swatches = h("div", { class: "swatches", role: "list", "aria-label": "Artworks per country" },
+    scale.classes.map((c) => h("span", { role: "listitem" }, h("i", { style: `background:${c.color}` }), range(c))));
   const inView = g.countries.filter((c) => c.in_view);
   const beyond = g.countries.filter((c) => !c.in_view);
   const list = (rows) => h("ol", {}, rows.map((c) => h("li", {}, h("button", { "aria-pressed": String(c.code === state.country), onclick: () => pick(c.code) },
     h("span", {}, c.name), h("span", { class: "num" }, fmt.format(c.n))))));
   const side = h("div", { class: "map-side" },
-    mapMode === "countries"
-      ? h("div", { class: "legend" }, h("span", {}, h("i"), "Circle area = artworks"),
-          g.include_nationality ? h("span", {}, h("i", { class: "proxy" }), "via nationality") : null)
-      : h("div", { class: "legend" }, h("span", {}, h("i"), "Artists' birthplaces")),
+    mapMode === "centres"
+      ? h("div", { class: "legend" }, h("span", {}, h("i"), "Circle area = artworks by artists born there"))
+      : [h("h4", {}, mapMode === "raised" ? "Artworks per country (height and shade)" : "Artworks per country"), swatches,
+          g.include_nationality ? h("p", { class: "legend-note" }, "Includes nationality where the birthplace is unknown.") : null],
     mapMode === "centres"
       ? [h("h4", {}, "Leading art centres"), h("ol", {}, g.places.filter((p) => p.in_view).slice(0, 10).map((p) => h("li", {},
           h("button", { onclick: () => pick(p.country), title: `Filter to artists born in ${labels["country:" + p.country] || p.country}` },

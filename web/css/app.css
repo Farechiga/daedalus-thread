@@ -157,17 +157,21 @@ svg.map .sea { fill: color-mix(in oklab, var(--bg) 70%, var(--accent-soft)); }
 svg.map path, svg.map circle, svg.map line { vector-effect: non-scaling-stroke; }
 svg.map .land path { fill: var(--surface); stroke: color-mix(in oklab, var(--line) 60%, var(--muted)); stroke-width: .6; }
 svg.map .land path.sel { fill: var(--gold-soft); }
-svg.map .leaders line { stroke: var(--muted); stroke-width: .8; opacity: .6; }
-svg.map .leaders circle { fill: var(--muted); opacity: .7; }
-svg.map .dorling circle.outer { fill: var(--bar); fill-opacity: .88; stroke: var(--surface); stroke-width: 1.5; }
-svg.map .dorling circle.outer.proxy { fill: var(--bar-hi); fill-opacity: .45; }
-svg.map .dorling circle.core { fill: var(--bar); fill-opacity: .92; }
-svg.map .dorling .hit:hover circle.outer, svg.map .dorling .hit:focus circle.outer { stroke: var(--gold); stroke-width: 2.5; }
-svg.map .dorling .sel circle.outer, svg.map .dorling .sel circle.core { fill: var(--gold); fill-opacity: 1; }
-svg.map .dorling text { fill: var(--surface); pointer-events: none; }
-svg.map .dorling text.cc { font: 600 12px var(--sans); }
-svg.map .dorling text.cn { font: 11px var(--sans); font-variant-numeric: tabular-nums; opacity: .9; }
-svg.map .dorling .sel text { fill: var(--navy); }
+svg.map .choro path { stroke: var(--surface); stroke-width: .7; }
+svg.map .choro .hit:hover path, svg.map .choro .hit:focus path { stroke: var(--gold); stroke-width: 2; }
+svg.map .choro .sel path { stroke: var(--gold); stroke-width: 2.5; }
+svg.map.raised .prisms .top { stroke: var(--surface); stroke-width: .9; stroke-linejoin: round; }
+svg.map.raised .prisms .wall { stroke: none; }
+svg.map.raised .prisms .hit:hover .top, svg.map.raised .prisms .hit:focus .top { stroke: var(--gold); stroke-width: 2; }
+svg.map.raised .prisms .sel .top { fill: var(--gold) !important; }
+svg.map.raised .prisms .sel .wall { fill: color-mix(in oklab, var(--gold) 60%, #000); }
+svg.map.raised .prism-labels text { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
+svg.map.raised .prism-labels .pn { font: italic 600 13px var(--serif); fill: var(--navy); }
+svg.map.raised .prism-labels .pv { font: 11px var(--sans); fill: var(--muted); font-variant-numeric: tabular-nums; }
+.map-side .swatches { display: grid; gap: 4px; margin: 0 0 14px; font-variant-numeric: tabular-nums; color: var(--muted); }
+.map-side .swatches span { display: flex; align-items: center; gap: 8px; }
+.map-side .swatches i { width: 22px; height: 12px; border-radius: 2px; border: 1px solid var(--line); }
+.map-side .legend-note { color: var(--muted); font-size: 12px; margin: -6px 0 12px; }
 svg.map .centres circle { fill: var(--bar); fill-opacity: .55; stroke: var(--surface); stroke-width: .8; }
 svg.map .centres .hit:hover circle { fill-opacity: .9; stroke: var(--gold); stroke-width: 2; }
 svg.map .centres .sel circle { fill: var(--gold); fill-opacity: .85; }
@@ -181,7 +185,6 @@ svg.map .centre-labels text.pl { font: italic 13px var(--serif); fill: var(--nav
 .map-side .num { font-variant-numeric: tabular-nums; color: var(--muted); }
 .map-side .legend { display: flex; gap: 10px; align-items: center; color: var(--muted); margin-bottom: 12px; }
 .map-side .legend i { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: var(--bar); vertical-align: -2px; margin-right: 4px; }
-.map-side .legend i.proxy { background: color-mix(in oklab, var(--bar-hi) 45%, var(--surface)); }
 
 /* ---------- the works: a catalogue set in type alone ---------- */
 .results { padding: 22px 24px 18px; }
