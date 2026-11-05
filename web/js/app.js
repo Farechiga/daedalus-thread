@@ -86,7 +86,7 @@ function render() {
   renderArtists();
   renderTreemap();
   renderSubjects();
-  renderCountryMix();
+  renderSubthemeMix();
   renderTypes();
   renderMediaFilter();
   renderSources();
@@ -249,38 +249,35 @@ function renderSubjects() {
       onPick: (x) => navigate({ code: state.code === x.code ? null : x.code }) }) : empty("No subjects."));
 }
 
-// The leading artist countries, each a 100% bar split into the selection's top sub-themes (or subjects) + Other.
-function renderCountryMix() {
-  const m = view.country_mix;
+// The focus's leading sub-themes, each a 100% bar of its own sub-themes ranked 1st..4th (or its Iconclass subjects) + Other.
+function renderSubthemeMix() {
+  const m = view.subtheme_mix;
   const c = $("#c-mix");
   c.hidden = !m;
   if (!m) return;
-  c.querySelector("h3").textContent = m.kind === "theme" ? "Sub-themes by country" : "Subjects by country";
-  const short = (t) => t.length > 34 ? t.slice(0, 33) + "…" : t;
-  const pick = (code, i) => m.kind === "theme"
-    ? navigate({ country: code, node: [m.categories[i].id, ...state.node.slice(1)] })
-    : navigate({ country: code, code: m.categories[i].id });
-  const rows = m.countries.map((row) => {
-    const parts = [...row.parts.map((n, i) => ({ n, i, label: m.categories[i].label })), { n: row.other, i: "other", label: m.other_label }];
+  const rest = state.node.slice(1);
+  const rows = m.rows.map((row) => {
+    const parts = [...row.parts.map((p, i) => ({ ...p, rank: i })), { n: row.other, rank: "other", label: "Other" }];
     const total = parts.reduce((sum, p) => sum + p.n, 0) || 1;
     return h("li", {},
       h("div", { class: "mix-head" },
-        h("button", { class: "linkish", onclick: () => navigate({ country: state.country === row.code ? null : row.code }),
-          title: `Filter to artists from ${row.name}` }, row.name),
+        h("button", { class: "linkish", onclick: () => navigate({ node: [row.id, ...rest] }), title: `Open ${row.label}` }, row.label),
         h("span", { class: "num" }, `${fmt.format(row.n)} works`)),
       h("div", { class: "mix-bar", role: "list" }, parts.filter((p) => p.n).map((p) => {
-        const share = `${Math.round((100 * p.n) / total)}%`;
-        const tip = `${row.name} · ${p.label}: ${fmt.format(p.n)} (${share})`;
-        return p.i === "other" ? h("span", { class: "s-other", role: "listitem", style: `flex-grow:${p.n}`, title: tip })
-          : h("button", { class: `s${p.i}`, role: "listitem", style: `flex-grow:${p.n}`, title: tip, "aria-label": tip, onclick: () => pick(row.code, p.i) });
+        const share = p.n / total;
+        const tip = `${row.label} › ${p.label}: ${fmt.format(p.n)} (${Math.round(100 * share)}%)` + (p.kind === "subject" ? " · Iconclass subject" : "");
+        const text = share >= 0.13 ? h("span", {}, p.label) : null;
+        if (p.rank === "other") return h("span", { class: "s-other", role: "listitem", style: `flex-grow:${p.n}`, title: tip }, text);
+        return h("button", { class: `s${p.rank}`, role: "listitem", style: `flex-grow:${p.n}`, title: tip, "aria-label": tip,
+          onclick: () => navigate(p.kind === "theme" ? { node: [p.id, ...rest] } : { node: [row.id, ...rest], code: p.id }) }, text);
       })));
   });
-  const legend = h("ul", { class: "mix-legend" }, [...m.categories.map((cat, i) => h("li", {}, h("i", { class: `s${i}` }), short(cat.label))),
-    h("li", {}, h("i", { class: "s-other" }), short(m.other_label))]);
-  card("#c-mix", m.include_nationality ? "artist countries by birthplace or nationality" : "artist countries by birthplace",
-    h("div", {}, h("ol", { class: "mix" }, rows), legend),
-    { text: m.kind === "theme" ? "Each bar is 100% of that country's theme memberships; a work in two sub-themes counts in both. Click a band to open it for that country."
-      : "This theme has no sub-themes, so its most frequent Iconclass subjects are shown instead. Click a band to filter." });
+  const legend = h("ul", { class: "mix-legend" }, ["1st sub-theme", "2nd", "3rd", "4th"].map((t, i) => h("li", {}, h("i", { class: `s${i}` }), t)),
+    h("li", {}, h("i", { class: "s-other" }), "Other"));
+  const subjectRows = m.rows.some((r) => r.parts[0]?.kind === "subject");
+  card("#c-mix", "each bar is 100% of that theme", h("div", {}, h("ol", { class: "mix" }, rows), legend),
+    { text: "Shares are of theme memberships, so a work in two sub-themes counts in both. Click a band to open it." +
+      (subjectRows ? " Themes without sub-themes are split by their most frequent Iconclass subjects." : "") });
 }
 
 // Media buttons above the catalogue: the same object-type filter as the "Kinds of object" chart.
