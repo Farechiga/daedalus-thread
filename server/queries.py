@@ -41,7 +41,8 @@ class Filters:
         self.repro = get("repro") in ("1", "true")
         self.nat = get("nat") in ("1", "true")  # also count nationality proxies (brief section 6)
         self.ds = get("ds") if get("ds") in ("icarus", "wikidata", "met") else None  # which collections; None = all
-        self.all = get("all") in ("1", "true")  # default view is "Notable works" (top half by fame)
+        # default view is Everything; ?notable=1 narrows to the better-known part (fame still orders the catalogue)
+        self.all = get("notable") not in ("1", "true")
         self.country = get("country")
         if self.country and self.country not in known_countries:
             raise BadRequest(f"unknown country: {self.country}")

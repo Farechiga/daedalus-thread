@@ -1,9 +1,9 @@
 import { artCentres, centuryLabel, choropleth, countryScale, fmt, pct, prism, rankedBars, themeHeatmap, timeline, treemap } from "./charts.js";
 
 const $ = (s) => document.querySelector(s);
-const PARAMS = ["node", "century", "creator", "type", "source", "country", "code", "q", "ds", "all", "repro", "nat"];
-const FLAGS = ["repro", "nat", "all"]; // display preferences that change the measure; kept across fresh searches
-const state = { node: [], century: null, creator: null, type: null, source: null, country: null, code: null, q: null, ds: null, all: false, repro: false, nat: false };
+const PARAMS = ["node", "century", "creator", "type", "source", "country", "code", "q", "ds", "notable", "repro", "nat"];
+const FLAGS = ["repro", "nat", "notable"]; // display preferences that change the measure; kept across fresh searches
+const state = { node: [], century: null, creator: null, type: null, source: null, country: null, code: null, q: null, ds: null, notable: false, repro: false, nat: false };
 const labels = {}; // remembered display labels for chips: "creator:123" -> "Albrecht Dürer"
 let meta = null, view = null, basemap = null, resultsOffset = 0, requestId = 0;
 let heatSort = (() => { try { return localStorage.getItem("dt.heatSort") || "size"; } catch { return "size"; } })();
@@ -91,7 +91,7 @@ function render() {
   $("#repro-toggle").checked = state.repro;
   $("#nat-toggle").checked = state.nat;
   renderDatasetSwitch();
-  for (const b of document.querySelectorAll("#depth-switch button")) b.setAttribute("aria-pressed", String(Boolean(b.dataset.all) === state.all));
+  for (const b of document.querySelectorAll("#depth-switch button")) b.setAttribute("aria-pressed", String(Boolean(b.dataset.notable) === state.notable));
 }
 
 function renderSegments() {
@@ -152,11 +152,11 @@ function renderStatus() {
   if (state.repro) add("Documentary photos included", { repro: false });
   $("#chips").replaceChildren(...chips);
   const c = view.coverage;
-  $("#summary").replaceChildren(h("strong", {}, fmt.format(view.n)), `artworks`,
+  $("#summary").replaceChildren(...[h("strong", {}, fmt.format(view.n)), `artworks`,
     view.focus ? ` in ${view.focus.label}` : " in the collection",
     ` · ${pct(c.dated, view.n)}% dated · ${pct(c.named_creator, view.n)}% with a named artist`,
-    !state.all && view.n_everything > view.n ? h("span", { class: "depth-note" },
-      ` · notable only (${fmt.format(view.n_everything - view.n)} hidden)`) : null);
+    state.notable && view.n_everything > view.n ? h("span", { class: "depth-note" },
+      ` · notable only (${fmt.format(view.n_everything - view.n)} hidden)`) : null].filter(Boolean));
   $("#reset-btn").disabled = !view.focus && !chips.length;
   $("#summary").title = `${fmt.format(view.n)} artworks match. Use “Everything” to include the lesser-known works.`;
 }
@@ -202,7 +202,7 @@ function renderTimeline() {
       onPick: (r) => pickCentury(r.c) }) : empty("No dated artworks in this selection."),
     notes.length ? { text: (lowCov ? "Low date coverage. " : "") + notes.join(" · ") + ".", warn: lowCov } : null);
 }
-for (const b of document.querySelectorAll("#depth-switch button")) b.addEventListener("click", () => navigate({ all: Boolean(b.dataset.all) }));
+for (const b of document.querySelectorAll("#depth-switch button")) b.addEventListener("click", () => navigate({ notable: Boolean(b.dataset.notable) }));
 for (const b of document.querySelectorAll("#heat-sort button")) {
   b.addEventListener("click", () => {
     heatSort = b.dataset.sort;
@@ -483,7 +483,7 @@ function renderInfo() {
       h("li", {}, "Artist geography uses present-day borders. Each artist's birthplace comes from Wikidata (via the Getty ULAN identifier) or the ULAN itself, and is placed in today's country, so Rubens, born in Siegen, counts under Germany. Nationality is used only if you switch it on, and is shown as a lighter ring. Names were matched to ULAN by name and life dates. Doubtful matches are left unlocated rather than guessed."),
       h("li", {}, "The map covers Europe and the Mediterranean, where over 99% of located artists were born. The rest are listed as “Beyond the map”."),
       h("li", {}, "PAUart records are photographs of artworks. Their dates and creators describe the photograph, so they are left out of the date and artist charts unless you include them."),
-      h("li", {}, "“Notable works” (the default) shows the better-known half of the collection. Each work is ranked by how widely Wikipedia covers it, or its artist (counted only for visual artists, so a patron like Napoleon adds nothing), plus museum highlights. Switch to “Everything” to see every record. Fame changes which works are shown and their order, never how a work is counted."),
+      h("li", {}, "The catalogue lists the most renowned works first, and “Notable” narrows every chart to the better-known part of the collection. Each work is ranked by how widely Wikipedia covers it, or its artist (counted only for visual artists, so a patron like Napoleon adds nothing), plus museum highlights. Switch to “Everything” to see every record. Fame changes which works are shown and their order, never how a work is counted."),
       h("li", {}, "Some collections still use unencrypted http:// links. Artworks with those links are listed after the others, and their detail panel shows a warning."),
       h("li", {}, "A second source adds paintings from Wikidata (CC0), from museums worldwide, to balance ICARUS's strength in Northern European prints. A painting's subjects come from what Wikidata says it depicts, mapped to Iconclass through subject entries that carry Iconclass codes. Use the Collections switch to view either source alone."),
       h("li", {}, "These are distributions within the collections shown, not definitive histories of art.")),
