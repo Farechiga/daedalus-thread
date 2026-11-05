@@ -23,6 +23,7 @@ COPY scripts scripts
 COPY taxonomy taxonomy
 # artist geography is a committed batch output (scripts/enrich_creators.py); the build needs no Getty data or network
 COPY data/enrichment data/enrichment
+COPY data/sources data/sources
 COPY web/assets/basemap.json web/assets/basemap.json
 RUN python3 scripts/build_db.py
 

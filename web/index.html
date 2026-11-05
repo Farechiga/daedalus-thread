@@ -46,7 +46,16 @@
           <div class="chips" id="chips" aria-live="polite"></div>
         </div>
         <div class="summary" id="summary" aria-live="polite"></div>
-        <label class="toggle"><input type="checkbox" id="repro-toggle"> Include documentary photographs in date &amp; artist charts</label>
+        <div class="status-controls">
+          <div class="seg" id="depth-switch" role="group" aria-label="Depth of the collection">
+            <button type="button" data-all="" aria-pressed="true" title="The better-known half: works and artists with the widest Wikipedia coverage">Notable works</button>
+            <button type="button" data-all="1" aria-pressed="false" title="Every artwork in the collections shown">Everything</button>
+          </div>
+          <div class="seg" id="ds-switch" role="group" aria-label="Collections shown" hidden>
+            <span class="seg-label">Collections</span>
+          </div>
+          <label class="toggle"><input type="checkbox" id="repro-toggle"> Include documentary photographs in date &amp; artist charts</label>
+        </div>
       </div>
 
       <div class="grid">
@@ -85,8 +94,9 @@
 
       <section class="card results" aria-labelledby="results-h">
         <header><div><span class="kicker">The catalogue</span><h3 id="results-h">The Works</h3></div>
-          <label>Sort <select id="sort"><option value="date">by date</option><option value="title">by title</option><option value="random">shuffled</option></select></label>
+          <label>Sort <select id="sort"><option value="fame">iconic first</option><option value="date">by date</option><option value="title">by title</option><option value="random">shuffled</option></select></label>
         </header>
+        <div class="media-filter" id="media-filter" role="group" aria-label="Filter the catalogue by medium"></div>
         <ol class="result-list" id="results"></ol>
         <button class="ghost" id="more-btn" hidden>Show more</button>
       </section>

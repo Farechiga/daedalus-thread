@@ -89,7 +89,7 @@ class App:
             f = q.filters(params)
             offset = max(0, int((params.get("offset") or ["0"])[0]))
             limit = min(100, max(1, int((params.get("limit") or ["40"])[0])))
-            return q.artworks(f, offset, limit, (params.get("sort") or ["date"])[0])
+            return q.artworks(f, offset, limit, (params.get("sort") or ["fame"])[0])
         if path == "/api/artwork":
             rec = q.artwork((params.get("id") or [""])[0])
             if rec is None:

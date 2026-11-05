@@ -1,9 +1,9 @@
 import { artCentres, centuryLabel, choropleth, countryScale, fmt, pct, prism, rankedBars, themeHeatmap, timeline, treemap } from "./charts.js";
 
 const $ = (s) => document.querySelector(s);
-const PARAMS = ["node", "century", "creator", "type", "source", "country", "code", "q", "repro", "nat"];
-const FLAGS = ["repro", "nat"]; // display preferences that change the measure; kept across fresh searches
-const state = { node: [], century: null, creator: null, type: null, source: null, country: null, code: null, q: null, repro: false, nat: false };
+const PARAMS = ["node", "century", "creator", "type", "source", "country", "code", "q", "ds", "all", "repro", "nat"];
+const FLAGS = ["repro", "nat", "all"]; // display preferences that change the measure; kept across fresh searches
+const state = { node: [], century: null, creator: null, type: null, source: null, country: null, code: null, q: null, ds: null, all: false, repro: false, nat: false };
 const labels = {}; // remembered display labels for chips: "creator:123" -> "Albrecht Dürer"
 let meta = null, view = null, basemap = null, resultsOffset = 0, requestId = 0;
 let heatSort = (() => { try { return localStorage.getItem("dt.heatSort") || "size"; } catch { return "size"; } })();
@@ -85,10 +85,13 @@ function render() {
   renderTreemap();
   renderSubjects();
   renderTypes();
+  renderMediaFilter();
   renderSources();
   renderMap();
   $("#repro-toggle").checked = state.repro;
   $("#nat-toggle").checked = state.nat;
+  renderDatasetSwitch();
+  for (const b of document.querySelectorAll("#depth-switch button")) b.setAttribute("aria-pressed", String(Boolean(b.dataset.all) === state.all));
 }
 
 function renderSegments() {
@@ -150,7 +153,9 @@ function renderStatus() {
   const c = view.coverage;
   $("#summary").replaceChildren(h("strong", {}, fmt.format(view.n)), `artworks`,
     view.focus ? ` in ${view.focus.label}` : " in the collection",
-    ` · ${pct(c.dated, view.n)}% dated · ${pct(c.named_creator, view.n)}% with a named artist`);
+    ` · ${pct(c.dated, view.n)}% dated · ${pct(c.named_creator, view.n)}% with a named artist`,
+    !state.all && view.n_everything > view.n ? h("span", { class: "depth-note" },
+      ` · notable works only; ${fmt.format(view.n_everything - view.n)} lesser-known hidden`) : null);
   $("#reset-btn").disabled = !view.focus && !chips.length;
 }
 
@@ -195,6 +200,7 @@ function renderTimeline() {
       onPick: (r) => pickCentury(r.c) }) : empty("No dated artworks in this selection."),
     notes.length ? { text: (lowCov ? "Low date coverage. " : "") + notes.join(" · ") + ".", warn: lowCov } : null);
 }
+for (const b of document.querySelectorAll("#depth-switch button")) b.addEventListener("click", () => navigate({ all: Boolean(b.dataset.all) }));
 for (const b of document.querySelectorAll("#heat-sort button")) {
   b.addEventListener("click", () => {
     heatSort = b.dataset.sort;
@@ -230,6 +236,15 @@ function renderSubjects() {
     s.length ? rankedBars(s.map((x) => ({ ...x, label: `${x.label}`, sel: x.code === state.code })), {
       width: widthOf("#c-subjects"), labelWidth: Math.min(230, widthOf("#c-subjects") * 0.45), maxLabel: widthOf("#c-subjects") < 420 ? 22 : 36,
       onPick: (x) => navigate({ code: state.code === x.code ? null : x.code }) }) : empty("No subjects."));
+}
+
+// Media buttons above the catalogue: the same object-type filter as the "Kinds of object" chart.
+function renderMediaFilter() {
+  const types = view.types.filter((t) => t.n > 0);
+  const total = types.reduce((sum, t) => sum + t.n, 0);
+  const btn = (id, label, n) => h("button", { type: "button", "aria-pressed": String((state.type || null) === id),
+    onclick: () => navigate({ type: id }) }, label, h("span", { class: "num" }, fmt.format(n)));
+  $("#media-filter").replaceChildren(btn(null, "All media", total), ...types.map((t) => btn(t.id, t.label, t.n)));
 }
 
 function renderTypes() {
@@ -302,7 +317,8 @@ async function loadResults(append) {
     h("span", { class: "t" }, a.title || "Untitled"),
     h("span", { class: "a" + (a.creators ? "" : " unknown") }, a.creators ? a.creators.split("; ").join(" · ") : "Artist unknown"),
     a.date ? h("span", { class: "d" }, a.date) : null,
-    h("span", { class: "m" }, a.type, " · ", a.source, a.reproduction ? h("span", { class: "repro" }, " · documentary photograph") : null))));
+    h("span", { class: "m" }, a.type, " · ", a.dataset === "wikidata" ? `${a.holding || "collection unknown"} · via Wikidata` : a.source,
+      a.reproduction ? h("span", { class: "repro" }, " · documentary photograph") : null))));
   if (append) $("#results").append(...items); else $("#results").replaceChildren(...items);
   if (!append && !items.length) $("#results").replaceChildren(h("li", { class: "empty" }, "No artworks match these filters."));
   $("#results-h").replaceChildren("The Works", h("span", { class: "tally" }, ` ${fmt.format(view.n)}`));
@@ -328,14 +344,17 @@ async function openArtwork(id) {
     c.geo.ulan && c.geo.wikidata ? " · " : null,
     c.geo.wikidata ? h("a", { href: `https://www.wikidata.org/wiki/${c.geo.wikidata}`, target: "_blank", rel: "noopener" }, "Wikidata") : null));
   const eyebrow = [a.object_type_label, a.century !== null && a.century !== undefined ? centuryLabel(a.century) : null, a.source.name].filter(Boolean).join(" · ");
+  const wd = a.dataset === "wikidata";
   d.querySelector("#drawer-body").replaceChildren(...[
+    a.image_url ? h("figure", { class: "thumb" }, h("img", { src: a.image_url, alt: a.title || "Artwork image", loading: "lazy" }),
+      h("figcaption", {}, "Image: Wikimedia Commons")) : null,
     h("p", { class: "eyebrow" }, eyebrow),
     h("h2", { id: "drawer-title" }, a.title || "Untitled"),
     h("hr", { class: "thread" }),
     h("p", { class: "byline" }, byline),
     h("p", { class: "dateline" }, a.date_text || "Undated", a.date_semantics === "reproduction" ? " (date of the photograph)" : ""),
     a.source_url ? h("a", { class: a.link_https ? "cta" : "cta insecure", href: a.source_url, target: "_blank", rel: "noopener noreferrer",
-      "aria-describedby": a.link_https ? null : "link-warning" }, `View image & record at ${a.source.name} ↗`) : null,
+      "aria-describedby": a.link_https ? null : "link-warning" }, wd ? "View on Wikidata ↗" : a.dataset === "met" ? "View at The Met ↗" : `View image & record at ${a.source.name} ↗`) : null,
     a.source_url && !a.link_https ? h("p", { class: "link-warning", id: "link-warning", role: "note" }, h("span", { "aria-hidden": "true" }, "⚠"),
       h("span", {}, "Warning: link may not be safe",
         h("small", {}, `${a.source.name} uses an unencrypted http:// address, so your browser may warn you before opening it.`))) : null,
@@ -344,7 +363,11 @@ async function openArtwork(id) {
       h("dt", {}, "Object"), h("dd", {}, a.object_type_label || "—", a.instance_of ? ` · ${a.instance_of}` : ""),
       h("dt", {}, "Held by"), h("dd", {}, a.holding || "—"),
       h("dt", {}, "Source"), h("dd", {}, a.source.name),
-      h("dt", {}, "ICARUS id"), h("dd", {}, h("code", {}, a.id))),
+      h("dt", {}, wd ? "Wikidata" : a.dataset === "met" ? "Met object" : "ICARUS id"), h("dd", {}, h("code", {}, wd ? a.id.slice(3) : a.dataset === "met" ? a.id.slice(4) : a.id)),
+      wd && a.fame !== null ? [h("dt", {}, "Wikipedia"), h("dd", {}, `${a.fame} language edition${a.fame === 1 ? "" : "s"}`)] : null,
+      a.fame_pct !== null && a.fame_pct !== undefined ? [h("dt", {}, "Renown"), h("dd", {},
+        a.fame_score > 0 ? `top ${Math.max(1, Math.round(100 * (1 - a.fame_pct)))}% by fame` : "little documented",
+        h("small", { class: "renown-note" }, " (Wikipedia coverage of the work or its artist)"))] : null),
     geoLines.length ? [h("h3", {}, "Where the artists were born"), h("ul", {}, geoLines)] : null,
     a.titles.length > 1 ? [h("h3", {}, "Also titled"), h("ul", {}, a.titles.slice(1).map((t) => h("li", { class: "alt-title" }, t)))] : null,
     h("h3", {}, "Themes"),
@@ -424,6 +447,16 @@ $("#back-btn").addEventListener("click", () => history.back());
 $("#reset-btn").addEventListener("click", () => navigate(blank({ node: view.path.length ? [view.path[0].id] : [] })));
 $("#repro-toggle").addEventListener("change", (e) => navigate({ repro: e.target.checked }, { replace: true }));
 $("#nat-toggle").addEventListener("change", (e) => navigate({ nat: e.target.checked }, { replace: true }));
+const DATASET_LABEL = { icarus: "ICARUS", wikidata: "Wikidata paintings", met: "The Met" };
+function renderDatasetSwitch() {
+  const el = $("#ds-switch");
+  const sets = Object.entries(meta.datasets || {}).sort((a, b) => b[1] - a[1]);
+  el.hidden = sets.length < 2;
+  const btn = (id, label, n) => h("button", { type: "button", "aria-pressed": String((state.ds || null) === id),
+    title: n ? `${fmt.format(n)} artworks` : null, onclick: () => navigate({ ds: id }) }, label);
+  el.replaceChildren(h("span", { class: "seg-label" }, "Collections"), btn(null, "All", sets.reduce((s, x) => s + x[1], 0)),
+    ...sets.map(([id, n]) => btn(id, DATASET_LABEL[id] || id, n)));
+}
 for (const b of document.querySelectorAll("#c-map .seg button")) {
   b.addEventListener("click", () => {
     mapMode = b.dataset.mode;
@@ -447,8 +480,10 @@ function renderInfo() {
       h("li", {}, "Artist geography uses present-day borders. Each artist's birthplace comes from Wikidata (via the Getty ULAN identifier) or the ULAN itself, and is placed in today's country, so Rubens, born in Siegen, counts under Germany. Nationality is used only if you switch it on, and is shown as a lighter ring. Names were matched to ULAN by name and life dates. Doubtful matches are left unlocated rather than guessed."),
       h("li", {}, "The map covers Europe and the Mediterranean, where over 99% of located artists were born. The rest are listed as “Beyond the map”."),
       h("li", {}, "PAUart records are photographs of artworks. Their dates and creators describe the photograph, so they are left out of the date and artist charts unless you include them."),
+      h("li", {}, "“Notable works” (the default) shows the better-known half of the collection. Each work is ranked by how widely Wikipedia covers it, or its artist (counted only for visual artists, so a patron like Napoleon adds nothing), plus museum highlights. Switch to “Everything” to see every record. Fame changes which works are shown and their order, never how a work is counted."),
       h("li", {}, "Some collections still use unencrypted http:// links. Artworks with those links are listed after the others, and their detail panel shows a warning."),
-      h("li", {}, "These are distributions within the ICARUS collections, not definitive histories of art.")),
+      h("li", {}, "A second source adds paintings from Wikidata (CC0), from museums worldwide, to balance ICARUS's strength in Northern European prints. A painting's subjects come from what Wikidata says it depicts, mapped to Iconclass through subject entries that carry Iconclass codes. Use the Collections switch to view either source alone."),
+      h("li", {}, "These are distributions within the collections shown, not definitive histories of art.")),
     h("h3", {}, "Sources"),
     h("table", {}, h("thead", {}, h("tr", {}, h("th", {}, "Collection"), h("th", {}, "Country"), h("th", { class: "num" }, "Artworks"))), h("tbody", {}, rows)),
     h("p", {}, `Build ${meta.build.built_at} · taxonomy v${meta.build.taxonomy_version} · Iconclass ${String(meta.build.iconclass_commit).slice(0, 7)}`));

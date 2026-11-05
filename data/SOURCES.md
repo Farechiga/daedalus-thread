@@ -17,6 +17,8 @@ Derived and committed:
 | Output | Built by | Inputs | License note |
 |---|---|---|---|
 | `enrichment/creator_geo.tsv` | `scripts/enrich_creators.py` (batch, about 5 min on first run, cached afterwards) | ICARUS creators, Getty ULAN (Jan 2026), Wikidata SPARQL (CC0; responses cached in `cache/wikidata/`), Natural Earth | ULAN-derived fields: ODC-By, so attribute Getty |
+| `sources/wikidata_paintings.jsonl.gz` | `scripts/fetch_wikidata_artworks.py` (about 1 h first run, cached in `raw/wikidata/`) | Wikidata SPARQL: paintings that depict or have as main subject one of about 1,400 subject items carrying an Iconclass notation (P1256) | CC0 |
+| `enrichment/wikidata_creators.tsv` | same script | Wikidata creators of those paintings: birthplace coordinates, life dates, ULAN id. Present-day country from Natural Earth | CC0 |
 | `../web/assets/basemap.json` | `scripts/build_basemap.py` | Natural Earth 1:50m | Public domain |
 
 Not downloaded on purpose:

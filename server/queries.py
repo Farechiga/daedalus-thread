@@ -40,6 +40,8 @@ class Filters:
         self.q = (get("q") or "").strip()[:100] or None
         self.repro = get("repro") in ("1", "true")
         self.nat = get("nat") in ("1", "true")  # also count nationality proxies (brief section 6)
+        self.ds = get("ds") if get("ds") in ("icarus", "wikidata", "met") else None  # which collections; None = all
+        self.all = get("all") in ("1", "true")  # default view is "Notable works" (top half by fame)
         self.country = get("country")
         if self.country and self.country not in known_countries:
             raise BadRequest(f"unknown country: {self.country}")
@@ -48,8 +50,18 @@ class Filters:
         return ("birthplace", "nationality") if self.nat else ("birthplace",)
 
     def without_century(self):
+        return self.without("century")
+
+    def without(self, *keys):
+        """Copy of these filters with some cleared, for charts that keep their own dimension in context."""
         clone = object.__new__(Filters)
-        clone.__dict__.update(self.__dict__, century=None)
+        clone.__dict__.update(self.__dict__, **{k: None for k in keys})
+        return clone
+
+    def everything(self):
+        """Same filters, but over all artworks instead of the notable half."""
+        clone = self.without()
+        clone.all = True
         return clone
 
     def as_dict(self):
@@ -61,6 +73,11 @@ class Filters:
         for nid in self.nodes:
             clauses.append(f"{alias}.rid IN (SELECT artwork_rid FROM artwork_node WHERE node_id = ?)")
             args.append(nid)
+        if self.ds:
+            clauses.append(f"{alias}.dataset = ?")
+            args.append(self.ds)
+        if not self.all:
+            clauses.append(f"{alias}.notable = 1")
         if self.century is not None:
             clauses.append(f"{alias}.century = ?")
             args.append(self.century)
@@ -153,8 +170,9 @@ class Queries:
     # ---------- static-ish ----------
     def meta_payload(self):
         segs = [self._node_json(nid) for nid in self.children.get(None, [])]
+        datasets = dict(self.db.execute("SELECT dataset, count(*) FROM artwork GROUP BY 1"))
         return {
-            "total_artworks": self.total, "build": self.meta, "segments": segs,
+            "total_artworks": self.total, "build": self.meta, "segments": segs, "datasets": datasets,
             "object_types": [{"id": t[0], "label": t[1], "n": t[3]} for t in sorted(self.types.values(), key=lambda t: t[2])],
             "sources": [{"id": s[0], "name": s[1], "country": s[2], "n": s[4]} for s in
                         sorted(self.sources.values(), key=lambda s: -s[4])],
@@ -178,7 +196,12 @@ class Queries:
         where, args = f.where("a")
         focus = f.nodes[0] if f.nodes else None
         n = self.db.execute(f"SELECT count(*) FROM artwork a WHERE {where}", args).fetchone()[0]
-        out = {"filters": f.as_dict(), "n": n, "total": self.total,
+        if f.all:
+            n_everything = n
+        else:
+            ewhere, eargs = f.everything().where("a")
+            n_everything = self.db.execute(f"SELECT count(*) FROM artwork a WHERE {ewhere}", eargs).fetchone()[0]
+        out = {"filters": f.as_dict(), "n": n, "total": self.total, "n_everything": n_everything,
                "path": self.path(focus) if focus else [],
                "focus": self._node_json(focus) if focus else None}
         out["tree"] = self.tree(f, focus, where, args)
@@ -189,7 +212,9 @@ class Queries:
         out["timeline"] = self.timeline(fc, cwhere, cargs, cn)
         out["timeline"]["selected"] = f.century
         out["artists"] = self.artists(f, where, args, n)
-        out["types"] = self.group_counts("object_type", where, args, self.types, 1)
+        # media counts ignore the media filter, so every kind stays visible (and selectable) while one is chosen
+        twhere, targs = f.without("type").where("a") if f.type else (where, args)
+        out["types"] = self.group_counts("object_type", twhere, targs, self.types, 1)
         out["sources"] = self.group_counts("source_id", where, args, self.sources, 1)
         out["heatmap"] = self.heatmap(fc, focus, cwhere, cargs)
         out["subjects"] = self.top_subjects(where, args, n)
@@ -338,20 +363,43 @@ class Queries:
                 "reproductions": repro, "source_link": linked, "artist_country": None}
 
     # ---------- results & detail ----------
-    def artworks(self, f, offset=0, limit=40, sort="date"):
+    def artworks(self, f, offset=0, limit=40, sort="fame", rid_list=None):
         where, args = f.where("a")
+        if rid_list is not None:  # fetch exactly these rows (used by the iconic ordering)
+            where, args = f"a.rid IN ({','.join('?' * len(rid_list))})", list(rid_list)
+        if sort == "fame" and rid_list is None:
+            return self._artworks_iconic(f, where, args, offset, limit)
         order = {"date": "a.date_start IS NULL, a.date_start, a.rid", "title": "a.title IS NULL, a.title COLLATE NOCASE",
                  "random": "(a.rid * 2654435761) % 1000003"}.get(sort, "a.rid")
         order = "a.link_https DESC, " + order  # works whose source link is plain http go to the back of every sort
         rows = self.db.execute(
             f"SELECT a.rid, a.id, a.title, a.date_text, a.date_start, a.date_end, a.century, a.object_type, a.source_id, "
-            f"a.source_url, a.date_semantics, a.link_https, (SELECT group_concat(c.display_name, '; ') FROM artwork_creator ac "
+            f"a.source_url, a.date_semantics, a.link_https, a.dataset, a.holding, a.fame_pct, (SELECT group_concat(c.display_name, '; ') FROM artwork_creator ac "
             f"JOIN creator c ON c.id = ac.creator_id WHERE ac.artwork_rid = a.rid AND c.kind != 'anonymous') "
             f"FROM artwork a WHERE {where} ORDER BY {order} LIMIT ? OFFSET ?", args + [limit, offset]).fetchall()
         return {"offset": offset, "limit": limit, "items": [{
             "id": r[1], "title": r[2], "date": r[3], "start": r[4], "end": r[5], "century": r[6],
             "type": self.types[r[7]][1] if r[7] in self.types else r[7], "source": self.sources[r[8]][1],
-            "url": r[9], "reproduction": r[10] == "reproduction", "secure": bool(r[11]), "creators": r[12]} for r in rows]}
+            "url": r[9], "reproduction": r[10] == "reproduction", "secure": bool(r[11]), "dataset": r[12], "holding": r[13],
+            "renown": r[14], "creators": r[15], **({"_rid": r[0]} if rid_list is not None else {})} for r in rows]}
+
+    def _artworks_iconic(self, f, where, args, offset, limit, per_artist=3):
+        """Most renowned first, with variety: after an artist's first `per_artist` works, the rest of that
+        artist's works wait until every other artist has had their turn. Insecure links still go last."""
+        rows = self.db.execute(
+            f"WITH r AS (SELECT a.rid, a.fame_score, a.link_https, ROW_NUMBER() OVER (PARTITION BY COALESCE(a.primary_creator, -a.rid) "
+            f"ORDER BY a.fame_score DESC, a.rid) rn FROM artwork a WHERE {where}) "
+            f"SELECT rid FROM r ORDER BY link_https DESC, rn > ?, fame_score DESC, rid LIMIT ? OFFSET ?",
+            args + [per_artist, limit, offset]).fetchall()
+        rids = [r[0] for r in rows]
+        if not rids:
+            return {"offset": offset, "limit": limit, "items": []}
+        items = self.artworks(f.without(), 0, len(rids), sort="date", rid_list=rids)["items"]
+        pos = {rid: i for i, rid in enumerate(rids)}
+        items.sort(key=lambda it: pos[it["_rid"]])
+        for it in items:
+            del it["_rid"]
+        return {"offset": offset, "limit": limit, "items": items}
 
     def artwork(self, aid):
         a = self.db.execute("SELECT * FROM artwork WHERE id = ?", (aid,)).fetchone()

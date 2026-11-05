@@ -9,8 +9,10 @@ for missing fields; every column is nullable and charts choose their own eligibl
 import argparse
 import collections
 import csv
+import gzip
 import json
 import os
+import re
 import sqlite3
 import sys
 import time
@@ -25,7 +27,10 @@ from etl.taxonomy import Taxonomy  # noqa: E402
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 RAW = os.path.join(ROOT, "data", "raw")
 LANGS = ("en", "de", "nl", "fr", "it", "pl")
-REPRODUCTION_SOURCES = {"pauart"}  # dates/creators describe a documentary photograph (decision log, open item)
+REPRODUCTION_SOURCES = {"pauart"}
+EXTRA_SOURCES = [("wikidata_paintings.jsonl.gz", "wikidata"), ("met_objects.jsonl.gz", "met")]
+EXTRA_SOURCE_ROWS = [("wikidata", "Wikidata (paintings)", None, "www.wikidata.org"),
+                     ("met", "The Metropolitan Museum of Art", "US", "www.metmuseum.org")]  # dates/creators describe a documentary photograph (decision log, open item)
 
 SCHEMA = """
 CREATE TABLE meta (key TEXT PRIMARY KEY, value TEXT);
@@ -47,7 +52,15 @@ CREATE TABLE artwork (
   century_mid INTEGER,               -- midpoint century when span <= 50 years (approximate)
   date_semantics TEXT,               -- 'object' | 'reproduction'
   n_creators INTEGER, n_named_creators INTEGER, n_codes INTEGER,
-  split TEXT
+  split TEXT,
+  dataset TEXT,                      -- 'icarus' | 'wikidata'
+  image_url TEXT,                    -- https thumbnail source where the record provides one (Wikimedia Commons)
+  fame INTEGER,                      -- Wikipedia sitelinks of the work (Wikidata); NULL when unknown
+  highlight INTEGER,                 -- museum highlight flag (The Met)
+  fame_score REAL,                   -- 0..1, see compute_fame()
+  fame_pct REAL,                     -- share of all artworks with a lower score (0..1)
+  notable INTEGER,                   -- 1 = top half by fame (the default "Notable works" view)
+  primary_creator INTEGER            -- first credited named artist (for per-artist variety in "Iconic first")
 );
 CREATE TABLE artwork_title (id INTEGER PRIMARY KEY, artwork_rid INTEGER NOT NULL, position INTEGER, title TEXT);
 CREATE TABLE creator (
@@ -88,6 +101,8 @@ CREATE TABLE suggest (id INTEGER PRIMARY KEY, kind TEXT, ref TEXT, label TEXT, d
 
 INDEXES = """
 CREATE INDEX artwork_source ON artwork(source_id);
+CREATE INDEX artwork_dataset ON artwork(dataset);
+CREATE INDEX artwork_notable ON artwork(notable, fame_score);
 CREATE INDEX artwork_type ON artwork(object_type);
 CREATE INDEX artwork_century ON artwork(century);
 CREATE INDEX artwork_dates ON artwork(date_start, date_end);
@@ -155,7 +170,7 @@ def main():
     rows = {k: [] for k in ("artwork", "title", "ac", "ai", "aio", "an")}
 
     def flush():
-        db.executemany("INSERT INTO artwork VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows["artwork"])
+        db.executemany("INSERT INTO artwork VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows["artwork"])
         db.executemany("INSERT INTO artwork_title(artwork_rid, position, title) VALUES (?,?,?)", rows["title"])
         db.executemany("INSERT INTO artwork_creator VALUES (?,?,?,?,?)", rows["ac"])
         db.executemany("INSERT INTO artwork_iconclass VALUES (?,?)", rows["ai"])
@@ -236,13 +251,80 @@ def main():
             parsed["kind"] if parsed else ("unparsed" if rec["time"] else None),
             int(parsed["approx"]) if parsed else None, cent, cent_mid,
             "reproduction" if sid in REPRODUCTION_SOURCES else "object",
-            len(rec["creator"]), n_named, len(codes), splits.get(rec["id"]),
+            len(rec["creator"]), n_named, len(codes), splits.get(rec["id"]), "icarus", None, None, None, None, None, None, None,
         ))
         if rid % 50000 == 0:
             flush()
             log(f"{rid} records")
     flush()
-    log(f"{rid} artworks inserted")
+    log(f"{rid} ICARUS artworks inserted")
+
+    # ---- additional sources (data/sources/*.jsonl.gz): Wikidata paintings, The Met, ...
+    wd_creators = load_wikidata_creators()
+    extra = collections.Counter()
+    for fname, dataset in EXTRA_SOURCES:
+        path = os.path.join(ROOT, "data", "sources", fname)
+        if not os.path.exists(path):
+            continue
+        with gzip.open(path, "rt", encoding="utf-8") as fh:
+            for line in fh:
+                w = json.loads(line)
+                rid += 1
+                extra[dataset] += 1
+                sid = w.get("source_id", dataset)
+                otype = w.get("object_type", "painting")
+                src_count[sid] += 1
+                type_count[otype] += 1
+                start, end, kind = w["date"] if w["date"] else (None, None, None)
+                parsed = {"start": start, "end": end, "kind": kind, "approx": False} if w["date"] else None
+                cent = century_of(parsed)
+                cent_mid = (start + end) // 2 // 100 * 100 if parsed and end - start <= 50 else None
+                n_named, seen_creators = 0, set()
+                for pos, c in enumerate(w["creators"]):
+                    name = c["name"] or (wd_creators.get(c["key"], {}).get("name"))
+                    if not name or not c["key"] or (c.get("qid") and not re.fullmatch(r"Q\d+", c["qid"])):
+                        continue
+                    key = c["key"]
+                    entry = creators.get(key)
+                    if entry is None:
+                        info = wd_creators.get(key, {})
+                        life = f"{info['birth']}–{info['death']}" if info.get("birth") and info.get("death") else None
+                        entry = creators[key] = [len(creators) + 1, collections.Counter(), "person", life, 0, collections.Counter()]
+                    entry[1][name] += 1
+                    entry[5][name] += 1
+                    if entry[0] not in seen_creators:
+                        entry[4] += 1
+                        seen_creators.add(entry[0])
+                    n_named += 1
+                    rows["ac"].append((rid, pos, entry[0], name, None))
+                codes = w["iconclass"]
+                rolled = set()
+                for code in codes:
+                    rows["ai"].append((rid, code))
+                    code_direct[code] += 1
+                    rolled.update(ic.ancestors(code))
+                code_rollup.update(rolled)
+                own_hits, matched, _ = tax.match(codes)
+                for nid in matched:
+                    other = int(tax.is_other(nid, own_hits, matched))
+                    rows["an"].append((nid, rid, other))
+                    node_count[nid] += 1
+                    node_other[nid] += other
+                if w["title"]:
+                    rows["title"].append((rid, 0, w["title"]))
+                image = w.get("image")
+                if image and "commons.wikimedia.org" in image:
+                    image += "?width=640"
+                url = w.get("source_url") or f"https://www.wikidata.org/wiki/{w['qid']}"
+                rows["artwork"].append((
+                    rid, w["id"], sid, url, int(url.lower().startswith("https://")), w["title"], w["holding"],
+                    otype, w.get("instance_of") or "painting (Wikidata)", None, w["date_text"], start, end, kind,
+                    int(bool(w.get("approx"))) if parsed else None, cent, cent_mid, "object", len(w["creators"]), n_named,
+                    len(codes), None, dataset, image, w.get("links"), int(bool(w.get("highlight"))), None, None, None, None))
+                if extra[dataset] % 50000 == 0:
+                    flush()
+        flush()
+        log(f"{extra[dataset]} {dataset} records inserted ({rid} artworks in total)")
 
     # creators
     db.executemany("INSERT INTO creator VALUES (?,?,?,?,?,?,?)", [
@@ -281,13 +363,17 @@ def main():
     db.executemany("INSERT INTO taxonomy_node VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)", tn_rows)
 
     db.executemany("INSERT INTO source VALUES (?,?,?,?,?)",
-                   [(sid, name, country, host, src_count[sid]) for host, (sid, name, country) in SOURCES.items()])
+                   [(sid, name, country, host, src_count[sid]) for host, (sid, name, country) in SOURCES.items()]
+                   + [(sid, name, country, host, src_count[sid]) for sid, name, country, host in EXTRA_SOURCE_ROWS if src_count[sid]])
     db.executemany("INSERT INTO object_type VALUES (?,?,?,?)",
                    [(t["id"], t["label"], i, type_count[t["id"]]) for i, t in enumerate(typer.types)])
     log("taxonomy, sources, object types")
 
     load_geography(db, creators)
     log("geography (countries, birthplaces, creator attribution)")
+
+    compute_fame(db)
+    log("fame scores")
 
     build_suggest(db, ic, tax, node_count, creators)
     log("suggest table")
@@ -311,6 +397,73 @@ def main():
     log(f"done -> {args.out} ({os.path.getsize(args.out) / 1e6:.0f} MB)")
 
 
+def compute_fame(db):
+    """fame_score (0..1) = max(work fame, 0.7 x artist fame) + 0.12 for a museum highlight; halved for documentary photos.
+    work fame:   log Wikipedia editions of the artwork itself (Wikidata/Met items; ICARUS works known to Wikidata
+                 by RKDimages or Rijksmuseum inventory number), 60 editions = 1.0
+    artist fame: log Wikipedia editions of the best-known *visual artist* credited (patrons, authors, rulers don't count),
+                 150 editions = 1.0. Anonymous and unlinked artists score 0.
+    notable = top half of all artworks by score (ties at the cut go in only if their score is above zero)."""
+    import math
+    enr = os.path.join(ROOT, "data", "enrichment")
+    artist = {}
+    p = os.path.join(enr, "fame_creators.tsv")
+    if os.path.exists(p):
+        for r in csv.DictReader(open(p, encoding="utf-8"), delimiter="\t"):
+            artist[r["wikidata_qid"]] = int(r["sitelinks"]) if r.get("visual_artist", "1") == "1" else 0
+    # artists first seen in the Wikidata/Met harvests carry their own sitelinks; they are credited painters/makers
+    for f in ("wikidata_creators.tsv", "met_creators.tsv"):
+        p = os.path.join(enr, f)
+        if os.path.exists(p):
+            for r in csv.DictReader(open(p, encoding="utf-8"), delimiter="\t"):
+                if r.get("links") and r["wikidata_qid"] not in artist:
+                    artist[r["wikidata_qid"]] = int(r["links"])
+    works = {}
+    p = os.path.join(enr, "fame_works.tsv")
+    if os.path.exists(p):
+        works = {r["artwork_id"]: int(r["sitelinks"]) for r in csv.DictReader(open(p, encoding="utf-8"), delimiter="\t")}
+    primary = {}
+    for rid, cid in db.execute("SELECT ac.artwork_rid, ac.creator_id FROM artwork_creator ac JOIN creator c ON c.id = ac.creator_id "
+                               "WHERE c.kind IN ('person', 'master') ORDER BY ac.artwork_rid, ac.position"):
+        primary.setdefault(rid, cid)
+    best_artist = collections.Counter()
+    for rid, qid in db.execute("SELECT ac.artwork_rid, g.wikidata_qid FROM artwork_creator ac JOIN creator_geo g "
+                               "ON g.creator_id = ac.creator_id WHERE g.wikidata_qid IS NOT NULL"):
+        n = artist.get(qid, 0)
+        if n > best_artist[rid]:
+            best_artist[rid] = n
+    scores = []
+    for rid, aid, fame, highlight, semantics in db.execute("SELECT rid, id, fame, highlight, date_semantics FROM artwork"):
+        w = fame if fame is not None else works.get(aid, 0)
+        s_work = min(1.0, math.log1p(w) / math.log1p(60))
+        s_art = min(1.0, math.log1p(best_artist[rid]) / math.log1p(150))
+        score = max(s_work, 0.7 * s_art) + (0.12 if highlight else 0.0)
+        if semantics == "reproduction":
+            score *= 0.5
+        scores.append((round(score, 4), rid))
+    scores.sort()
+    n = len(scores)
+    cut = scores[n // 2][0] if n else 0
+    rows, below = [], 0
+    for i, (score, rid) in enumerate(scores):
+        if i and score != scores[i - 1][0]:
+            below = i
+        rows.append((score, below / n, int(score > cut or (score == cut and score > 0)), primary.get(rid), rid))
+    db.executemany("UPDATE artwork SET fame_score = ?, fame_pct = ?, notable = ?, primary_creator = ? WHERE rid = ?", rows)
+    notable = sum(r[2] for r in rows)
+    log(f"fame: cut at score {cut:.3f}; {notable} notable of {n} ({100 * notable / max(n, 1):.0f}%)")
+
+
+def load_wikidata_creators():
+    out = {}
+    for f in ("wikidata_creators.tsv", "met_creators.tsv"):
+        path = os.path.join(ROOT, "data", "enrichment", f)
+        if os.path.exists(path):
+            for r in csv.DictReader(open(path, encoding="utf-8", newline=""), delimiter="\t"):
+                out.setdefault(r["name_key"], {"name": r["display_name"], "birth": r["ulan_birth"] or None, "death": r["ulan_death"] or None})
+    return out
+
+
 def load_geography(db, creators):
     """Countries and anchors from the basemap, plus creator attribution from the enrichment TSV (if present)."""
     from etl.geo import Countries, Viewport
@@ -320,33 +473,33 @@ def load_geography(db, creators):
     db.executemany("INSERT INTO country VALUES (?,?,?,?,?,?,?,?)", [
         (code, i["name"], i["iso2"], i["continent"], i["subregion"], int(code in basemap["in_view"]),
          *(basemap["anchors"].get(code) or (None, None))) for code, i in countries.info.items()])
-    path = os.path.join(ROOT, "data", "enrichment", "creator_geo.tsv")
-    if not os.path.exists(path):
-        log("no data/enrichment/creator_geo.tsv: artist geography left empty (run scripts/enrich_creators.py)")
+    paths = [os.path.join(ROOT, "data", "enrichment", f) for f in ("creator_geo.tsv", "wikidata_creators.tsv", "met_creators.tsv")]
+    paths = [p for p in paths if os.path.exists(p)]
+    if not paths:
+        log("no data/enrichment/*.tsv: artist geography left empty (run scripts/enrich_creators.py)")
         return
     ids = {key: e[0] for key, e in creators.items()}
     places, rows = {}, []
-    with open(path, encoding="utf-8", newline="") as fh:
-        for r in csv.DictReader(fh, delimiter="\t"):
-            cid = ids.get(r["name_key"])
-            if cid is None:
-                continue
-            pid = None
-            if r["birth_lat"] and r["birth_lon"]:
-                lat, lon = float(r["birth_lat"]), float(r["birth_lon"])
-                key = (r["birth_place"], round(lat, 2), round(lon, 2))
-                if key not in places:
-                    x, y = view.project(lon, lat)
-                    places[key] = (len(places) + 1, r["birth_place"], r["country_code"] or None, lat, lon, x, y,
-                                   int(view.contains(lon, lat)))
-                pid = places[key][0]
-            rows.append((cid, r["country_code"] or None, r["proxy_type"] or None, r["evidence_source"] or None,
-                         r["geo_confidence"] or None, r["status"], r["match_method"] or None, r["match_confidence"] or None,
-                         r["ulan_id"] or None, r["wikidata_qid"] or None, r["ulan_name"] or None,
-                         int(r["ulan_birth"]) if r["ulan_birth"] else None, int(r["ulan_death"]) if r["ulan_death"] else None,
-                         pid, r["nationality"] or None, r["notes"] or None))
+    for r in (r for path in paths for r in csv.DictReader(open(path, encoding="utf-8", newline=""), delimiter="\t")):
+        cid = ids.get(r["name_key"])
+        if cid is None:
+            continue
+        pid = None
+        if r["birth_lat"] and r["birth_lon"]:
+            lat, lon = float(r["birth_lat"]), float(r["birth_lon"])
+            key = (r["birth_place"], round(lat, 2), round(lon, 2))
+            if key not in places:
+                x, y = view.project(lon, lat)
+                places[key] = (len(places) + 1, r["birth_place"], r["country_code"] or None, lat, lon, x, y,
+                               int(view.contains(lon, lat)))
+            pid = places[key][0]
+        rows.append((cid, r["country_code"] or None, r["proxy_type"] or None, r["evidence_source"] or None,
+                     r["geo_confidence"] or None, r["status"], r["match_method"] or None, r["match_confidence"] or None,
+                     r["ulan_id"] or None, r["wikidata_qid"] or None, r["ulan_name"] or None,
+                     int(r["ulan_birth"]) if r["ulan_birth"] else None, int(r["ulan_death"]) if r["ulan_death"] else None,
+                     pid, r["nationality"] or None, r["notes"] or None))
     db.executemany("INSERT INTO birthplace VALUES (?,?,?,?,?,?,?,?)", list(places.values()))
-    db.executemany("INSERT INTO creator_geo VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows)
+    db.executemany("INSERT OR IGNORE INTO creator_geo VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows)
 
 
 def build_suggest(db, ic, tax, node_count, creators):

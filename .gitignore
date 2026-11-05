@@ -21,6 +21,9 @@ data/db/
 *.z0[0-9]
 *.gz
 !data/**/.gitkeep
+# committed batch outputs (reproducible, but slow to re-harvest)
+!data/sources/
+!data/sources/*.jsonl.gz
 
 # --- Python ---
 __pycache__/

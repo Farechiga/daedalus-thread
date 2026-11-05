@@ -1,5 +1,6 @@
 data/*
 !data/enrichment
+!data/sources
 .git/
 docs/
 tests/

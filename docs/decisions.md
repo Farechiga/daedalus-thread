@@ -2,6 +2,37 @@
 
 Newest first. Each entry records what was decided, why, and where it is implemented.
 
+## 2026-11-05 (later): Fame, "Notable works", teal palette
+
+| # | Decision | Implementation |
+|---|---|---|
+| D21 | **Fame score.** It is max(work fame, 0.7 × artist fame), plus 0.12 for a museum highlight, halved for documentary photos. Work fame is log Wikipedia editions of the artwork: Wikidata/Met items, plus 1,612 ICARUS works Wikidata knows by RKDimages id or Rijksmuseum inventory number. Artist fame counts only creators with a verified visual-art occupation (P106), so patrons and authors credited as creators (Napoleon, Homer, Dickens) add nothing. | `scripts/fetch_fame.py`, `build_db.compute_fame()` |
+| D22 | **"Notable works" is a reversible default view, not a deletion.** It is the documented top of the ranking: about 42% of records, because 58% have no measurable fame (anonymous, unlinked, undocumented). "Everything" is one click away, and every count says how many works are hidden. Measured effect: it does **not** reduce Germany's share (33.0% → 33.4%) and it sharpens the 1600s and Rubens. Fame is an ordering tool. Rebalancing comes from the new sources. | `Filters.all`, `#depth-switch` |
+| D23 | **"Iconic first" is the default catalogue order**: fame, with at most 3 works per artist before the rest of that artist's works. Insecure links still sort last. | `queries._artworks_iconic()` |
+| D24 | **Data colour is teal #138F80** (bars, heatmap, map, treemap, theme bars), with darker #0C6C61 for hover and white-text tiles. Navy stays for headings and gold for selections. | `web/css/app.css` tokens |
+
+Measured rebalancing from 67,266 Wikidata paintings (share of located artworks):
+
+- Germany 34.1% → 29.8% overall, Italy 13.4% → 16.3%.
+- Christian Art: Italy now leads, 28.1% against Germany's 20.4%.
+- Annunciation: Italy 45%.
+- Paintings only: Italy 20.0%, Germany 18.1%.
+
+## 2026-11-05: Second source and catalogue media filter
+
+| # | Decision | Implementation |
+|---|---|---|
+| D17 | **Wikidata paintings as a counterweight to ICARUS's Northern-European print bias.** Paintings (P31 Q3305213) that depict (P180) or have as main subject (P921) a Wikidata subject carrying an Iconclass notation (P1256) inherit that notation, so the taxonomy, charts, map and search work unchanged. Wikidata's own Iconclass-tagged artworks (P1257, about 64k) were *not* used: they come from the same Dutch and Austrian collections. | `scripts/fetch_wikidata_artworks.py`, `build_db.py` (`artwork.dataset`) |
+| D18 | **No double counting.** A painting is dropped when its RKDimages id (P350) matches an ICARUS RKD record, or when its collection is one ICARUS harvests (Rijksmuseum, Belvedere, Städel, NGA, Kassel). Wikidata artists merge with ICARUS artists through the Wikidata ids found during ULAN reconciliation. | same |
+| D19 | **Source switch, default "All".** The Collections switch (All, ICARUS, Wikidata paintings) is a persistent preference that survives fresh searches. Copy says "within the collections shown". Wikidata records link out over https and show Commons thumbnails in the detail panel. | `web/js/app.js` |
+| D20 | **Media buttons above the catalogue** use the shared object-type filter (brief: one filter state). Their counts ignore the media filter, so every medium stays selectable. | `renderMediaFilter()`, `queries.view()` |
+
+Gaps to close:
+
+- About 56 themes have no Wikidata subject with an Iconclass code yet (e.g. Owls). Add curated QIDs per theme (`wikidata` field) in a later taxonomy version.
+- "depicts" tags are uneven by museum (Met 81%, Prado 54%, National Gallery London 34%, Capodimonte 12%).
+- Generic subjects (tree, man, horse) pull in many landscape and portrait paintings. That's correct, but they weight Landscape & Nature.
+
 ## 2026-11-04 (night): Artist geography and the map
 
 | # | Decision | Implementation |
