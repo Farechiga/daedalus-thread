@@ -14,7 +14,7 @@ apt-get install -yq python3 git curl unzip caddy unattended-upgrades ufw fail2ba
 # security: automatic security updates, key-only SSH, firewall (Hetzner's firewall also filters)
 dpkg-reconfigure -f noninteractive unattended-upgrades
 sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/; s/^#\?PermitRootLogin.*/PermitRootLogin prohibit-password/' /etc/ssh/sshd_config
-systemctl reload ssh
+systemctl reload ssh 2>/dev/null || true  # Ubuntu 26.04 starts sshd on demand (ssh.socket): new logins read the new config
 ufw allow 22/tcp; ufw allow 80/tcp; ufw allow 443/tcp; ufw --force enable
 systemctl enable --now fail2ban
 
