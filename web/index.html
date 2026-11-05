@@ -28,7 +28,26 @@
     <button class="ghost" id="info-btn" aria-haspopup="dialog">About the data</button>
   </header>
 
-  <nav class="segments" id="segments" aria-label="Segments"></nav>
+  <div class="toprow">
+    <nav class="segments" id="segments" aria-label="Segments"></nav>
+    <div class="statusbar" id="statusbar">
+      <div class="filters">
+        <button class="ghost small" id="back-btn" title="Previous view">← Back</button>
+        <button class="ghost small" id="reset-btn" title="Clear all filters">Reset filters</button>
+        <div class="chips" id="chips" aria-live="polite"></div>
+      </div>
+      <div class="summary" id="summary" aria-live="polite"></div>
+      <div class="status-controls">
+        <div class="seg" id="depth-switch" role="group" aria-label="Depth of the collection">
+          <button type="button" data-all="" aria-pressed="true" title="Notable works: the better-known part of the collection (widest Wikipedia coverage of the work or its artist)">Notable</button>
+          <button type="button" data-all="1" aria-pressed="false" title="Every artwork in the collections shown, including lesser-known works">Everything</button>
+        </div>
+        <div class="seg" id="ds-switch" role="group" aria-label="Collections shown" title="Which collections to show" hidden>
+          <span class="seg-label">Collections</span>
+        </div>
+        </div>
+    </div>
+  </div>
 
   <main id="main" class="layout">
     <aside class="themes card" aria-labelledby="themes-h">
@@ -39,25 +58,6 @@
     </aside>
 
     <section class="content">
-      <div class="statusbar card">
-        <div class="filters">
-          <button class="ghost small" id="back-btn" title="Previous view">← Back</button>
-          <button class="ghost small" id="reset-btn" title="Clear all filters">Reset filters</button>
-          <div class="chips" id="chips" aria-live="polite"></div>
-        </div>
-        <div class="summary" id="summary" aria-live="polite"></div>
-        <div class="status-controls">
-          <div class="seg" id="depth-switch" role="group" aria-label="Depth of the collection">
-            <button type="button" data-all="" aria-pressed="true" title="The better-known half: works and artists with the widest Wikipedia coverage">Notable works</button>
-            <button type="button" data-all="1" aria-pressed="false" title="Every artwork in the collections shown">Everything</button>
-          </div>
-          <div class="seg" id="ds-switch" role="group" aria-label="Collections shown" hidden>
-            <span class="seg-label">Collections</span>
-          </div>
-          <label class="toggle"><input type="checkbox" id="repro-toggle"> Include documentary photographs in date &amp; artist charts</label>
-        </div>
-      </div>
-
       <div class="grid">
         <article class="card chart wide" id="c-timeline">
           <header>
@@ -85,9 +85,9 @@
           </header>
           <div class="body"></div>
         </article>
+        <article class="card chart" id="c-subjects"><header><h3>Most frequent Iconclass subjects</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-artists"><header><h3>Most frequent artists</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-treemap"><header><h3>Theme proportions</h3><p class="n"></p></header><div class="body"></div></article>
-        <article class="card chart" id="c-subjects"><header><h3>Most frequent Iconclass subjects</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-types"><header><h3>Kinds of object</h3><p class="n"></p></header><div class="body"></div></article>
         <article class="card chart" id="c-sources"><header><h3>Source collections</h3><p class="n"></p></header><div class="body"></div></article>
       </div>
@@ -111,6 +111,9 @@
   <dialog id="info">
     <form method="dialog"><button class="ghost close" aria-label="Close">×</button></form>
     <h2>About the data</h2>
+    <div class="info-options">
+      <label class="toggle"><input type="checkbox" id="repro-toggle"> Include documentary photographs (PAUart) in date, artist and map charts</label>
+    </div>
     <div id="info-body"></div>
   </dialog>
 

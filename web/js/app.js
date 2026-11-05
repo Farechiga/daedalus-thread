@@ -149,14 +149,16 @@ function renderStatus() {
   if (state.country) add(`Artist born in: ${labels["country:" + state.country] || state.country}${state.nat ? " (or national of)" : ""}`, { country: null });
   if (state.code) add(`Subject: ${labels["code:" + state.code] || state.code}`, { code: null });
   if (state.q) add(`Title contains: “${state.q}”`, { q: null });
+  if (state.repro) add("Documentary photos included", { repro: false });
   $("#chips").replaceChildren(...chips);
   const c = view.coverage;
   $("#summary").replaceChildren(h("strong", {}, fmt.format(view.n)), `artworks`,
     view.focus ? ` in ${view.focus.label}` : " in the collection",
     ` · ${pct(c.dated, view.n)}% dated · ${pct(c.named_creator, view.n)}% with a named artist`,
     !state.all && view.n_everything > view.n ? h("span", { class: "depth-note" },
-      ` · notable works only; ${fmt.format(view.n_everything - view.n)} lesser-known hidden`) : null);
+      ` · notable only (${fmt.format(view.n_everything - view.n)} hidden)`) : null);
   $("#reset-btn").disabled = !view.focus && !chips.length;
+  $("#summary").title = `${fmt.format(view.n)} artworks match. Use “Everything” to include the lesser-known works.`;
 }
 
 const widthOf = (id) => Math.max(300, Math.round($(id).querySelector(".body").clientWidth || 520));
@@ -224,6 +226,7 @@ function renderTreemap() {
   const items = kids.map((k) => ({ id: k.id, label: k.label, n: k.n }));
   if (view.tree.other) items.push({ id: null, label: `Other`, n: view.tree.other });
   const sum = items.reduce((s, d) => s + d.n, 0);
+  $("#c-treemap").hidden = items.length < 2; // a single tile says nothing: hide the card, the next one moves up
   card("#c-treemap", sum ? `annotation-based · ${fmt.format(sum)} theme memberships (artworks can sit in several)` : "",
     items.length ? treemap(items, { width: widthOf("#c-treemap"), height: 300, onPick: (d) => d.id && navigate({ node: [d.id, ...state.node.slice(1)] }) })
       : empty("No sub-themes at this level."));
@@ -447,14 +450,14 @@ $("#back-btn").addEventListener("click", () => history.back());
 $("#reset-btn").addEventListener("click", () => navigate(blank({ node: view.path.length ? [view.path[0].id] : [] })));
 $("#repro-toggle").addEventListener("change", (e) => navigate({ repro: e.target.checked }, { replace: true }));
 $("#nat-toggle").addEventListener("change", (e) => navigate({ nat: e.target.checked }, { replace: true }));
-const DATASET_LABEL = { icarus: "ICARUS", wikidata: "Wikidata paintings", met: "The Met" };
+const DATASET_LABEL = { icarus: "ICARUS", wikidata: "Wikidata", met: "The Met" };
 function renderDatasetSwitch() {
   const el = $("#ds-switch");
   const sets = Object.entries(meta.datasets || {}).sort((a, b) => b[1] - a[1]);
   el.hidden = sets.length < 2;
   const btn = (id, label, n) => h("button", { type: "button", "aria-pressed": String((state.ds || null) === id),
-    title: n ? `${fmt.format(n)} artworks` : null, onclick: () => navigate({ ds: id }) }, label);
-  el.replaceChildren(h("span", { class: "seg-label" }, "Collections"), btn(null, "All", sets.reduce((s, x) => s + x[1], 0)),
+    title: id ? `Only ${label} (${fmt.format(n)} artworks)` : `All collections (${fmt.format(n)} artworks)`, onclick: () => navigate({ ds: id }) }, label);
+  el.replaceChildren(btn(null, "All", sets.reduce((s, x) => s + x[1], 0)),
     ...sets.map(([id, n]) => btn(id, DATASET_LABEL[id] || id, n)));
 }
 for (const b of document.querySelectorAll("#c-map .seg button")) {
