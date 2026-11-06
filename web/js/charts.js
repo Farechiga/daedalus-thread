@@ -299,8 +299,11 @@ export function choropleth(basemap, items, { selected, onPick, scale, showProxy 
 }
 
 /** Prism map: the same filled countries, raised in proportion to artworks on a tilted map.
- *  Side walls are drawn back-to-front (painter's algorithm), so nearer prisms hide those behind. */
-export function prism(basemap, items, { selected, onPick, scale, showProxy = false, tilt = 0.55, maxH = 64, labels = 6 } = {}) {
+ *  Each raised country is extruded by stacking copies of its own outline upward (one every 1.5 px), so the sides are
+ *  the exact silhouette of the solid for any coastline: no per-edge wall tests, no slivers or seams. The sides use a
+ *  striped accent colour (--wall-*) with a darker band at the base; the top face keeps the map's shade.
+ *  Countries are drawn back to front (by their southernmost point). */
+export function prism(basemap, items, { selected, onPick, scale, showProxy = false, tilt = 0.64, maxH = 46, labels = 7 } = {}) {
   const rings = ringsOf(basemap);
   const top = maxH + 24;
   const W = basemap.width, H = Math.round(basemap.height * tilt + top + 8);
@@ -309,45 +312,43 @@ export function prism(basemap, items, { selected, onPick, scale, showProxy = fal
   const byCode = new Map(items.map((d) => [d.code, d]));
   const max = Math.max(1, ...items.filter((d) => d.ax !== null).map((d) => d.n));
   const sy = (y) => y * tilt + top;
+  const defs = el("defs", {}, svg);
+  const id = `pr${uid++}`;
+  // vertical stripes: accent with lighter pin-stripes; a darker variant for the band at the base
+  for (const [suffix, a, b] of [["", "var(--wall-a)", "var(--wall-b)"], ["-dk", "var(--wall-dark)", "var(--wall-a)"]]) {
+    const pat = el("pattern", { id: `${id}-stripe${suffix}`, width: 6, height: 6, patternUnits: "userSpaceOnUse" }, defs);
+    el("rect", { width: 6, height: 6, style: `fill:${a}` }, pat);
+    el("rect", { width: 1.6, height: 6, style: `fill:${b}` }, pat);
+  }
   const flat = el("g", { class: "land" }, svg);
   const shapes = [];
   for (const c of basemap.countries) {
     const d = byCode.get(c.code);
     const pts = rings.get(c.code).map((r) => r.map(([x, y]) => [x, sy(y)]));
-    const h = d && d.n ? Math.max(1.5, (maxH * d.n) / max) : 0;
-    if (!h) { el("path", { d: pts.map((r) => "M" + r.map((p) => p.join(",")).join("L") + "Z").join("") }, flat); continue; }
-    shapes.push({ c, d, pts, h, south: Math.max(...pts.flat().map((p) => p[1])) });
+    const path = pts.map((r) => "M" + r.map((p) => `${p[0].toFixed(1)},${p[1].toFixed(1)}`).join("L") + "Z").join("");
+    const h = d && d.n ? (maxH * d.n) / max : 0;
+    if (!d || !d.n) { el("path", { d: path }, flat); continue; }
+    shapes.push({ c, d, path, h: h >= 2 ? h : 0, south: Math.max(...pts.flat().map((p) => p[1])) });
   }
   shapes.sort((a, b) => a.south - b.south); // north (far) first
-  const defs = el("defs", {}, svg);
   const g = el("g", { class: "prisms" }, svg);
   for (const s of shapes) {
     const node = hit(g, countryLabel(s.c, s.d, showProxy), onPick, s.d);
     if (s.c.code === selected) node.classList.add("sel");
-    const color = scale.color(s.d.n);
-    // Walls facing the viewer (south) only; the top face hides the rest. One smooth vertical gradient per
-    // country (lit near the top, darker at the base) reads as solid volume without striping on jagged coasts.
-    let walls = "";
-    for (const r of s.pts) {
-      let area = 0;
-      for (let i = 0; i < r.length - 1; i++) area += r[i][0] * r[i + 1][1] - r[i + 1][0] * r[i][1];
-      const sign = area > 0 ? 1 : -1;
-      for (let i = 0; i < r.length - 1; i++) {
-        const [x1, y1] = r[i], [x2, y2] = r[i + 1];
-        const dx = x2 - x1;
-        if (!dx && y1 === y2) continue;
-        if ((dx * sign) < 0) continue; // outward normal points north: hidden
-        walls += `M${x1},${y1}L${x2},${y2}L${x2},${y2 - s.h}L${x1},${y1 - s.h}Z`;
+    if (s.h) {
+      const ref = `${id}-${s.c.code}`;
+      el("path", { id: ref, d: s.path }, defs);
+      el("use", { href: `#${ref}`, transform: "translate(1.5,2.5)", class: "shadow" }, node);  // soft ground shadow
+      const sides = el("g", { class: "sides" }, node);
+      const steps = Math.ceil(s.h / 1.5);
+      for (let k = 0; k <= steps; k++) {
+        const dy = Math.min(s.h, k * 1.5);
+        el("use", { href: `#${ref}`, transform: `translate(0,${(-dy).toFixed(2)})`,
+          style: `fill:url(#${id}-stripe${dy < Math.min(6, s.h * 0.3) ? "-dk" : ""})` }, sides);
       }
     }
-    if (walls) {
-      const id = `wall-${s.c.code}-${uid++}`;
-      const grad = el("linearGradient", { id, x1: 0, y1: 0, x2: 0, y2: 1 }, defs);
-      el("stop", { offset: "0%", style: `stop-color:color-mix(in oklab, ${color} 80%, #000)` }, grad);
-      el("stop", { offset: "100%", style: `stop-color:color-mix(in oklab, ${color} 45%, #000)` }, grad);
-      el("path", { d: walls, class: "wall", fill: `url(#${id})` }, node);
-    }
-    el("path", { d: s.pts.map((r) => "M" + r.map(([x, y]) => `${x},${y - s.h}`).join("L") + "Z").join(""), class: "top", style: `fill:${color}` }, node);
+    el("path", { d: s.path, transform: s.h ? `translate(0,${(-s.h).toFixed(2)})` : null, class: "top",
+      style: `fill:${scale.color(s.d.n)}` }, node);
   }
   // labels above the tallest prisms
   const lg = el("g", { class: "prism-labels" }, svg);
@@ -355,9 +356,14 @@ export function prism(basemap, items, { selected, onPick, scale, showProxy = fal
   for (const s of [...shapes].sort((a, b) => b.d.n - a.d.n)) {
     if (placed.length >= labels) break;
     if (s.d.ax === null) continue;
-    const x = s.d.ax, y = sy(s.d.ay) - s.h - 6;
-    const w = Math.max(s.d.name.length * 7.2, 40), box = { x: x - w / 2, y: y - 13, w, h: 28 };
-    if (placed.some((b) => box.x < b.x + b.w && b.x < box.x + box.w && box.y < b.y + b.h && b.y < box.y + box.h)) continue;
+    // at the country's raised centre, else nudged aside (small countries behind a tall neighbour keep their label)
+    const w = Math.max(s.d.name.length * 7.2, 40);
+    const spot = [[0, 0], [w * 0.75, -6], [-w * 0.75, -6], [0, -24]].map(([dx, dy]) => {
+      const x = s.d.ax + dx, y = sy(s.d.ay) - s.h - 6 + dy;
+      return { x, y, box: { x: x - w / 2, y: y - 13, w, h: 28 } };
+    }).find(({ box }) => !placed.some((b) => box.x < b.x + b.w && b.x < box.x + box.w && box.y < b.y + b.h && b.y < box.y + box.h));
+    if (!spot) continue;
+    const { x, y, box } = spot;
     placed.push(box);
     el("text", { x, y, "text-anchor": "middle", class: "pn" }, lg).textContent = s.d.name;
     el("text", { x, y: y + 13, "text-anchor": "middle", class: "pv" }, lg).textContent = fmt.format(s.d.n);

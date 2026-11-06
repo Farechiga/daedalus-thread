@@ -21,6 +21,7 @@
   --heat-mid: #80c2b8; --sea: color-mix(in oklab, #f5f3ee 70%, #e2f2ef);
   --stack-0: #123a45; --stack-1: #2a6570; --stack-2: #4f8a91; --stack-3: #86b5b7; --stack-4: #b3d1d1; --stack-other: #e2ecea; --band-ink: #fff;  /* 100% bars */
   --ramp-1: #e8f3f1; --ramp-2: #bfdcd7; --ramp-3: #84beb4; --ramp-4: #3e9c8d; --ramp-5: #006d67; --ramp-6: #003c39;  /* map scale stops */
+  --wall-a: #c2185b; --wall-b: #e86aa1; --wall-dark: #7d0f3b;  /* raised-map sides: striped accent */
   /* donut slices: the teal family, then navy and slate, light enough steps apart to tell neighbours apart */
   --pie-0: #006d67; --pie-1: #3e9c8d; --pie-2: #84beb4; --pie-3: #022e3a; --pie-4: #4f7480; --pie-5: #a9c2c8;
   --pie-6: #0c8a7d; --pie-7: #c9e3de; --pie-8: #7a8f95; --pie-other: #e1ded5;
@@ -39,7 +40,7 @@
     --gold: #e3a828; --gold-soft: #3a2f12; --gold-ink: #f0c76a; --chip: #a48dbc; --chip-ink: #160f1c;
     --bar: #2fb8a6; --bar-hi: #7fdccf; --bar-muted: #1d3d39;
     --stack-0: #9ae6da; --stack-1: #5cc8b8; --stack-2: #36a091; --stack-3: #25766c; --stack-4: #1d544e; --stack-other: #1f3238; --band-ink: #0a171c; --heat-0: #12262d; --heat-mid: #1f6f66; --heat-1: #2fb8a6; --sea: color-mix(in oklab, #0a171c 70%, #14332f); --focus: #6fd6c8; --warn: #e6bd5a; --danger: #ff8a80; color-scheme: dark;
-    --ramp-1: #173a36; --ramp-2: #1f5c54; --ramp-3: #2a8677; --ramp-4: #3fb3a1; --ramp-5: #8de6d6; --ramp-6: #c8f6ee;
+    --ramp-1: #173a36; --ramp-2: #1f5c54; --ramp-3: #2a8677; --ramp-4: #3fb3a1; --ramp-5: #8de6d6; --ramp-6: #c8f6ee; --wall-a: #ff4f9a; --wall-b: #ff9cc6; --wall-dark: #b0306b;
     --pie-0: #2fb8a6; --pie-1: #7fdccf; --pie-2: #1f7f72; --pie-3: #cfe3e8; --pie-4: #6f97a3; --pie-5: #3d5a62; --pie-6: #a9efe4; --pie-7: #2a4d55; --pie-8: #8aa0a6; --pie-other: #21363e;
   }
 }
@@ -49,7 +50,7 @@
   --gold: #e3a828; --gold-soft: #3a2f12; --gold-ink: #f0c76a; --chip: #a48dbc; --chip-ink: #160f1c;
   --bar: #2fb8a6; --bar-hi: #7fdccf; --bar-muted: #1d3d39;
   --stack-0: #9ae6da; --stack-1: #5cc8b8; --stack-2: #36a091; --stack-3: #25766c; --stack-4: #1d544e; --stack-other: #1f3238; --band-ink: #0a171c; --heat-0: #12262d; --heat-mid: #1f6f66; --heat-1: #2fb8a6; --sea: color-mix(in oklab, #0a171c 70%, #14332f); --focus: #6fd6c8; --warn: #e6bd5a; --danger: #ff8a80; color-scheme: dark;
-    --ramp-1: #173a36; --ramp-2: #1f5c54; --ramp-3: #2a8677; --ramp-4: #3fb3a1; --ramp-5: #8de6d6; --ramp-6: #c8f6ee;
+    --ramp-1: #173a36; --ramp-2: #1f5c54; --ramp-3: #2a8677; --ramp-4: #3fb3a1; --ramp-5: #8de6d6; --ramp-6: #c8f6ee; --wall-a: #ff4f9a; --wall-b: #ff9cc6; --wall-dark: #b0306b;
     --pie-0: #2fb8a6; --pie-1: #7fdccf; --pie-2: #1f7f72; --pie-3: #cfe3e8; --pie-4: #6f97a3; --pie-5: #3d5a62; --pie-6: #a9efe4; --pie-7: #2a4d55; --pie-8: #8aa0a6; --pie-other: #21363e;
 }
 
@@ -266,10 +267,11 @@ svg.map .choro path { stroke: var(--surface); stroke-width: .7; }
 svg.map .choro .hit:hover path, svg.map .choro .hit:focus path { stroke: var(--gold); stroke-width: 2; }
 svg.map .choro .sel path { stroke: var(--gold); stroke-width: 2.5; }
 svg.map.raised .prisms .top { stroke: var(--surface); stroke-width: .9; stroke-linejoin: round; }
-svg.map.raised .prisms .wall { stroke: none; }
+svg.map.raised .prisms .sides use { stroke: none; }
+svg.map.raised .prisms .shadow { fill: rgb(0 0 0 / .18); stroke: none; }
 svg.map.raised .prisms .hit:hover .top, svg.map.raised .prisms .hit:focus .top { stroke: var(--gold); stroke-width: 2; }
 svg.map.raised .prisms .sel .top { fill: var(--gold) !important; }
-svg.map.raised .prisms .sel .wall { fill: color-mix(in oklab, var(--gold) 60%, #000); }
+svg.map.raised .prisms .hit:hover .sides, svg.map.raised .prisms .hit:focus .sides { filter: brightness(1.08); }
 svg.map.raised .prism-labels text { paint-order: stroke; stroke: var(--surface); stroke-width: 3px; stroke-linejoin: round; pointer-events: none; }
 svg.map.raised .prism-labels .pn { font: italic 600 13px var(--serif); fill: var(--navy); }
 svg.map.raised .prism-labels .pv { font: 11px var(--sans); fill: var(--muted); font-variant-numeric: tabular-nums; }
@@ -398,41 +400,41 @@ dialog td.num, dialog th.num { text-align: right; font-variant-numeric: tabular-
 /* ---------- colour palettes (data colours only; navy and gold chrome stay) ----------
    Teal is the default. Fresco: muted fresco pigments, with a muted purple for the top level, maps and heatmaps. Enamel: jewel tones. In both, each segment
    carries its own hue on bars, and maps and heatmaps use multi-hue sequential ramps. */
-:root[data-palette="fresco"] { --bar: #75598c; --bar-hi: #573f6c; --bar-muted: #e6dfec; --accent: #8a4b36; --accent-soft: #f4e6df; --focus: #8a4b36; --heat-0: #f4f0f5; --heat-mid: #a68fb8; --heat-1: #4a3160; --sea: #e8ecec; --ramp-1: #f1edf3; --ramp-2: #d3c6dc; --ramp-3: #a68fb8; --ramp-4: #6f5487; --ramp-5: #3b2649; --ramp-6: #24152e; --pie-0: #3f5f8a; --pie-1: #a0533d; --pie-2: #6e8460; --pie-3: #7d5a80; --pie-4: #4f8a80; --pie-5: #8e6b4e; --pie-6: #b06f7a; --pie-7: #5b6670; --pie-8: #8a8f5a; --pie-other: #e4ddd3; --tm-0: #3f5f8a; --tm-1: #a0533d; --tm-2: #6e8460; --tm-3: #7d5a80; --tm-4: #4f8a80; --tm-5: #8e6b4e; --tm-6: #b06f7a; --tm-7: #5b6670; --tm-8: #8a8f5a; }
+:root[data-palette="fresco"] { --wall-a: #d99413; --wall-b: #f3c862; --wall-dark: #8f5f06; --bar: #75598c; --bar-hi: #573f6c; --bar-muted: #e6dfec; --accent: #8a4b36; --accent-soft: #f4e6df; --focus: #8a4b36; --heat-0: #f4f0f5; --heat-mid: #a68fb8; --heat-1: #4a3160; --sea: #e8ecec; --ramp-1: #f1edf3; --ramp-2: #d3c6dc; --ramp-3: #a68fb8; --ramp-4: #6f5487; --ramp-5: #3b2649; --ramp-6: #24152e; --pie-0: #3f5f8a; --pie-1: #a0533d; --pie-2: #6e8460; --pie-3: #7d5a80; --pie-4: #4f8a80; --pie-5: #8e6b4e; --pie-6: #b06f7a; --pie-7: #5b6670; --pie-8: #8a8f5a; --pie-other: #e4ddd3; --tm-0: #3f5f8a; --tm-1: #a0533d; --tm-2: #6e8460; --tm-3: #7d5a80; --tm-4: #4f8a80; --tm-5: #8e6b4e; --tm-6: #b06f7a; --tm-7: #5b6670; --tm-8: #8a8f5a; }
 :root[data-palette="fresco"][data-segment="christian-art"] { --bar: #3f5f8a; --bar-hi: #2c4566; --bar-muted: #d5deea; }
 :root[data-palette="fresco"][data-segment="classical-mythology"] { --bar: #a0533d; --bar-hi: #7a3d2c; --bar-muted: #eed8cf; }
 :root[data-palette="fresco"][data-segment="animals"] { --bar: #6e8460; --bar-hi: #536648; --bar-muted: #dde5d5; }
 :root[data-palette="fresco"][data-segment="allegory-symbols"] { --bar: #7d5a80; --bar-hi: #5e4161; --bar-muted: #e6dce7; }
 :root[data-palette="fresco"][data-segment="landscape-nature"] { --bar: #4f8a80; --bar-hi: #3a6a62; --bar-muted: #d6e8e4; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"])[data-palette="fresco"] { --bar: #b49ccb; --bar-hi: #d6c5e6; --bar-muted: #2f2738; --accent: #e3a68c; --accent-soft: #3a2721; --focus: #e3a68c; --heat-0: #1d1a20; --heat-mid: #6b5580; --heat-1: #dccdea; --sea: #0e1b20; --ramp-1: #26212b; --ramp-2: #43364f; --ramp-3: #6b5580; --ramp-4: #a48dbc; --ramp-5: #dccdea; --ramp-6: #f2eaf8; --pie-0: #7e9cc6; --pie-1: #d78a72; --pie-2: #9db48e; --pie-3: #b08fb3; --pie-4: #82bdb2; --pie-5: #c4a07f; --pie-6: #d9a0aa; --pie-7: #9aa6b0; --pie-8: #bfc48a; --pie-other: #2c3a40; --tm-0: #7e9cc6; --tm-1: #d78a72; --tm-2: #9db48e; --tm-3: #b08fb3; --tm-4: #82bdb2; --tm-5: #c4a07f; --tm-6: #d9a0aa; --tm-7: #9aa6b0; --tm-8: #bfc48a; }
+  :root:not([data-theme="light"])[data-palette="fresco"] { --wall-a: #f0b232; --wall-b: #ffda8a; --wall-dark: #a8760f; --bar: #b49ccb; --bar-hi: #d6c5e6; --bar-muted: #2f2738; --accent: #e3a68c; --accent-soft: #3a2721; --focus: #e3a68c; --heat-0: #1d1a20; --heat-mid: #6b5580; --heat-1: #dccdea; --sea: #0e1b20; --ramp-1: #26212b; --ramp-2: #43364f; --ramp-3: #6b5580; --ramp-4: #a48dbc; --ramp-5: #dccdea; --ramp-6: #f2eaf8; --pie-0: #7e9cc6; --pie-1: #d78a72; --pie-2: #9db48e; --pie-3: #b08fb3; --pie-4: #82bdb2; --pie-5: #c4a07f; --pie-6: #d9a0aa; --pie-7: #9aa6b0; --pie-8: #bfc48a; --pie-other: #2c3a40; --tm-0: #7e9cc6; --tm-1: #d78a72; --tm-2: #9db48e; --tm-3: #b08fb3; --tm-4: #82bdb2; --tm-5: #c4a07f; --tm-6: #d9a0aa; --tm-7: #9aa6b0; --tm-8: #bfc48a; }
   :root:not([data-theme="light"])[data-palette="fresco"][data-segment="christian-art"] { --bar: #7e9cc6; --bar-hi: #a9c0e2; --bar-muted: #22303f; }
   :root:not([data-theme="light"])[data-palette="fresco"][data-segment="classical-mythology"] { --bar: #d78a72; --bar-hi: #edb3a0; --bar-muted: #3d2620; }
   :root:not([data-theme="light"])[data-palette="fresco"][data-segment="animals"] { --bar: #9db48e; --bar-hi: #c2d4b6; --bar-muted: #29331f; }
   :root:not([data-theme="light"])[data-palette="fresco"][data-segment="allegory-symbols"] { --bar: #b08fb3; --bar-hi: #d0b6d2; --bar-muted: #33273a; }
   :root:not([data-theme="light"])[data-palette="fresco"][data-segment="landscape-nature"] { --bar: #82bdb2; --bar-hi: #aedad1; --bar-muted: #1f3533; }
 }
-:root[data-theme="dark"][data-palette="fresco"] { --bar: #b49ccb; --bar-hi: #d6c5e6; --bar-muted: #2f2738; --accent: #e3a68c; --accent-soft: #3a2721; --focus: #e3a68c; --heat-0: #1d1a20; --heat-mid: #6b5580; --heat-1: #dccdea; --sea: #0e1b20; --ramp-1: #26212b; --ramp-2: #43364f; --ramp-3: #6b5580; --ramp-4: #a48dbc; --ramp-5: #dccdea; --ramp-6: #f2eaf8; --pie-0: #7e9cc6; --pie-1: #d78a72; --pie-2: #9db48e; --pie-3: #b08fb3; --pie-4: #82bdb2; --pie-5: #c4a07f; --pie-6: #d9a0aa; --pie-7: #9aa6b0; --pie-8: #bfc48a; --pie-other: #2c3a40; --tm-0: #7e9cc6; --tm-1: #d78a72; --tm-2: #9db48e; --tm-3: #b08fb3; --tm-4: #82bdb2; --tm-5: #c4a07f; --tm-6: #d9a0aa; --tm-7: #9aa6b0; --tm-8: #bfc48a; }
+:root[data-theme="dark"][data-palette="fresco"] { --wall-a: #f0b232; --wall-b: #ffda8a; --wall-dark: #a8760f; --bar: #b49ccb; --bar-hi: #d6c5e6; --bar-muted: #2f2738; --accent: #e3a68c; --accent-soft: #3a2721; --focus: #e3a68c; --heat-0: #1d1a20; --heat-mid: #6b5580; --heat-1: #dccdea; --sea: #0e1b20; --ramp-1: #26212b; --ramp-2: #43364f; --ramp-3: #6b5580; --ramp-4: #a48dbc; --ramp-5: #dccdea; --ramp-6: #f2eaf8; --pie-0: #7e9cc6; --pie-1: #d78a72; --pie-2: #9db48e; --pie-3: #b08fb3; --pie-4: #82bdb2; --pie-5: #c4a07f; --pie-6: #d9a0aa; --pie-7: #9aa6b0; --pie-8: #bfc48a; --pie-other: #2c3a40; --tm-0: #7e9cc6; --tm-1: #d78a72; --tm-2: #9db48e; --tm-3: #b08fb3; --tm-4: #82bdb2; --tm-5: #c4a07f; --tm-6: #d9a0aa; --tm-7: #9aa6b0; --tm-8: #bfc48a; }
 :root[data-theme="dark"][data-palette="fresco"][data-segment="christian-art"] { --bar: #7e9cc6; --bar-hi: #a9c0e2; --bar-muted: #22303f; }
 :root[data-theme="dark"][data-palette="fresco"][data-segment="classical-mythology"] { --bar: #d78a72; --bar-hi: #edb3a0; --bar-muted: #3d2620; }
 :root[data-theme="dark"][data-palette="fresco"][data-segment="animals"] { --bar: #9db48e; --bar-hi: #c2d4b6; --bar-muted: #29331f; }
 :root[data-theme="dark"][data-palette="fresco"][data-segment="allegory-symbols"] { --bar: #b08fb3; --bar-hi: #d0b6d2; --bar-muted: #33273a; }
 :root[data-theme="dark"][data-palette="fresco"][data-segment="landscape-nature"] { --bar: #82bdb2; --bar-hi: #aedad1; --bar-muted: #1f3533; }
-:root[data-palette="enamel"] { --bar: #2747c9; --bar-hi: #1b329a; --bar-muted: #d6ddf7; --accent: #2747c9; --accent-soft: #e3e8fa; --focus: #2747c9; --heat-0: #eef2fc; --heat-mid: #6c86e4; --heat-1: #3a1489; --sea: #edf1f6; --ramp-1: #edf1fc; --ramp-2: #a7bdf2; --ramp-3: #4f72de; --ramp-4: #5326b0; --ramp-5: #2e0b57; --ramp-6: #1a0533; --pie-0: #2747c9; --pie-1: #c2253f; --pie-2: #0c8a5b; --pie-3: #7a2fbf; --pie-4: #e0662a; --pie-5: #0078a8; --pie-6: #b8237d; --pie-7: #4e7a12; --pie-8: #1e2a78; --pie-other: #e1ded5; --tm-0: #2747c9; --tm-1: #c2253f; --tm-2: #0c8a5b; --tm-3: #7a2fbf; --tm-4: #e0662a; --tm-5: #0078a8; --tm-6: #b8237d; --tm-7: #4e7a12; --tm-8: #1e2a78; }
+:root[data-palette="enamel"] { --wall-a: #e8a00c; --wall-b: #ffd166; --wall-dark: #9a6400; --bar: #2747c9; --bar-hi: #1b329a; --bar-muted: #d6ddf7; --accent: #2747c9; --accent-soft: #e3e8fa; --focus: #2747c9; --heat-0: #eef2fc; --heat-mid: #6c86e4; --heat-1: #3a1489; --sea: #edf1f6; --ramp-1: #edf1fc; --ramp-2: #a7bdf2; --ramp-3: #4f72de; --ramp-4: #5326b0; --ramp-5: #2e0b57; --ramp-6: #1a0533; --pie-0: #2747c9; --pie-1: #c2253f; --pie-2: #0c8a5b; --pie-3: #7a2fbf; --pie-4: #e0662a; --pie-5: #0078a8; --pie-6: #b8237d; --pie-7: #4e7a12; --pie-8: #1e2a78; --pie-other: #e1ded5; --tm-0: #2747c9; --tm-1: #c2253f; --tm-2: #0c8a5b; --tm-3: #7a2fbf; --tm-4: #e0662a; --tm-5: #0078a8; --tm-6: #b8237d; --tm-7: #4e7a12; --tm-8: #1e2a78; }
 :root[data-palette="enamel"][data-segment="christian-art"] { --bar: #2747c9; --bar-hi: #1b329a; --bar-muted: #d6ddf7; }
 :root[data-palette="enamel"][data-segment="classical-mythology"] { --bar: #b5174a; --bar-hi: #8a0f37; --bar-muted: #f5d3de; }
 :root[data-palette="enamel"][data-segment="animals"] { --bar: #0c8a5b; --bar-hi: #076443; --bar-muted: #cbebdd; }
 :root[data-palette="enamel"][data-segment="allegory-symbols"] { --bar: #7a2fbf; --bar-hi: #5a1f91; --bar-muted: #e6d7f5; }
 :root[data-palette="enamel"][data-segment="landscape-nature"] { --bar: #0078a8; --bar-hi: #005a80; --bar-muted: #cde6f1; }
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"])[data-palette="enamel"] { --bar: #7d95ff; --bar-hi: #b0c0ff; --bar-muted: #232b55; --accent: #9aaeff; --accent-soft: #1e2650; --focus: #9aaeff; --heat-0: #141a33; --heat-mid: #3d55c8; --heat-1: #c9a8ff; --sea: #0c1622; --ramp-1: #1c2142; --ramp-2: #2e3a8c; --ramp-3: #4f6be8; --ramp-4: #9a6bff; --ramp-5: #e3c8ff; --ramp-6: #f4eaff; --pie-0: #7d95ff; --pie-1: #ff6b85; --pie-2: #2fd39a; --pie-3: #b784ff; --pie-4: #ff9a5c; --pie-5: #3bb8f0; --pie-6: #f062b5; --pie-7: #9bcb4a; --pie-8: #a5b0ff; --pie-other: #2a3448; --tm-0: #7d95ff; --tm-1: #ff6b85; --tm-2: #2fd39a; --tm-3: #b784ff; --tm-4: #ff9a5c; --tm-5: #3bb8f0; --tm-6: #f062b5; --tm-7: #9bcb4a; --tm-8: #a5b0ff; }
+  :root:not([data-theme="light"])[data-palette="enamel"] { --wall-a: #ffbe3d; --wall-b: #ffe39a; --wall-dark: #b5800f; --bar: #7d95ff; --bar-hi: #b0c0ff; --bar-muted: #232b55; --accent: #9aaeff; --accent-soft: #1e2650; --focus: #9aaeff; --heat-0: #141a33; --heat-mid: #3d55c8; --heat-1: #c9a8ff; --sea: #0c1622; --ramp-1: #1c2142; --ramp-2: #2e3a8c; --ramp-3: #4f6be8; --ramp-4: #9a6bff; --ramp-5: #e3c8ff; --ramp-6: #f4eaff; --pie-0: #7d95ff; --pie-1: #ff6b85; --pie-2: #2fd39a; --pie-3: #b784ff; --pie-4: #ff9a5c; --pie-5: #3bb8f0; --pie-6: #f062b5; --pie-7: #9bcb4a; --pie-8: #a5b0ff; --pie-other: #2a3448; --tm-0: #7d95ff; --tm-1: #ff6b85; --tm-2: #2fd39a; --tm-3: #b784ff; --tm-4: #ff9a5c; --tm-5: #3bb8f0; --tm-6: #f062b5; --tm-7: #9bcb4a; --tm-8: #a5b0ff; }
   :root:not([data-theme="light"])[data-palette="enamel"][data-segment="christian-art"] { --bar: #7d95ff; --bar-hi: #b0c0ff; --bar-muted: #232b55; }
   :root:not([data-theme="light"])[data-palette="enamel"][data-segment="classical-mythology"] { --bar: #ff6b85; --bar-hi: #ffa3b3; --bar-muted: #4a1e2a; }
   :root:not([data-theme="light"])[data-palette="enamel"][data-segment="animals"] { --bar: #2fd39a; --bar-hi: #8af0c8; --bar-muted: #123b2e; }
   :root:not([data-theme="light"])[data-palette="enamel"][data-segment="allegory-symbols"] { --bar: #b784ff; --bar-hi: #d7b8ff; --bar-muted: #34225a; }
   :root:not([data-theme="light"])[data-palette="enamel"][data-segment="landscape-nature"] { --bar: #3bb8f0; --bar-hi: #93dcfa; --bar-muted: #123548; }
 }
-:root[data-theme="dark"][data-palette="enamel"] { --bar: #7d95ff; --bar-hi: #b0c0ff; --bar-muted: #232b55; --accent: #9aaeff; --accent-soft: #1e2650; --focus: #9aaeff; --heat-0: #141a33; --heat-mid: #3d55c8; --heat-1: #c9a8ff; --sea: #0c1622; --ramp-1: #1c2142; --ramp-2: #2e3a8c; --ramp-3: #4f6be8; --ramp-4: #9a6bff; --ramp-5: #e3c8ff; --ramp-6: #f4eaff; --pie-0: #7d95ff; --pie-1: #ff6b85; --pie-2: #2fd39a; --pie-3: #b784ff; --pie-4: #ff9a5c; --pie-5: #3bb8f0; --pie-6: #f062b5; --pie-7: #9bcb4a; --pie-8: #a5b0ff; --pie-other: #2a3448; --tm-0: #7d95ff; --tm-1: #ff6b85; --tm-2: #2fd39a; --tm-3: #b784ff; --tm-4: #ff9a5c; --tm-5: #3bb8f0; --tm-6: #f062b5; --tm-7: #9bcb4a; --tm-8: #a5b0ff; }
+:root[data-theme="dark"][data-palette="enamel"] { --wall-a: #ffbe3d; --wall-b: #ffe39a; --wall-dark: #b5800f; --bar: #7d95ff; --bar-hi: #b0c0ff; --bar-muted: #232b55; --accent: #9aaeff; --accent-soft: #1e2650; --focus: #9aaeff; --heat-0: #141a33; --heat-mid: #3d55c8; --heat-1: #c9a8ff; --sea: #0c1622; --ramp-1: #1c2142; --ramp-2: #2e3a8c; --ramp-3: #4f6be8; --ramp-4: #9a6bff; --ramp-5: #e3c8ff; --ramp-6: #f4eaff; --pie-0: #7d95ff; --pie-1: #ff6b85; --pie-2: #2fd39a; --pie-3: #b784ff; --pie-4: #ff9a5c; --pie-5: #3bb8f0; --pie-6: #f062b5; --pie-7: #9bcb4a; --pie-8: #a5b0ff; --pie-other: #2a3448; --tm-0: #7d95ff; --tm-1: #ff6b85; --tm-2: #2fd39a; --tm-3: #b784ff; --tm-4: #ff9a5c; --tm-5: #3bb8f0; --tm-6: #f062b5; --tm-7: #9bcb4a; --tm-8: #a5b0ff; }
 :root[data-theme="dark"][data-palette="enamel"][data-segment="christian-art"] { --bar: #7d95ff; --bar-hi: #b0c0ff; --bar-muted: #232b55; }
 :root[data-theme="dark"][data-palette="enamel"][data-segment="classical-mythology"] { --bar: #ff6b85; --bar-hi: #ffa3b3; --bar-muted: #4a1e2a; }
 :root[data-theme="dark"][data-palette="enamel"][data-segment="animals"] { --bar: #2fd39a; --bar-hi: #8af0c8; --bar-muted: #123b2e; }
