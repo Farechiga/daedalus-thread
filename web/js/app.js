@@ -71,7 +71,7 @@ async function load() {
     resultsOffset = 0;
     loadResults(false);
   } catch (e) {
-    $("#summary").textContent = `Could not load: ${e.message}`;
+    $("#chain-n").textContent = `Could not load: ${e.message}`;
   } finally {
     if (id === requestId) document.body.classList.remove("loading");
   }
@@ -93,8 +93,6 @@ function render() {
   renderStatus();  // after the charts, which register display labels (countries, artists, subjects) for the chips
   $("#repro-toggle").checked = state.repro;
   $("#nat-toggle").checked = state.nat;
-  renderDatasetSwitch();
-  for (const b of document.querySelectorAll("#depth-switch button")) b.setAttribute("aria-pressed", String(Boolean(b.dataset.notable) === state.notable));
 }
 
 function renderSegments() {
@@ -156,16 +154,12 @@ function renderStatus() {
   if (state.code) add(`Subject: ${labels["code:" + state.code] || state.code}`, { code: null });
   if (state.q) add(`Title contains: “${state.q}”`, { q: null });
   if (state.repro) add("Documentary photos included", { repro: false });
+  // no on-page switches for these any more; they can still arrive in a shared link, so they show (and clear) as chips
+  if (state.notable) add("Notable works only", { notable: false });
+  if (state.ds) add(`Collection: ${{ icarus: "ICARUS", wikidata: "Wikidata", met: "The Met", aic: "Chicago", zeri: "Zeri", joconde: "Joconde" }[state.ds] || state.ds}`, { ds: null });
   $("#chips").replaceChildren(...chips);
   $("#chain-n").textContent = `${fmt.format(view.n)} ${view.n === 1 ? "work" : "works"}`;
-  const c = view.coverage;
-  $("#summary").replaceChildren(...[h("strong", {}, fmt.format(view.n)), `artworks`,
-    view.focus ? ` in ${view.focus.label}` : " in the collection",
-    ` · ${pct(c.dated, view.n)}% dated · ${pct(c.named_creator, view.n)}% with a named artist`,
-    state.notable && view.n_everything > view.n ? h("span", { class: "depth-note" },
-      ` · notable only (${fmt.format(view.n_everything - view.n)} hidden)`) : null].filter(Boolean));
   $("#reset-btn").disabled = !view.focus && !chips.length;
-  $("#summary").title = `${fmt.format(view.n)} artworks match. Use “Everything” to include the lesser-known works.`;
 }
 
 const widthOf = (id) => Math.max(300, Math.round($(id).querySelector(".body").clientWidth || 520));
@@ -187,10 +181,6 @@ function renderTimeline() {
   sortCtl.hidden = !useHeat;
   for (const b of sortCtl.querySelectorAll("button")) b.setAttribute("aria-pressed", String(b.dataset.sort === heatSort));
   const pickCentury = (c) => navigate({ century: state.century === c ? null : c });
-  const notes = [];
-  if (t.spanning) notes.push(`${fmt.format(t.spanning)} span more than one century (pale when the span is ≤ 50 years)`);
-  if (t.unknown) notes.push(`${fmt.format(t.unknown)} undated`);
-  if (t.excluded_reproductions) notes.push(`${fmt.format(t.excluded_reproductions)} documentary photographs excluded`);
   const lowCov = t.eligible && t.n / t.eligible < 0.4;
   const nText = t.eligible ? nline(t.n, t.eligible, " dated to a single century") : "";
   if (useHeat) {
@@ -198,18 +188,14 @@ function renderTimeline() {
       onCol: pickCentury,
       onRow: (r) => navigate({ node: [r.id, ...state.node.slice(1)] }),
       onCell: (d) => navigate({ node: [d.id, ...state.node.slice(1)], century: d.century }) });
-    const extra = [];
-    if (svg.hiddenRows) extra.push(`${svg.hiddenRows} smaller theme${svg.hiddenRows > 1 ? "s" : ""} not shown`);
-    card("#c-timeline", nText, svg, { text: "Each row is shaded relative to its own peak, to show when each theme was most popular. The bars on top count all artworks in the selection, and the column on the right is each theme's size. Click a century to filter, a cell to open that theme in that century, or a name to open the theme. " +
-      [...extra, ...notes].join(" · ") + (notes.length || extra.length ? "." : ""), warn: lowCov });
+    card("#c-timeline", nText, svg, lowCov ? { text: "Low date coverage.", warn: true } : null);
     return;
   }
   card("#c-timeline", nText,
     t.n || t.mid_extra.length ? timeline(t.by_century, { width: widthOf("#c-timeline"), height: widthOf("#c-timeline") < 600 ? 180 : 210, extra: t.mid_extra, selected: state.century,
       onPick: (r) => pickCentury(r.c) }) : empty("No dated artworks in this selection."),
-    notes.length ? { text: (lowCov ? "Low date coverage. " : "") + notes.join(" · ") + ".", warn: lowCov } : null);
+    lowCov ? { text: "Low date coverage.", warn: true } : null);
 }
-for (const b of document.querySelectorAll("#depth-switch button")) b.addEventListener("click", () => navigate({ notable: Boolean(b.dataset.notable) }));
 for (const b of document.querySelectorAll("#heat-sort button")) {
   b.addEventListener("click", () => {
     heatSort = b.dataset.sort;
@@ -221,11 +207,9 @@ for (const b of document.querySelectorAll("#heat-sort button")) {
 function renderArtists() {
   const a = view.artists;
   for (const x of a.top) labels["creator:" + x.id] = x.name;
-  const extra = a.creator_links > a.n ? ` · ${fmt.format(a.creator_links)} artist credits (works with several artists count once per artist)` : "";
   card("#c-artists", a.eligible ? nline(a.n, a.eligible, " with a named artist") : "",
     a.top.length ? rankedBars(a.top.map((x) => ({ ...x, label: x.name, sel: x.id === state.creator })), { width: widthOf("#c-artists"), labelWidth: Math.min(190, widthOf("#c-artists") * 0.42),
-      onPick: (x) => navigate({ creator: state.creator === x.id ? null : x.id }) }) : empty("No named artists in this selection."),
-    { text: `${fmt.format(a.anonymous_only)} anonymous, ${fmt.format(a.no_creator)} with no creator recorded${extra}.` });
+      onPick: (x) => navigate({ creator: state.creator === x.id ? null : x.id }) }) : empty("No named artists in this selection."));
 }
 
 function renderTreemap() {
@@ -234,7 +218,7 @@ function renderTreemap() {
   if (view.tree.other) items.push({ id: null, label: `Other`, n: view.tree.other });
   const sum = items.reduce((s, d) => s + d.n, 0);
   $("#c-treemap").hidden = items.length < 2; // a single tile says nothing: hide the card, the next one moves up
-  card("#c-treemap", sum ? `annotation-based · ${fmt.format(sum)} theme memberships (artworks can sit in several)` : "",
+  card("#c-treemap", sum ? `${fmt.format(sum)} theme memberships` : "",
     items.length ? treemap(items, { width: widthOf("#c-treemap"), height: 300, onPick: (d) => d.id && navigate({ node: [d.id, ...state.node.slice(1)] }) })
       : empty("No sub-themes at this level."));
 }
@@ -243,7 +227,7 @@ function renderSubjects() {
   const s = view.subjects;
   for (const x of s) labels["code:" + x.code] = x.label;
   const sc = view.subject_countries;
-  const nText = view.n ? `unique artworks per Iconclass code · n = ${fmt.format(view.n)}` : "";
+  const nText = view.n ? `n = ${fmt.format(view.n)}` : "";
   if (!sc) {
     card("#c-subjects", nText, s.length ? rankedBars(s.map((x) => ({ ...x, label: `${x.label}`, sel: x.code === state.code })), {
       width: widthOf("#c-subjects"), labelWidth: Math.min(230, widthOf("#c-subjects") * 0.45), maxLabel: widthOf("#c-subjects") < 420 ? 22 : 36,
@@ -270,8 +254,7 @@ function renderSubjects() {
   });
   const legend = h("ul", { class: "mix-legend" }, sc.countries.map((c, i) => h("li", {}, h("i", { class: `s${i}` }), c.name)),
     h("li", {}, h("i", { class: "s-other" }), "Other countries"));
-  card("#c-subjects", nText, h("div", {}, h("ol", { class: "mix compact" }, rows), legend),
-    { text: `Bars show where each subject's artists were born${sc.include_nationality ? " (or their nationality)" : ""}, as shares of works with a located artist. Click a band to filter to that subject and country.` });
+  card("#c-subjects", nText, h("div", {}, h("ol", { class: "mix compact" }, rows), legend));
 }
 
 // Media buttons above the catalogue: the same object-type filter as the "Kinds of object" chart.
@@ -298,8 +281,7 @@ function renderTypes() {
   const sel = items.find((t) => t.sel);
   card("#c-types", view.n ? `n = ${fmt.format(view.n)}` : "",
     items.length ? donutChart(items, { onPick: (t) => navigate({ type: state.type === t.id ? null : t.id }),
-      centre: sel ? { value: fmt.format(sel.n), caption: sel.label } : { caption: "artworks" } }) : empty("—"),
-    { text: "Object types are normalised from each source's own (multilingual) terms." + (sel ? " Other kinds are shown for comparison." : "") });
+      centre: sel ? { value: fmt.format(sel.n), caption: sel.label } : { caption: "artworks" } }) : empty("—"));
 }
 
 function renderSources() {
@@ -312,7 +294,7 @@ function renderSources() {
   card("#c-sources", view.n ? `n = ${fmt.format(view.n)}` : "",
     shown.length ? donutChart(shown, { onPick: (s) => navigate({ source: state.source === s.id ? null : s.id }),
       centre: sel ? { value: fmt.format(sel.n), caption: sel.label } : { caption: shown.length === 1 ? "one collection" : `${view.sources.length} collections` } }) : empty("—"),
-    dominated ? { text: `${pct(top.n, view.n)}% of this selection comes from one source, so patterns may reflect that collection's focus.`, warn: true } : null);
+    dominated ? { text: `${pct(top.n, view.n)}% from ${top.name || top.label}.`, warn: true } : null);
 }
 
 function renderMap() {
@@ -338,7 +320,7 @@ function renderMap() {
     h("div", { class: "ticks" }, scale.ticks.map((v, i) => h("span", {
       class: i === 0 ? "first" : i === scale.ticks.length - 1 ? "last" : null,
       style: `left:${(100 * (0.06 + 0.94 * scale.t(v))).toFixed(1)}%` }, short(v)))),
-    h("p", {}, "The darkest shades separate the leading countries; small counts share the pale end."));
+  );
   const inView = g.countries.filter((c) => c.in_view);
   const beyond = g.countries.filter((c) => !c.in_view);
   const list = (rows) => h("ol", {}, rows.map((c) => h("li", {}, h("button", { "aria-pressed": String(c.code === state.country), onclick: () => pick(c.code) },
@@ -354,14 +336,9 @@ function renderMap() {
             h("span", {}, p.name), h("span", { class: "num" }, fmt.format(p.n))))))]
       : [h("h4", {}, "Countries"), list(inView.slice(0, 12))],
     beyond.length ? [h("h4", {}, "Beyond the map"), list(beyond.slice(0, 8))] : null);
-  const notes = [`${fmt.format(g.named_not_located)} by named artists not yet located`, `${fmt.format(g.anonymous_only)} anonymous`,
-    `${fmt.format(g.no_creator)} with no creator recorded`];
-  if (g.multi_country) notes.push(`${fmt.format(g.multi_country)} have artists from several countries and count once in each`);
-  if (g.excluded_reproductions) notes.push(`${fmt.format(g.excluded_reproductions)} documentary photographs excluded`);
   const low = g.n / g.eligible < 0.25;
-  card("#c-map", nline(g.n, g.eligible, ` ${measure}`), h("div", { class: "map-wrap" }, svg, side), {
-    text: (low ? "Low coverage: read these proportions with care. " : "") + notes.join(" · ") +
-      ". Present-day borders; birthplaces from Wikidata and the Getty ULAN.", warn: low });
+  card("#c-map", nline(g.n, g.eligible, ` ${measure}`), h("div", { class: "map-wrap" }, svg, side),
+    low ? { text: "Low coverage: few artists located.", warn: true } : null);
 }
 
 // ---------- results & drawer ----------
@@ -534,15 +511,6 @@ $("#reset-btn").addEventListener("click", () => navigate(blank({ node: view.path
 $("#repro-toggle").addEventListener("change", (e) => navigate({ repro: e.target.checked }, { replace: true }));
 $("#nat-toggle").addEventListener("change", (e) => navigate({ nat: e.target.checked }, { replace: true }));
 const DATASET_LABEL = { icarus: "ICARUS", wikidata: "Wikidata", met: "The Met", aic: "Chicago", zeri: "Zeri", joconde: "Joconde" };
-function renderDatasetSwitch() {
-  const el = $("#ds-switch");
-  const sets = Object.entries(meta.datasets || {}).sort((a, b) => b[1] - a[1]);
-  el.hidden = sets.length < 2;
-  const btn = (id, label, n) => h("button", { type: "button", "aria-pressed": String((state.ds || null) === id),
-    title: id ? `Only ${label} (${fmt.format(n)} artworks)` : `All collections (${fmt.format(n)} artworks)`, onclick: () => navigate({ ds: id }) }, label);
-  el.replaceChildren(btn(null, "All", sets.reduce((s, x) => s + x[1], 0)),
-    ...sets.map(([id, n]) => btn(id, DATASET_LABEL[id] || id, n)));
-}
 for (const b of document.querySelectorAll("#c-map .seg button")) {
   b.addEventListener("click", () => {
     mapMode = b.dataset.mode;
@@ -566,9 +534,9 @@ function renderInfo() {
       h("li", {}, "Artist geography uses present-day borders. Each artist's birthplace comes from Wikidata (via the Getty ULAN identifier) or the ULAN itself, and is placed in today's country, so Rubens, born in Siegen, counts under Germany. Nationality is used only if you switch it on, and is shown as a lighter ring. Names were matched to ULAN by name and life dates. Doubtful matches are left unlocated rather than guessed."),
       h("li", {}, "The map covers Europe and the Mediterranean, where over 99% of located artists were born. The rest are listed as “Beyond the map”."),
       h("li", {}, "PAUart records are photographs of artworks. Their dates and creators describe the photograph, so they are left out of the date and artist charts unless you include them."),
-      h("li", {}, "The catalogue lists the most renowned works first, and “Notable” narrows every chart to the better-known part of the collection. A work ranks first by its own renown (how widely Wikipedia covers it, or a museum highlight); a work without its own renown is ranked by its artist's, discounted for prints (0.35) and drawings (0.5) and for uncertain credits: “attributed to” 0.7, “workshop”, “school” or “circle of” 0.35, “after” or “manner of” 0.15. Only visual artists count, so a patron like Napoleon adds nothing. Attributions come from each source, and for RKD records from the RKD Knowledge Graph. Fame changes which works are shown and their order, never how a work is counted."),
+      h("li", {}, "The catalogue lists the most renowned works first. A work ranks first by its own renown (how widely Wikipedia covers it, or a museum highlight); a work without its own renown is ranked by its artist's, discounted for prints (0.35) and drawings (0.5) and for uncertain credits: “attributed to” 0.7, “workshop”, “school” or “circle of” 0.35, “after” or “manner of” 0.15. Only visual artists count, so a patron like Napoleon adds nothing. Attributions come from each source, and for RKD records from the RKD Knowledge Graph. Fame changes which works are shown and their order, never how a work is counted."),
       h("li", {}, "Some collections still use unencrypted http:// links. Artworks with those links are listed after the others, and their detail panel shows a warning."),
-      h("li", {}, "A second source adds paintings from Wikidata (CC0), from museums worldwide, to balance ICARUS's strength in Northern European prints. A painting's subjects come from what Wikidata says it depicts, mapped to Iconclass through subject entries that carry Iconclass codes. Use the Collections switch to view either source alone."),
+      h("li", {}, "A second source adds paintings from Wikidata (CC0), from museums worldwide, to balance ICARUS's strength in Northern European prints. A painting's subjects come from what Wikidata says it depicts, mapped to Iconclass through subject entries that carry Iconclass codes."),
       h("li", {}, "Further sources: the Art Institute of Chicago (CC0), whose subject terms are mapped to themes through their names and Wikidata's Iconclass links; and the Fondazione Federico Zeri photo-archive catalogue of mostly Italian Renaissance art, whose subjects come linked to Iconclass by the Fondazione. Zeri data © Fondazione Federico Zeri, Università di Bologna, CC BY-NC 4.0, non-commercial use."),
       h("li", {}, "Joconde, the national catalogue of the Musées de France, adds paintings, drawings, prints and sculpture from French museums, which hold much Italian, Flemish and Spanish art as well as French. Its French subject terms (“scène biblique (Annonciation)”) are mapped to themes by a reviewed term list. Data: Ministère de la Culture, base Joconde (POP), Licence Ouverte 2.0."),
       h("li", {}, "These are distributions within the collections shown, not definitive histories of art.")),

@@ -71,7 +71,8 @@ LOGIN_LIMITER = RateLimiter(10)  # sign-in attempts per visitor per minute
 # Session cookie: "<expiry>.<hmac>", keyed by the password, so changing SITE_PASSWORD signs everyone out.
 SESSION_COOKIE, SESSION_DAYS = "dt_session", 30
 SESSION_KEY = hashlib.sha256(b"daedalus-thread-session:" + SITE_PASSWORD.encode("utf-8")).digest()
-PUBLIC_PATHS = {"/healthz", "/assets/logo-96.png", "/assets/logo-192.png", "/assets/favicon-32.png", "/assets/apple-touch-icon.png"}
+PUBLIC_PATHS = {"/healthz", "/assets/logo-96.png", "/assets/logo-192.png", "/assets/favicon-32.png", "/assets/apple-touch-icon.png",
+                "/assets/wordmark.png"}
 
 
 def session_token(expiry):
@@ -95,7 +96,8 @@ body { margin: 0; min-height: 100vh; display: grid; place-items: center; backgro
 main { width: min(380px, 100%); background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 32px 28px 28px; text-align: center; }
 img { width: 72px; height: 72px; border-radius: 50%; background: #f5f3ee; }
 h1 { font: 600 26px "Iowan Old Style", Palatino, Georgia, serif; color: var(--navy); margin: 12px 0 4px; }
-h1 em { font-weight: 500; }
+h1 .wm { display: block; width: 100%; height: auto; max-width: 300px; margin: 6px auto 0; background: none; border-radius: 0; }
+@media (prefers-color-scheme: dark) { h1 .wm { filter: brightness(0) invert(.9); } }
 .thread { width: 48px; height: 2px; background: var(--gold); margin: 12px auto 18px; border: 0; }
 p { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
 input { width: 100%; padding: 11px 16px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--ink); font: inherit; }
@@ -104,7 +106,7 @@ button { margin-top: 12px; width: 100%; padding: 11px 16px; border: 0; border-ra
 .err { color: var(--danger); font-weight: 600; margin: 12px 0 0; }
 </style></head><body><main>
 <img src="/assets/logo-192.png" alt="">
-<h1>Daedalus <em>Thread</em></h1><hr class="thread">
+<h1><img class="wm" src="/assets/wordmark.png" alt="Daedalus Thread"></h1><hr class="thread">
 <p>This preview is private. Enter the password to continue.</p>
 <form method="post" action="/login"><input type="hidden" name="next" value="{next}">
 <label for="pw" style="position:absolute;left:-9999px">Password</label>
