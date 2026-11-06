@@ -256,8 +256,10 @@ export function countryScale(values) {
     const k = Math.min(4, Math.floor(p));
     return `color-mix(in oklab, var(--ramp-${k + 2}) ${Math.round((p - k) * 100)}%, var(--ramp-${k + 1}))`;
   };
-  const ticks = [];
-  for (let v = 1; v < max; v *= 10) if (t(v) < 0.86) ticks.push(v);
+  const ticks = [];  // powers of ten, skipping any that would crowd the previous tick or the maximum
+  for (let v = 1; v < max; v *= 10) {
+    if (t(v) < 0.82 && (!ticks.length || t(v) - t(ticks[ticks.length - 1]) >= 0.11)) ticks.push(v);
+  }
   ticks.push(max);
   return { color, t, ticks, max };
 }

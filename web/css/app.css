@@ -332,6 +332,31 @@ svg.map .centre-labels text.pl { font: italic 13px var(--serif); fill: var(--nav
 .result-list li.empty { grid-column: 1 / -1; border: 0; padding: 24px 0; font: italic 16px var(--serif); color: var(--muted); }
 #more-btn { margin: 18px auto 0; display: block; font: italic 15px var(--serif); padding: 8px 22px; }
 
+/* ---------- works dock: floating thumbnails of the best-known works, hinting at the catalogue below ---------- */
+.works-dock { position: fixed; left: 50%; bottom: 18px; z-index: 30; display: flex; align-items: center; gap: 12px;
+  max-width: min(780px, calc(100vw - 32px)); padding: 7px 8px 7px 18px; background: var(--surface); border: 1px solid var(--line);
+  border-radius: 999px; box-shadow: 0 10px 30px rgb(2 46 58 / .18), 0 2px 6px rgb(2 46 58 / .08);
+  transform: translateX(-50%); transition: transform .35s cubic-bezier(.2, .8, .2, 1), opacity .25s; }
+.works-dock.away { transform: translate(-50%, calc(100% + 30px)); opacity: 0; pointer-events: none; }
+.works-dock[hidden] { display: none; }
+.dock-label { display: grid; border: 0; background: none; padding: 0; cursor: pointer; text-align: left; flex: none; }
+.dock-k { font: 600 10px var(--sans); letter-spacing: .16em; text-transform: uppercase; color: var(--gold-ink); }
+.dock-n { font: 500 18px/1.1 var(--serif); color: var(--navy); font-variant-numeric: lining-nums; }
+.dock-thumbs { display: flex; gap: 6px; min-width: 0; overflow: hidden; }
+.dock-thumbs .thumb { flex: none; width: 46px; height: 46px; padding: 0; border: 0; border-radius: 8px; overflow: hidden; cursor: pointer;
+  background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); transition: transform .15s; }
+.dock-thumbs .thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.dock-thumbs .thumb:hover, .dock-thumbs .thumb:focus-visible { transform: translateY(-3px); box-shadow: 0 0 0 2px var(--gold); }
+.dock-go { flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--navy); color: var(--surface);
+  font-size: 18px; cursor: pointer; }
+.dock-go:hover { background: var(--bar-hi); }
+.works-dock.bare { padding-left: 18px; }
+@media (max-width: 960px) {
+  .works-dock { bottom: 12px; gap: 8px; padding-left: 14px; }
+  .dock-thumbs .thumb { width: 40px; height: 40px; }
+  .dock-thumbs .thumb:nth-child(n + 5) { display: none; }
+}
+
 /* ---------- drawer: the catalogue entry ---------- */
 .drawer { position: fixed; top: 0; right: 0; bottom: 0; width: min(540px, 100vw); background: var(--surface); border-left: 1px solid var(--line); box-shadow: -16px 0 40px rgb(2 46 58 / .18); z-index: 40; overflow: auto; padding: 34px 32px 44px; }
 .drawer .close, dialog .close { position: absolute; right: 14px; top: 12px; font-size: 20px; padding: 2px 11px; }
@@ -367,7 +392,7 @@ dialog table { border-collapse: collapse; width: 100%; font-size: 13.5px; margin
 dialog td, dialog th { border-bottom: 1px solid var(--line); padding: 5px 6px; text-align: left; }
 dialog td.num, dialog th.num { text-align: right; font-variant-numeric: tabular-nums; }
 
-.foot { padding: 0 24px 28px; color: var(--muted); font-size: 12.5px; }
+.foot { padding: 0 24px 96px; color: var(--muted); font-size: 12.5px; }
 .loading .content, .loading .themes { opacity: .55; transition: opacity .15s; }
 
 @media (max-width: 1320px) {
@@ -395,7 +420,7 @@ dialog td.num, dialog th.num { text-align: right; font-variant-numeric: tabular-
   .results > header h3 { font-size: 26px; }
   .drawer { padding: 30px 20px 40px; }
   .drawer dl { grid-template-columns: 96px 1fr; }
-  .foot { padding: 0 16px 24px; }
+  .foot { padding: 0 16px 84px; }
 }
 
 /* ---------- colour palettes (data colours only; navy and gold chrome stay) ----------

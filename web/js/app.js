@@ -84,8 +84,9 @@ function render() {
   renderThemes();
   renderTimeline();
   renderArtists();
-  renderTreemap();
   renderSubjects();
+  renderTreemap();  // after subjects: it fills the height of that row
+  renderDock();
   renderTypes();
   renderMediaFilter();
   renderSources();
@@ -218,8 +219,11 @@ function renderTreemap() {
   if (view.tree.other) items.push({ id: null, label: `Other`, n: view.tree.other });
   const sum = items.reduce((s, d) => s + d.n, 0);
   $("#c-treemap").hidden = items.length < 2; // a single tile says nothing: hide the card, the next one moves up
+  // fill the row: the subjects card beside it sets the height (never shorter than 300)
+  $("#c-treemap .body").replaceChildren();
+  const rowH = $("#c-treemap").hidden ? 300 : Math.max(300, Math.floor($("#c-treemap .body").clientHeight));
   card("#c-treemap", sum ? `${fmt.format(sum)} theme memberships` : "",
-    items.length ? treemap(items, { width: widthOf("#c-treemap"), height: 300, onPick: (d) => d.id && navigate({ node: [d.id, ...state.node.slice(1)] }) })
+    items.length ? treemap(items, { width: widthOf("#c-treemap"), height: rowH, onPick: (d) => d.id && navigate({ node: [d.id, ...state.node.slice(1)] }) })
       : empty("No sub-themes at this level."));
 }
 
@@ -428,9 +432,31 @@ async function openArtwork(id) {
     h("ul", {}, a.subjects.map((s) => h("li", {}, h("button", { class: "linkish", title: s.label || s.code,
       onclick: () => { labels["code:" + s.code] = s.label_short; closeDrawer(); navigate({ code: s.code }); } }, s.label_short || s.code), " ", h("code", {}, s.code))))].flat(Infinity).filter(Boolean));
   d.hidden = false;
+  dockVisibility();
   d.querySelector("#drawer-close").focus();
 }
-function closeDrawer() { $("#drawer").hidden = true; }
+function closeDrawer() { $("#drawer").hidden = true; dockVisibility(); }
+
+// ---------- the works dock: a floating strip of the selection's best-known works, one per artist ----------
+let catalogueInView = false;
+function renderDock() {
+  const dock = $("#works-dock");
+  $("#dock-n").textContent = fmt.format(view.n);
+  $("#dock-thumbs").replaceChildren(...(view.thumbs || []).map((t) => h("button", { class: "thumb", title: t.title || "Untitled",
+    "aria-label": `Open ${t.title || "artwork"}`, onclick: () => openArtwork(t.id) },
+    h("img", { src: t.image, alt: "", loading: "lazy", decoding: "async", onerror: (e) => e.target.parentElement.remove() }))));
+  dock.classList.toggle("bare", !(view.thumbs || []).length);
+  dock.hidden = false;
+  dockVisibility();
+}
+function dockVisibility() {
+  $("#works-dock").classList.toggle("away", catalogueInView || !$("#drawer").hidden || !view || !view.n);
+}
+const toCatalogue = () => $(".results").scrollIntoView({ behavior: "smooth", block: "start" });
+$("#dock-label").addEventListener("click", toCatalogue);
+$("#dock-go").addEventListener("click", toCatalogue);
+new IntersectionObserver((entries) => { catalogueInView = entries[0].isIntersecting; dockVisibility(); },
+  { rootMargin: "0px 0px -35% 0px" }).observe($(".results"));
 $("#drawer-close").addEventListener("click", closeDrawer);
 document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("#drawer").hidden) closeDrawer(); });
 

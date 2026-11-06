@@ -224,7 +224,18 @@ class Queries:
         out["geo"] = self.geo(f, where, args, n)
         out["coverage"]["artist_country"] = out["geo"]["n"]
         out["subject_countries"] = self.subject_countries(f, where, args, out)
+        out["thumbs"] = self.thumbs(where, args)
         return out
+
+    def thumbs(self, where, args, limit=10):
+        """Small images of the selection's most renowned works, one per artist (for the works dock)."""
+        rows = self.db.execute(
+            f"WITH r AS (SELECT a.id, a.title, a.image_url, a.fame_score, ROW_NUMBER() OVER (PARTITION BY "
+            f"COALESCE(a.primary_creator, -a.rid) ORDER BY a.fame_score DESC, a.rid) rn FROM artwork a "
+            f"WHERE {where} AND a.image_url IS NOT NULL) "
+            f"SELECT id, title, image_url FROM r WHERE rn = 1 ORDER BY fame_score DESC, id LIMIT ?", args + [limit]).fetchall()
+        small = lambda u: re.sub(r"\?width=\d+$", "?width=160", u).replace("/full/640,/", "/full/!200,200/")  # noqa: E731
+        return [{"id": r[0], "title": r[1], "image": small(r[2])} for r in rows]
 
     def subject_countries(self, f, where, args, out, n_subjects=10, n_countries=5):
         """For the most frequent Iconclass subjects: where their artists were born. The selection's top countries
