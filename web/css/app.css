@@ -328,10 +328,13 @@ svg.map .centre-labels text.pl { font: italic 13px var(--serif); fill: var(--nav
 .drawer h2 { font: italic 500 30px/1.15 var(--serif); margin-right: 40px; }
 .drawer .thread { width: 56px; height: 2px; background: var(--gold); margin: 16px 0 14px; border: 0; }
 .drawer .byline { font: 17px/1.35 var(--serif); font-variant-caps: all-small-caps; letter-spacing: .07em; margin: 0; }
+.drawer .byline .attr { font-variant-caps: normal; font-style: italic; letter-spacing: 0; color: var(--muted); }
 .drawer .byline .life { font-variant-caps: normal; font-variant-numeric: oldstyle-nums; color: var(--muted); letter-spacing: 0; }
 .drawer .dateline { font: 17px var(--serif); font-variant-numeric: oldstyle-nums; color: var(--muted); margin: 2px 0 0; }
 .drawer .cta { display: inline-block; margin: 20px 0 8px; padding: 10px 18px; border-radius: 999px; background: var(--navy); color: var(--surface); text-decoration: none; font-weight: 600; font-size: 14px; }
 .drawer .cta:hover { background: var(--bar-hi); }
+.drawer .cta-secondary { display: inline-block; margin-left: 14px; font-size: 13.5px; color: var(--accent); }
+.drawer .thumb a { display: inline-block; cursor: zoom-in; }
 .drawer .cta.insecure { outline: 2px solid var(--danger); outline-offset: 3px; }
 .drawer .link-warning { display: flex; gap: 8px; align-items: baseline; color: var(--danger); font-size: 13.5px; font-weight: 600; margin: 6px 0 4px; }
 .drawer .link-warning small { display: block; font-weight: 400; color: var(--muted); margin-top: 2px; }

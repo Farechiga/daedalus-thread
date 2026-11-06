@@ -405,7 +405,7 @@ class Queries:
         order = "a.link_https DESC, " + order  # works whose source link is plain http go to the back of every sort
         rows = self.db.execute(
             f"SELECT a.rid, a.id, a.title, a.date_text, a.date_start, a.date_end, a.century, a.object_type, a.source_id, "
-            f"a.source_url, a.date_semantics, a.link_https, a.dataset, a.holding, a.fame_pct, (SELECT group_concat(c.display_name, '; ') FROM artwork_creator ac "
+            f"a.source_url, a.date_semantics, a.link_https, a.dataset, a.holding, a.fame_pct, (SELECT group_concat(coalesce(ac.attribution || ' ', '') || c.display_name, '; ') FROM artwork_creator ac "
             f"JOIN creator c ON c.id = ac.creator_id WHERE ac.artwork_rid = a.rid AND c.kind != 'anonymous') "
             f"FROM artwork a WHERE {where} ORDER BY {order} LIMIT ? OFFSET ?", args + [limit, offset]).fetchall()
         return {"offset": offset, "limit": limit, "items": [{
@@ -441,13 +441,13 @@ class Queries:
         rid = rec.pop("rid")
         rec["titles"] = [t for (t,) in self.db.execute(
             "SELECT title FROM artwork_title WHERE artwork_rid = ? ORDER BY position", (rid,))]
-        rec["creators"] = [{"raw": r[0], "qualifier": r[1], "id": r[2], "name": r[3], "kind": r[4], "life": r[5],
+        rec["creators"] = [{"raw": r[0], "qualifier": r[1], "attribution": r[16], "id": r[2], "name": r[3], "kind": r[4], "life": r[5],
                             "geo": {"country": r[6], "country_name": self.countries.get(r[6], {}).get("name"), "proxy": r[7],
                                     "evidence": r[8], "confidence": r[9], "place": r[10], "ulan": r[11], "wikidata": r[12],
                                     "born": r[13], "died": r[14], "match": r[15]} if r[15] else None}
                            for r in self.db.execute(
             "SELECT ac.raw_name, ac.qualifier, c.id, c.display_name, c.kind, c.life_dates, g.country_code, g.proxy, g.evidence, "
-            "g.geo_confidence, b.name, g.ulan_id, g.wikidata_qid, g.birth_year, g.death_year, g.match_status "
+            "g.geo_confidence, b.name, g.ulan_id, g.wikidata_qid, g.birth_year, g.death_year, g.match_status, ac.attribution "
             "FROM artwork_creator ac LEFT JOIN creator c ON c.id = ac.creator_id LEFT JOIN creator_geo g ON g.creator_id = c.id "
             "LEFT JOIN birthplace b ON b.id = g.birthplace_id WHERE ac.artwork_rid = ? ORDER BY ac.position", (rid,))]
         rec["subjects"] = [{"code": r[0], "label": r[1], "label_short": short_label(r[1])} for r in self.db.execute(

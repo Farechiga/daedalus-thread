@@ -26,6 +26,7 @@ import unicodedata
 
 ROOT = os.path.join(os.path.dirname(__file__), "..")
 sys.path.insert(0, ROOT)
+from etl.attribution import classify_attribution  # noqa: E402
 from etl.geo import Countries  # noqa: E402
 from etl.iconclass import Iconclass  # noqa: E402
 from etl.normalize import classify  # noqa: E402
@@ -206,10 +207,12 @@ def creators_of(row):
         if not raw or ALIAS.search(raw):
             continue
         raw = re.sub(r"\([^)]*$", "", raw).strip()  # 'Millet Jean-François (1814-1875' (unclosed)
-        raw = re.sub(r"\s*\([^)]*\)", "", raw).strip()  # roles and attributions: (graveur), (d'après), (atelier de)
+        # attributions ("d'après", 'attribué à', 'atelier de') are kept as the credit's qualifier; roles (graveur) dropped
+        qual = next((q for q in re.findall(r"\(([^)]*)\)", raw) if classify_attribution(q)[0]), None)
+        raw = re.sub(r"\s*\([^)]*\)", "", raw).strip()
         c = classify(raw)
         if c["kind"] in ("person", "master") and c["name_key"]:
-            out.append((c["name_key"], display_name(raw)))
+            out.append((c["name_key"], display_name(raw), qual))
     return out
 
 
@@ -295,7 +298,7 @@ def main():
             cre = creators_of(row)
             life = life_years(row, len(cre))
             sch = schools(row)
-            for key, name in cre[:4]:
+            for key, name, _ in cre[:4]:
                 info = cre_info[key]
                 info["names"][name] += 1
                 info["n"] += 1
@@ -312,7 +315,7 @@ def main():
                 "id": f"joconde-{ref}", "dataset": "joconde", "source_id": "joconde",
                 "source_url": f"https://pop.culture.gouv.fr/notice/joconde/{ref}", "qid": joc_to_qid.get(ref),
                 "title": sentence_case(row["Titre"]) or sentence_case(row["Denomination"].split(";")[0]),
-                "links": None, "highlight": False, "creators": [{"qid": None, "name": n, "key": k} for k, n in cre[:4]],
+                "links": None, "highlight": False, "creators": [{"qid": None, "name": n, "key": k, "qualifier": q} for k, n, q in cre[:4]],
                 "date": date, "date_text": row["Millesime_de_creation"] or row["Periode_de_creation"] or None,
                 "approx": approx, "holding": holding, "object_type": otype,
                 "instance_of": (row["Denomination"] or "").split(";")[0] or None, "image": None,

@@ -379,13 +379,22 @@ async function loadResults(append) {
 $("#more-btn").addEventListener("click", () => { resultsOffset += 40; loadResults(true); });
 $("#sort").addEventListener("change", () => { resultsOffset = 0; loadResults(false); });
 
+// A Wikimedia Commons image opens in Commons' full-screen viewer (File page + #/media/), not the Wikidata back office
+function commonsViewer(imageUrl) {
+  const m = /commons\.wikimedia\.org\/wiki\/Special:FilePath\/([^?#]+)/.exec(imageUrl || "");
+  if (!m) return null;
+  const f = encodeURIComponent(decodeURIComponent(m[1]).replace(/ /g, "_"));
+  return `https://commons.wikimedia.org/wiki/File:${f}#/media/File:${f}`;
+}
+
 async function openArtwork(id) {
   const a = await api("artwork", `id=${encodeURIComponent(id)}`);
   const d = $("#drawer");
   const named = a.creators.filter((c) => c.kind && c.kind !== "anonymous");
   const byline = named.length ? named.map((c, i) => [i ? " · " : "",
+    c.attribution ? h("span", { class: "attr" }, `${c.attribution} `) : null,
     h("button", { class: "linkish", style: "font:inherit", onclick: () => { labels["creator:" + c.id] = c.name; closeDrawer(); navigate({ creator: c.id }); } }, c.name),
-    c.qualifier ? h("span", { class: "life" }, ` (${c.qualifier})`) : null,
+    c.qualifier && !c.attribution ? h("span", { class: "life" }, ` (${c.qualifier})`) : null,
     c.life ? h("span", { class: "life" }, ` ${c.life}`) : null]) : ["Artist unknown"];
   const roles = a.creators.filter((c) => c.kind === "institution" || c.kind === "qualifier");
   const located = named.filter((c) => c.geo && c.geo.country);
@@ -397,15 +406,19 @@ async function openArtwork(id) {
     c.geo.wikidata ? h("a", { href: `https://www.wikidata.org/wiki/${c.geo.wikidata}`, target: "_blank", rel: "noopener noreferrer" }, "Wikidata") : null));
   const eyebrow = [a.object_type_label, a.century !== null && a.century !== undefined ? centuryLabel(a.century) : null, a.source.name].filter(Boolean).join(" · ");
   const wd = a.dataset === "wikidata";
+  const viewer = commonsViewer(a.image_url);
+  const img = a.image_url ? h("img", { src: a.image_url, alt: a.title || "Artwork image", loading: "lazy" }) : null;
   d.querySelector("#drawer-body").replaceChildren(...[
-    a.image_url ? h("figure", { class: "thumb" }, h("img", { src: a.image_url, alt: a.title || "Artwork image", loading: "lazy" }),
+    a.image_url ? h("figure", { class: "thumb" }, viewer ? h("a", { href: viewer, target: "_blank", rel: "noopener noreferrer", title: "Open the full image" }, img) : img,
       h("figcaption", {}, { met: "Image: The Metropolitan Museum of Art (Open Access)", aic: "Image: Art Institute of Chicago (CC0)" }[a.dataset] || "Image: Wikimedia Commons")) : null,
     h("p", { class: "eyebrow" }, eyebrow),
     h("h2", { id: "drawer-title" }, a.title || "Untitled"),
     h("hr", { class: "thread" }),
     h("p", { class: "byline" }, byline),
     h("p", { class: "dateline" }, a.date_text || "Undated", a.date_semantics === "reproduction" ? " (date of the photograph)" : ""),
-    a.source_url ? h("a", { class: a.link_https ? "cta" : "cta insecure", href: a.source_url, target: "_blank", rel: "noopener noreferrer",
+    wd && viewer ? h("a", { class: "cta", href: viewer, target: "_blank", rel: "noopener noreferrer" }, "View the image ↗") : null,
+    wd && viewer ? h("a", { class: "cta-secondary", href: a.source_url, target: "_blank", rel: "noopener noreferrer" }, "Wikidata record ↗") : null,
+    a.source_url && !(wd && viewer) ? h("a", { class: a.link_https ? "cta" : "cta insecure", href: a.source_url, target: "_blank", rel: "noopener noreferrer",
       "aria-describedby": a.link_https ? null : "link-warning" }, wd ? "View on Wikidata ↗" : a.dataset === "met" ? "View at The Met ↗" : a.dataset === "aic" ? "View at the Art Institute of Chicago ↗" :
       a.dataset === "zeri" ? "View the Zeri catalogue record ↗" : a.dataset === "joconde" ? "View the record on POP (Joconde) ↗" : `View image & record at ${a.source.name} ↗`) : null,
     a.source_url && !a.link_https ? h("p", { class: "link-warning", id: "link-warning", role: "note" }, h("span", { "aria-hidden": "true" }, "⚠"),
@@ -546,7 +559,7 @@ function renderInfo() {
       h("li", {}, "Artist geography uses present-day borders. Each artist's birthplace comes from Wikidata (via the Getty ULAN identifier) or the ULAN itself, and is placed in today's country, so Rubens, born in Siegen, counts under Germany. Nationality is used only if you switch it on, and is shown as a lighter ring. Names were matched to ULAN by name and life dates. Doubtful matches are left unlocated rather than guessed."),
       h("li", {}, "The map covers Europe and the Mediterranean, where over 99% of located artists were born. The rest are listed as “Beyond the map”."),
       h("li", {}, "PAUart records are photographs of artworks. Their dates and creators describe the photograph, so they are left out of the date and artist charts unless you include them."),
-      h("li", {}, "The catalogue lists the most renowned works first, and “Notable” narrows every chart to the better-known part of the collection. Each work is ranked by how widely Wikipedia covers it, or its artist (counted only for visual artists, so a patron like Napoleon adds nothing), plus museum highlights. Switch to “Everything” to see every record. Fame changes which works are shown and their order, never how a work is counted."),
+      h("li", {}, "The catalogue lists the most renowned works first, and “Notable” narrows every chart to the better-known part of the collection. A work ranks first by its own renown (how widely Wikipedia covers it, or a museum highlight); a work without its own renown is ranked by its artist's, discounted for prints (0.35) and drawings (0.5) and for uncertain credits: “attributed to” 0.7, “workshop”, “school” or “circle of” 0.35, “after” or “manner of” 0.15. Only visual artists count, so a patron like Napoleon adds nothing. Attributions come from each source, and for RKD records from the RKD Knowledge Graph. Fame changes which works are shown and their order, never how a work is counted."),
       h("li", {}, "Some collections still use unencrypted http:// links. Artworks with those links are listed after the others, and their detail panel shows a warning."),
       h("li", {}, "A second source adds paintings from Wikidata (CC0), from museums worldwide, to balance ICARUS's strength in Northern European prints. A painting's subjects come from what Wikidata says it depicts, mapped to Iconclass through subject entries that carry Iconclass codes. Use the Collections switch to view either source alone."),
       h("li", {}, "Further sources: the Art Institute of Chicago (CC0), whose subject terms are mapped to themes through their names and Wikidata's Iconclass links; and the Fondazione Federico Zeri photo-archive catalogue of mostly Italian Renaissance art, whose subjects come linked to Iconclass by the Fondazione. Zeri data © Fondazione Federico Zeri, Università di Bologna, CC BY-NC 4.0, non-commercial use."),

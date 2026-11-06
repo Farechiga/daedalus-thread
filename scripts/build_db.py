@@ -85,7 +85,8 @@ CREATE TABLE creator (
   life_dates TEXT, n_artworks INTEGER, variants TEXT  -- JSON list of raw spellings
 );
 CREATE TABLE artwork_creator (
-  artwork_rid INTEGER NOT NULL, position INTEGER, creator_id INTEGER, raw_name TEXT, qualifier TEXT
+  artwork_rid INTEGER NOT NULL, position INTEGER, creator_id INTEGER, raw_name TEXT, qualifier TEXT,
+  attribution TEXT                   -- normalised qualifier: 'after', 'school of', 'attributed to'... (etl/attribution.py)
 );
 CREATE TABLE iconclass (
   notation TEXT PRIMARY KEY, parent TEXT, depth INTEGER, in_tree INTEGER,
@@ -189,7 +190,7 @@ def main():
     def flush():
         db.executemany("INSERT INTO artwork VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)", rows["artwork"])
         db.executemany("INSERT INTO artwork_title(artwork_rid, position, title) VALUES (?,?,?)", rows["title"])
-        db.executemany("INSERT INTO artwork_creator VALUES (?,?,?,?,?)", rows["ac"])
+        db.executemany("INSERT INTO artwork_creator VALUES (?,?,?,?,?,NULL)", rows["ac"])
         db.executemany("INSERT INTO artwork_iconclass VALUES (?,?)", rows["ai"])
         db.executemany("INSERT INTO artwork_iconclass_original VALUES (?,?)", rows["aio"])
         db.executemany("INSERT INTO artwork_node VALUES (?,?,?)", rows["an"])
@@ -314,7 +315,7 @@ def main():
                         entry[4] += 1
                         seen_creators.add(entry[0])
                     n_named += 1
-                    rows["ac"].append((rid, pos, entry[0], name, None))
+                    rows["ac"].append((rid, pos, entry[0], name, c.get("qualifier")))
                 codes = w["iconclass"]
                 rolled = set()
                 for code in codes:
@@ -389,6 +390,8 @@ def main():
 
     load_geography(db, creators)
     log("geography (countries, birthplaces, creator attribution)")
+    merge_same_person(db, creators)
+    apply_attributions(db)
 
     compute_fame(db)
     log("fame scores")
@@ -415,14 +418,25 @@ def main():
     log(f"done -> {args.out} ({os.path.getsize(args.out) / 1e6:.0f} MB)")
 
 
+# A famous name lends a work less renown when the work is one of many impressions or a working sheet
+MEDIUM_WEIGHT = {"painting": 1.0, "wall-painting": 1.0, "sculpture": 1.0, "stained-glass": 0.8, "drawing": 0.5,
+                 "decorative-arts": 0.5, "other": 0.4, "print": 0.35, "book-illustration": 0.35, "poster-graphic": 0.3,
+                 "map": 0.3, "photograph": 0.2}
+
+
 def compute_fame(db):
-    """fame_score (0..1) = max(work fame, 0.7 x artist fame) + 0.12 for a museum highlight; halved for documentary photos.
+    """fame_score = 0.40 x (the work has evidence of its own) + 0.48 x work fame + 0.12 x museum highlight
+                    + 0.35 x artist fame x medium weight x attribution weight;  halved for documentary photos.
     work fame:   log Wikipedia editions of the artwork itself (Wikidata/Met items; ICARUS works known to Wikidata
-                 by RKDimages or Rijksmuseum inventory number), 60 editions = 1.0
+                 by RKDimages or Rijksmuseum inventory number), 60 editions = 1.0. Evidence = any edition or a highlight.
     artist fame: log Wikipedia editions of the best-known *visual artist* credited (patrons, authors, rulers don't count),
-                 150 editions = 1.0. Anonymous and unlinked artists score 0.
+                 150 editions = 1.0, times that credit's attribution weight (after 0.15, school/workshop 0.35,
+                 attributed 0.7; etl/attribution.py) and the medium weight (prints 0.35, drawings 0.5, paintings 1).
+                 Its share (at most 0.35) stays below the evidence step, so a work with renown of its own always
+                 ranks above one that is known only by its artist's name.
     notable = top half of all artworks by score (ties at the cut go in only if their score is above zero)."""
     import math
+    from etl.attribution import WEIGHT
     enr = os.path.join(ROOT, "data", "enrichment")
     artist = {}
     p = os.path.join(enr, "fame_creators.tsv")
@@ -444,18 +458,21 @@ def compute_fame(db):
     for rid, cid in db.execute("SELECT ac.artwork_rid, ac.creator_id FROM artwork_creator ac JOIN creator c ON c.id = ac.creator_id "
                                "WHERE c.kind IN ('person', 'master') ORDER BY ac.artwork_rid, ac.position"):
         primary.setdefault(rid, cid)
-    best_artist = collections.Counter()
-    for rid, qid in db.execute("SELECT ac.artwork_rid, g.wikidata_qid FROM artwork_creator ac JOIN creator_geo g "
-                               "ON g.creator_id = ac.creator_id WHERE g.wikidata_qid IS NOT NULL"):
-        n = artist.get(qid, 0)
-        if n > best_artist[rid]:
-            best_artist[rid] = n
+    best_artist = collections.defaultdict(float)
+    for rid, qid, attribution in db.execute(
+            "SELECT ac.artwork_rid, g.wikidata_qid, ac.attribution FROM artwork_creator ac JOIN creator_geo g "
+            "ON g.creator_id = ac.creator_id WHERE g.wikidata_qid IS NOT NULL"):
+        s_art = min(1.0, math.log1p(artist.get(qid, 0)) / math.log1p(150)) * WEIGHT.get(attribution, 1.0)
+        if s_art > best_artist[rid]:
+            best_artist[rid] = s_art
     scores = []
-    for rid, aid, fame, highlight, semantics in db.execute("SELECT rid, id, fame, highlight, date_semantics FROM artwork"):
+    for rid, aid, fame, highlight, semantics, otype in db.execute(
+            "SELECT rid, id, fame, highlight, date_semantics, object_type FROM artwork"):
         w = fame if fame is not None else works.get(aid, 0)
         s_work = min(1.0, math.log1p(w) / math.log1p(60))
-        s_art = min(1.0, math.log1p(best_artist[rid]) / math.log1p(150))
-        score = max(s_work, 0.7 * s_art) + (0.12 if highlight else 0.0)
+        evidence = w > 0 or bool(highlight)
+        score = (0.40 * evidence + 0.48 * s_work + (0.12 if highlight else 0.0)
+                 + 0.35 * best_artist[rid] * MEDIUM_WEIGHT.get(otype, 0.4))
         if semantics == "reproduction":
             score *= 0.5
         scores.append((round(score, 4), rid))
@@ -470,6 +487,82 @@ def compute_fame(db):
     db.executemany("UPDATE artwork SET fame_score = ?, fame_pct = ?, notable = ?, primary_creator = ? WHERE rid = ?", rows)
     notable = sum(r[2] for r in rows)
     log(f"fame: cut at score {cut:.3f}; {notable} notable of {n} ({100 * notable / max(n, 1):.0f}%)")
+
+
+def merge_same_person(db, creators):
+    """One artist, several spellings ('Raffael', 'Raphael', 'RAPHAEL Urbin'): creators that the enrichment matched
+    to the same Wikidata item (or, without one, the same ULAN id) become one creator. The ULAN preferred name is
+    Wikidata English label is used when known (data/enrichment/creator_labels.tsv), else the ULAN preferred name when it is one of the
+    group's own spellings, else the most frequent spelling."""
+    by_id = {e[0]: (key, e) for key, e in creators.items()}
+    path = os.path.join(ROOT, "data", "enrichment", "creator_labels.tsv")  # scripts/fetch_creator_labels.py
+    label = ({r["wikidata_qid"]: r["label"] for r in csv.DictReader(open(path, encoding="utf-8", newline=""), delimiter="\t")}
+             if os.path.exists(path) else {})
+    groups = collections.defaultdict(list)
+    for cid, qid, ulan, uname in db.execute(
+            "SELECT g.creator_id, g.wikidata_qid, g.ulan_id, g.ulan_name FROM creator_geo g JOIN creator c ON c.id = g.creator_id "
+            "WHERE c.kind IN ('person', 'master') AND (g.wikidata_qid IS NOT NULL OR g.ulan_id IS NOT NULL)"):
+        if cid in by_id:
+            groups[("q", qid) if qid else ("u", ulan)].append((cid, uname, qid))
+    merged = 0
+    for members in groups.values():
+        if len(members) < 2:
+            continue
+        ids = sorted((cid for cid, _, _ in members), key=lambda c: -by_id[c][1][4])
+        canon, others = ids[0], ids[1:]
+        ce = by_id[canon][1]
+        for o in others:
+            okey, oe = by_id[o]
+            ce[1].update(oe[1])
+            ce[5].update(oe[5])
+            ce[3] = ce[3] or oe[3]
+            del creators[okey]
+        marks = ",".join("?" * len(others))
+        db.execute(f"UPDATE artwork_creator SET creator_id = ? WHERE creator_id IN ({marks})", [canon] + others)
+        db.execute(f"DELETE FROM creator WHERE id IN ({marks})", others)
+        db.execute(f"DELETE FROM creator_geo WHERE creator_id IN ({marks})", others)
+        ce[4] = db.execute("SELECT count(DISTINCT artwork_rid) FROM artwork_creator WHERE creator_id = ?", [canon]).fetchone()[0]
+        uname = next((u for _, u, _ in members if u), None)
+        wd = label.get(members[0][2])
+        spellings = [v for v, _ in ce[1].most_common()]
+        display = wd if wd and not re.fullmatch(r"Q\d+", wd) else uname if uname in spellings else spellings[0]
+        ce[1] = collections.Counter({display: max(ce[1].values()) + 1, **{k: v for k, v in ce[1].items() if k != display}})
+        db.execute("UPDATE creator SET display_name = ?, n_artworks = ?, variants = ?, life_dates = ? WHERE id = ?",
+                   [display, ce[4], json.dumps([v for v, _ in ce[5].most_common(12)], ensure_ascii=False), ce[3], canon])
+        merged += len(others)
+    log(f"merged {merged} duplicate spellings into their artists")
+
+
+def apply_attributions(db):
+    """artwork_creator.attribution: the normalised qualifier of each credit. ICARUS and Joconde carry their own
+    qualifiers; ICARUS's RKDimages records lost theirs, so they come back from the RKD Knowledge Graph
+    (data/enrichment/rkd_attributions.tsv), matched to the credited artist by Wikidata id, or to the only credit."""
+    from etl.attribution import classify_attribution
+    p = os.path.join(ROOT, "data", "enrichment", "rkd_attributions.tsv")
+    rkd = collections.defaultdict(list)
+    if os.path.exists(p):
+        for r in csv.DictReader(open(p, encoding="utf-8"), delimiter="\t"):
+            rkd[r["image_id"]].append((r["wikidata_qid"] or None, r["qualifier"] or None))
+    updates, from_rkd = [], 0
+    rows = db.execute(
+        "SELECT ac.rowid, ac.artwork_rid, ac.qualifier, g.wikidata_qid, a.source_id, a.source_url, c.kind "
+        "FROM artwork_creator ac JOIN artwork a ON a.rid = ac.artwork_rid LEFT JOIN creator c ON c.id = ac.creator_id "
+        "LEFT JOIN creator_geo g ON g.creator_id = ac.creator_id ORDER BY ac.artwork_rid").fetchall()
+    named = collections.Counter(r[1] for r in rows if r[6] in ("person", "master"))
+    for rowid, rid, qualifier, qid, source, url, kind in rows:
+        label = classify_attribution(qualifier)[0]
+        if label is None and source == "rkd" and url and "/images/" in url and kind in ("person", "master"):
+            attrs = rkd.get(url.rsplit("/", 1)[1], [])
+            hit = next((q for aq, q in attrs if qid and aq == qid), None)
+            if hit is None and len(attrs) == 1 and named[rid] == 1:
+                hit = attrs[0][1]
+            if hit:
+                label = classify_attribution(hit)[0]
+                from_rkd += bool(label)
+        if label:
+            updates.append((label, rowid))
+    db.executemany("UPDATE artwork_creator SET attribution = ? WHERE rowid = ?", updates)
+    log(f"attributions: {len(updates)} qualified credits ({from_rkd} restored from RKD)")
 
 
 def load_wikidata_creators():

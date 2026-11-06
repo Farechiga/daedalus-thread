@@ -20,6 +20,8 @@ Derived and committed:
 | `sources/wikidata_paintings.jsonl.gz` | `scripts/fetch_wikidata_artworks.py` (about 1 h first run, cached in `raw/wikidata/`) | Wikidata SPARQL: paintings that depict or have as main subject one of about 1,400 subject items carrying an Iconclass notation (P1256) | CC0 |
 | `enrichment/wikidata_creators.tsv` | same script | Wikidata creators of those paintings: birthplace coordinates, life dates, ULAN id. Present-day country from Natural Earth | CC0 |
 | `sources/joconde_objects.jsonl.gz`, `enrichment/joconde_creators.tsv` | `scripts/import_joconde.py` (about 3 min; ULAN and Wikidata cached) | Joconde, Musées de France (`raw/joconde/joconde.csv`, 1.25 GB, https://ministere-culture.s3.sbg.io.cloud.ovh.net/POP/joconde.csv, data.gouv.fr dataset 5b448216a3a729752eb11d6f), subject terms mapped by `taxonomy/joconde_terms.json` | Licence Ouverte 2.0: attribute "Ministère de la Culture, base Joconde (POP)" |
+| `enrichment/rkd_attributions.tsv` | `scripts/fetch_rkd_attributions.py` (about 4 min, cached in `raw/rkd/`) | RKD Knowledge Graph SPARQL (api.rkd.triply.cc): attribution qualifiers of ICARUS's RKDimages records, RKD artist ids mapped to Wikidata by P650 | RKD open data (CC BY 4.0 or more permissive per RKD); Wikidata CC0 |
+| `enrichment/creator_labels.tsv` | `scripts/fetch_creator_labels.py` | Wikidata English labels for artists with several spellings | CC0 |
 | `../web/assets/basemap.json` | `scripts/build_basemap.py` | Natural Earth 1:50m | Public domain |
 
 Not downloaded on purpose:
