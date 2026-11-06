@@ -1223,7 +1223,7 @@ bevalet fils l	L Fils Bevalet	6	unmatched	no_name_match							FRA	France	nationa
 feuardent	FEUARDENT	6	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 boug d henri orschwiller	Boug d’Orschwiller Henri	6	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 emile frederic simon	Simon Frédéric-Émile	6	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-thomas	THOMAS	6	ambiguous	homonyms:14																	500077832 500355523 500105027 500326922 500025230 500028705 500451686 500416429	
+thomas	THOMAS	6	ambiguous	homonyms:14																	500355523 500077832 500105027 500326922 500025230 500028705 500451686 500436427	
 berdon maurice	Berdon Maurice	6	matched	unique_name	medium	500164833	Berdon, Maurice				FRA	France	nationality	ulan	medium				French			
 artisan l	L'Artisan	6	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 hyacinthe regnier	Hyacinthe Regnier	6	matched	unique_name	high	500330608	Regnier, Hyacinthe	1803	1870	Q110017707	FRA	France	nationality	ulan	medium				French			1
@@ -1476,7 +1476,7 @@ alfred brunet debaines louis	Brunet-Debaines Alfred-Louis	5	unmatched	candidates
 emile renard	Renard Émile	5	ambiguous	homonyms:2							FRA	France	nationality	joconde_school	low						500330592 500050504	
 louis mottez victor	Victor Louis Mottez	5	matched	unique_name	high	500020891	Mottez, Victor Louis	1809	1897	Q668411	FRA	France	birthplace	wikidata+ulan	high	Lille	50.631944444	3.0575	French			10
 benjamin duston	Benjamin Duston	5	matched	unique_name	medium	500541563	Duston, Benjamin				FRA	France	nationality	ulan	medium				French			
-petit	Petit	5	ambiguous	homonyms:8							FRA	France	nationality	joconde_school	low						500129501 500014567 500405759 500438406 500433285 500439419 500435951 500366043	
+petit	Petit	5	ambiguous	homonyms:8							FRA	France	nationality	joconde_school	low						500129501 500014567 500405759 500438406 500439419 500433285 500435951 500366043	
 blanche hoschede monet	Hoschedé-Monet Blanche	5	matched	unique_name+life_dates	high	500003469	Hoschedé-Monet, Blanche	1865	1947	Q2905991	FRA	France	birthplace	wikidata+ulan	high	10ᵗʰ arrondissement of Paris	48.875508333	2.357852777	French			13
 coene jacques	Coene Jacques	5	ambiguous	homonyms:2							NLD	Netherlands	nationality	joconde_school	low						500025686 500559183	
 bognard j	Bognard J	5	unmatched	no_name_match																		
@@ -1671,7 +1671,7 @@ dampt jean	Jean Dampt	4	matched	unique_name+life_dates	high	500109887	Dampt, Jea
 cordier henri	Henri Cordier	4	matched	unique_name+life_dates	high	500539803	Cordier, Henri-Louis	1853	1925		FRA	France	nationality	ulan	medium				French			
 charles eugene louis virion	Charles Louis Eugène Virion	4	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 cazin marie	Cazin Marie	4	matched	unique_name+life_dates	high	500101388	Cazin, Marie	1845	1924	Q3292434	FRA	France	birthplace	wikidata+ulan	high	Paimbœuf	47.2875	-2.031666666	French			11
-antoine idrac jean marie	Jean Antoine Marie Idrac	4	ambiguous	homonyms:2							FRA	France	nationality	joconde_school	low						500082100 500566438	
+antoine idrac jean marie	Jean Antoine Marie Idrac	4	ambiguous	homonyms:2							FRA	France	nationality	joconde_school	low						500566438 500082100	
 durenne	DURENNE	4	matched	generation_stripped+unique_name	high	500055988	Durenne, Eugène-Antoine	1860	1944	Q3059692	FRA	France	birthplace	wikidata	high	2nd arrondissement of Paris	48.86688	2.34047	French			3
 godet henri	Henri Godet	4	matched	unique_name+life_dates	high	500566288	Godet, Henri	1863	1937		FRA	France	nationality	ulan	medium				French			
 edouard eugene felicien navellier	Edouard Félicien Eugène Navellier	4	unmatched	candidates_rejected_by_dates							FRA	France	nationality	joconde_school	low						500107789	
@@ -1776,7 +1776,7 @@ burch der hippolyte van	Hippolyte van der Burch	4	unmatched	candidates_rejected_
 brouardel laure	Brouardel Laure	4	matched	unique_name	medium	500531323	Brouardel, Laure				FRA	France	nationality	ulan	medium				French			
 angelo crivelli maria	Angelo Maria Crivelli	4	unmatched	candidates_rejected_by_dates							ITA	Italy	nationality	joconde_school	low						500005090	
 e finot	E Finot	4	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-a atelier	A Atelier	4	ambiguous	homonyms:3							FRA	France	nationality	joconde_school	low						500247364 500270831 500254399	
+a atelier	A Atelier	4	ambiguous	homonyms:3							FRA	France	nationality	joconde_school	low						500270831 500247364 500254399	
 bedos cie	& Cie Bedos	4	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 mathey paul	Paul Mathey	4	matched	life_dates_disambiguated	high	500021507	Mathey, Paul	1844	1929	Q3371802	FRA	France	birthplace	wikidata+ulan	high	Paris	48.856666666	2.352222222	French			8
 de lucas valdes	Lucas de Valdes	4	unmatched	candidates_rejected_by_dates							ESP	Spain	nationality	joconde_school	low						500022263	
@@ -1933,7 +1933,7 @@ alphonse fils picard	Picard Alphonse Fils	4	unmatched	no_name_match
 du papeterie souche	Papeterie du Souche	4	unmatched	no_name_match																		
 burckardt charles	Burckardt Charles	4	unmatched	no_name_match																		
 leon printemps	Léon Printemps	4	unmatched	no_name_match																		
-georges	GEORGES	4	ambiguous	homonyms:2																	500085526 500078862	
+georges	GEORGES	4	ambiguous	homonyms:2																	500078862 500085526	
 breur seiz	Seiz-Breur	4	unmatched	no_name_match																		
 andre milan	André Milan	4	matched	fuzzy_name:0.80+dates	low	500664606	Da Miano, Andre	1897	1977		USA	United States of America	nationality	ulan	medium				American			
 arnoux guy	Guy Arnoux	4	matched	unique_name	high	500056682	Arnoux, Guy	1886	1951	Q3121521	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222	French			2
@@ -2370,7 +2370,7 @@ alexandre charles lesueur	Charles Alexandre Lesueur	3	matched	unique_name	high	5
 bernard marie pingeon	Pingeon Bernard Marie	3	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 cha shibiao	CHA SHIBIAO	3	unmatched	no_name_match							CHN	China	nationality	joconde_school	low							
 oliver william	William Oliver	3	ambiguous	homonyms:3							GBR	United Kingdom	nationality	joconde_school	low						500021444 500025941 500451998	
-walton	WALTON	3	ambiguous	homonyms:3							GBR	United Kingdom	nationality	joconde_school	low						500010151 500442368 500435124	
+walton	WALTON	3	ambiguous	homonyms:3							GBR	United Kingdom	nationality	joconde_school	low						500010151 500435124 500442368	
 and conalghi puckle	CONALGHI AND PUCKLE	3	unmatched	no_name_match							GBR	United Kingdom	nationality	joconde_school	low							
 piquenot	PIQUENOT	3	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 perrotin	PERROTIN	3	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -2385,7 +2385,7 @@ hans reichel	Reichel Hans	3	matched	unique_name+life_dates	high	500007293	Reiche
 kallos paul	Kallos Paul	3	ambiguous	homonyms:2																	500084988 500149124	
 tavernier	TAVERNIER	3	matched	unique_name	low	500048904	Tavernier, François	1659	1725	Q52222519	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222	French			1
 bertaux et patas	Bertaux et Patas	3	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-bryant	BRYANT	3	ambiguous	homonyms:4																	500212006 500315058 500026620 500438986	
+bryant	BRYANT	3	ambiguous	homonyms:4																	500212006 500315058 500438986 500026620	
 dequevauviller	DEQUEVAUVILLER	3	matched	unique_name	medium	500316703	Dequevauviller family				FRA	France	nationality	ulan	medium				French			
 devilliers	DEVILLIERS	3	matched	generation_stripped+unique_name	medium	500057848	Devilliers, I				FRA	France	nationality	joconde_school	low				undetermined	nationality 'undetermined' has no single present-day country		
 freres rouargue	Frères Rouargue	3	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -2478,7 +2478,7 @@ boug d hippolyte orschwiller	Boug d’Orschwiller Hippolyte	3	matched	unique_nam
 atthalin felix laurent louis marie	Laurent-Atthalin Louis Marie Félix	3	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 julius umbach	Julius Umbach	3	unmatched	no_name_match							DEU	Germany	nationality	joconde_school	low							
 ag	AG	3	unmatched	no_name_match							DEU	Germany	nationality	joconde_school	low							
-a jung	A Jung	3	ambiguous	homonyms:3							FRA	France	nationality	joconde_school	low						500447428 500415847 500221281	
+a jung	A Jung	3	ambiguous	homonyms:3							FRA	France	nationality	joconde_school	low						500447428 500221281 500415847	
 combet descombes pierre	Combet-Descombes Pierre	3	matched	unique_name	high	500102609	Combet-Descombes, Pierre	1885	1966	Q3384492	FRA	France	birthplace	wikidata+ulan	high	2nd arrondissement of Lyon	45.754111111	4.829077777	French			2
 beguine leonard michel	Michel Léonard Beguine	3	matched	unique_name+life_dates	high	500565497	Beguine, Michel Léonard	1855	1929		FRA	France	nationality	ulan	medium				French			
 maurou paul	Paul Maurou	3	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -3702,10 +3702,10 @@ bandinelli bartolommeo	Bartolommeo Bandinelli	2	unmatched	candidates_rejected_by
 giniez	GINIEZ	2	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 ricaud	RICAUD	2	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 chaise de la manufacture rue	manufacture de la rue de la chaise	2	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-girardet	GIRARDET	2	ambiguous	homonyms:8							FRA	France	nationality	joconde_school	low						500016551 500004534 500085257 500049377 500121889 500030121 500408154 500399609	
+girardet	GIRARDET	2	ambiguous	homonyms:8							FRA	France	nationality	joconde_school	low						500016551 500004534 500085257 500049377 500121889 500030121 500399609 500408154	
 rebel	REBEL	2	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 chevalier michel	Michel Chevalier	2	matched	unique_name	high	500106884	Chevalier, Michel	1806	1879	Q1930688	FRA	France	birthplace	wikidata	high	Limoges	45.834444444	1.261666666	French			21
-adam	ADAM	2	ambiguous	homonyms:8																	500043090 500442871 500014652 500453170 500417412 500643341 500402405 500114345	
+adam	ADAM	2	ambiguous	homonyms:8																	500043090 500442871 500453170 500014652 500417412 500402405 500643341 500114345	
 edouard richard	Edouard Richard	2	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 frere luc	Frère Luc	2	matched	unique_name	high	500029570	François, Claude	1614	1685	Q2977396	FRA	France	birthplace	wikidata+ulan	high	Amiens	49.891944444	2.297777777	French			6
 barrat rex	Rex-Barrat	2	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -4055,7 +4055,7 @@ karl reille	Karl Reille	2	unmatched	no_name_match
 bongart hans	Bongart Hans	2	unmatched	no_name_match							DEU	Germany	nationality	joconde_school	low							
 jean karl longuet	Longuet Karl-Jean	2	matched	unique_name+life_dates	high	500615899	Longuet, Karl-Jean	1904	1981		FRA	France	nationality	ulan	medium				French			
 charles ramelet	Charles Ramelet	2	matched	unique_name	high	500072872	Ramelet, Charles	1805	1851	Q18508055	FRA	France	birthplace	wikidata	high	Marseille-en-Beauvaisis	49.575555555	1.955555555	French			2
-h s v	V. H. S.	2	ambiguous	homonyms:3																	500093596 500297619 500295194	
+h s v	V. H. S.	2	ambiguous	homonyms:3																	500093596 500295194 500297619	
 ardit	ARDIT	2	unmatched	no_name_match																		
 gaugain	GAUGAIN	2	unmatched	no_name_match																		
 etienne perlet pierre	Perlet Pierre Étienne	2	matched	unique_name+life_dates	high	500086244	Perlet, Pierre Etienne	1804	1843	Q26944958	FRA	France	birthplace	wikidata+ulan	high	Lyon	45.7675	4.835	French			2
@@ -4336,7 +4336,7 @@ christian editeur mechel von	Christian von : Editeur Mechel	2	unmatched	no_name_
 editeur graveur israel silvestre	Israël : Graveur Editeur Silvestre	2	unmatched	no_name_match																		
 angelica apres d kauffmann	Angelica : D'après Kauffmann	2	unmatched	no_name_match																		
 dijon	Dijon	2	unmatched	no_name_match																		
-arts beaux des ecole	Ecole Des Beaux-Arts	2	ambiguous	homonyms:4																	500311851 500300001 500303111 500212030	
+arts beaux des ecole	Ecole Des Beaux-Arts	2	ambiguous	homonyms:4																	500303111 500300001 500311851 500212030	
 bonheur juliette peyrol	Peyrol-Bonheur Juliette	2	matched	unique_name+life_dates	high	500034633	Bonheur, Juliette	1830	1891	Q38120567	FRA	France	birthplace	wikidata+ulan	high	former 9th arrondissement of Paris	48.855068	2.356731	French			9
 henri hogard	Hogard Henri	2	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 editeur graveur jean lepautre	Jean : Graveur Editeur Lepautre	2	unmatched	no_name_match																		
@@ -4934,7 +4934,7 @@ georges lefrancois	Georges Lefrançois	1	unmatched	no_name_match							FRA	Franc
 chapelle de georges la	Georges de la Chapelle	1	matched	unique_name	high	500617536	La Chapelle, Georges de	1598	1688		FRA	France	nationality	ulan	medium				French			
 lafon marie meloe	Lafon Marie Méloé	1	matched	unique_name	high	500058214	Lafon, Marie Méloé	1795	1895	Q116971838	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222	French			1
 battista ghidoni giovanni	Giovanni Battista Ghidoni	1	unmatched	no_name_match							ITA	Italy	nationality	joconde_school	low							
-fowler william	William Fowler	1	ambiguous	homonyms:3																	500031275 500019120 500078819	
+fowler william	William Fowler	1	ambiguous	homonyms:3																	500019120 500031275 500078819	
 de heer margarethe	Heer Margarethe de	1	matched	unique_name	medium	500067541	Adrianides, Margarita				NLD	Netherlands	nationality	joconde_school	low				Netherlandish	nationality 'Netherlandish' has no single present-day country		
 guy hosteins	Guy Hosteins	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 carlotto dit	dit Carlotto	1	unmatched	no_name_match							DEU	Germany	nationality	joconde_school	low							
@@ -5281,8 +5281,8 @@ coquand paul	Paul Coquand	1	unmatched	no_name_match							FRA	France	nationality
 chautard joseph thomas	Joseph Thomas Chautard	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 avisse francois remi	François Rémi Avisse	1	matched	unique_name+life_dates	high	500183539	Avisse, François-Rémi-Joseph	1763	1843		FRA	France	birthplace	ulan	high	Douai			French			
 armand seguin	Armand Seguin	1	matched	unique_name+life_dates	high	500019502	Séguin, Armand	1869	1903	Q4792704	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222	French			10
-d g s	G D S G	1	ambiguous	homonyms:5							FRA	France	nationality	joconde_school	low						500048839 500047900 500245675 500295575 500187662	
-esiguo maestro	Esiguo Maestro	1	ambiguous	homonyms:2							ITA	Italy	nationality	joconde_school	low						500299803 500027952	
+d g s	G D S G	1	ambiguous	homonyms:5							FRA	France	nationality	joconde_school	low						500048839 500245675 500047900 500187662 500295575	
+esiguo maestro	Esiguo Maestro	1	ambiguous	homonyms:2							ITA	Italy	nationality	joconde_school	low						500027952 500299803	
 francken le vieux	le Vieux Francken	1	unmatched	no_name_match							BEL	Belgium	nationality	joconde_school	low							
 humblot robert	Robert Humblot	1	matched	unique_name+life_dates	high	500015484	Humblot, Robert	1907	1962	Q18418654	FRA	France	birthplace	wikidata	high	Fontenay-sous-Bois	48.851666666	2.477222222	French			1
 du perrine viger vigneau	Viger du Vigneau Perrine	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -6044,7 +6044,7 @@ conca maria tommaso	Tommaso Maria Conca	1	unmatched	candidates_rejected_by_dates
 croci domenico frilli	Domenico Frilli Croci	1	matched	unique_name	high	500091535	Croci, Domenico Frilli	1584	1684	Q138783960	ITA	Italy	birthplace	wikidata+ulan	high	Florence	43.771388888	11.254166666	Italian			1
 lorenzo sabbatini	Lorenzo Sabbatini	1	unmatched	candidates_rejected_by_dates							ITA	Italy	nationality	joconde_school	low						500001193	
 cornelie de emma vivefay wyatt	de VIVEFAY Emma Cornélie Wyatt	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-lenoir	LENOIR	1	ambiguous	homonyms:4																	500438219 500439456 500409249 500402446	
+lenoir	LENOIR	1	ambiguous	homonyms:4																	500439456 500438219 500409249 500402446	
 vancon	VANCON	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 antoine pintard	Antoine Pintard	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 pascher	PASCHER	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -6065,7 +6065,7 @@ boulogne jean theodore	Théodore Jean Boulogne	1	unmatched	no_name_match							F
 francois joseph sandmann	François Joseph Sandmann	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 cordua joannes	Joannes Cordua	1	unmatched	candidates_rejected_by_dates							BEL	Belgium	nationality	joconde_school	low						500022844	
 dandelot pierre	Pierre Dandelot	1	unmatched	no_name_match																		
-foster	FOSTER	1	ambiguous	homonyms:5																	500441607 500430226 500435086 500451576 500447103	
+foster	FOSTER	1	ambiguous	homonyms:5																	500441607 500451576 500430226 500435086 500447103	
 g j schwender	J G Schwender	1	unmatched	no_name_match																		
 chatenet du gaetan	Gaëtan du Chatenet	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 piel	PIEL	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -6401,7 +6401,7 @@ francois jean lejeune	Jean-François Lejeune	1	matched	unique_name	medium	500455
 henry somm	Henry Somm	1	matched	unique_name+life_dates	high	500001392	Somm, Henry	1844	1907	Q1450980	FRA	France	birthplace	wikidata+ulan	high	Rouen	49.443055555	1.1025	French			7
 auguste croix de la louis magne paul	Louis Auguste Paul Magne de la Croix	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 carriere norbert	Norbert Carriere	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-alexandre bodoy ernest	Bodoy Ernest Alexandre	1	ambiguous	homonyms:2																	500004226 500771794	
+alexandre bodoy ernest	Bodoy Ernest Alexandre	1	ambiguous	homonyms:2																	500771794 500004226	
 brunelli h	H Brunelli	1	unmatched	no_name_match																		
 baudrier robert	Robert Baudrier	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 andre baudrier	André Baudrier	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -6995,7 +6995,7 @@ emile jean sulpis	Emile Jean Sulpis	1	unmatched	no_name_match							FRA	France	n
 daumet honore	Honoré Daumet	1	matched	unique_name	high	500033755	Daumet, Honoré	1826	1911	Q3140221	FRA	France	birthplace	wikidata+ulan	high	Paris	48.856666666	2.352222222	French			10
 a aveline	A Aveline	1	unmatched	candidates_rejected_by_dates							FRA	France	nationality	joconde_school	low						500298018	
 demonchy mme	Demonchy Mme	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-charles hunt	Charles Hunt	1	ambiguous	homonyms:2							GBR	United Kingdom	nationality	joconde_school	low						500019659 500101216	
+charles hunt	Charles Hunt	1	ambiguous	homonyms:2							GBR	United Kingdom	nationality	joconde_school	low						500101216 500019659	
 b campion g	G B Campion	1	unmatched	no_name_match							GBR	United Kingdom	nationality	joconde_school	low							
 f herring j	J F Herring	1	ambiguous	homonyms:2							GBR	United Kingdom	nationality	joconde_school	low						500016966 500018168	
 auxray	AUXRAY	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -7170,7 +7170,7 @@ gellio	GELLIO	1	unmatched	no_name_match
 alexandre lion louis	Louis Alexandre Lion	1	matched	unique_name+life_dates	high	500099165	Lion, Alexandre Louis	1823	1852	Q38027696	BEL	Belgium	birthplace	wikidata	high	Antwerp	51.221111111	4.399722222	Belgian			2
 billotte joseph leon	Léon Joseph Billotte	1	unmatched	candidates_rejected_by_dates							FRA	France	nationality	joconde_school	low						500046196	
 fils mesureur monduit	& MONDUIT Fils Mesureur	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-andre jacques	Jacques Andre	1	ambiguous	homonyms:3																	500086192 500689751 500266282	
+andre jacques	Jacques Andre	1	ambiguous	homonyms:3																	500086192 500266282 500689751	
 claude dien jean louis	Louis Jean Claude Dien	1	matched	unique_name	medium	500135046	Dien, Louis-Jean-Claude				FRA	France	nationality	ulan	medium				French			
 cecile descamps louise sabouret	Descamps-Sabouret Louise Cécile	1	unmatched	candidates_rejected_by_dates							FRA	France	nationality	joconde_school	low						500069893	
 chapsal eloi jean	Jean-Eloi Chapsal	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -7178,8 +7178,8 @@ joanny	Joanny	1	ambiguous	homonyms:2							FRA	France	nationality	joconde_school
 adolphe brunet henri	Brunet Henri Adolphe	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 ernest louis pichio	Pichio Ernest Louis	1	matched	unique_name+life_dates	high	500022517	Pichio, Ernest Louis	1840	1893	Q16739687	FRA	France	birthplace	wikidata	high	former 1st arrondissement of Paris	48.870128	2.320808	French			4
 boullonier	BOULLONIER	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-pelletier	PELLETIER	1	ambiguous	homonyms:3							FRA	France	nationality	joconde_school	low						500188754 500299126 500451179	
-a morillon	A Morillon	1	ambiguous	homonyms:2							FRA	France	nationality	joconde_school	low						500468222 500405427	
+pelletier	PELLETIER	1	ambiguous	homonyms:3							FRA	France	nationality	joconde_school	low						500188754 500451179 500299126	
+a morillon	A Morillon	1	ambiguous	homonyms:2							FRA	France	nationality	joconde_school	low						500405427 500468222	
 der ignace stock van	Ignace van der Stock	1	unmatched	no_name_match																		
 de fleur guillaume la nicolas	Nicolas Guillaume de la Fleur	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 iv jean leclerc veuve	Jean IV Veuve Leclerc	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -7539,7 +7539,7 @@ lapi niccolo	Niccolò Lapi	1	matched	unique_name+life_dates	high	500017166	Lapi,
 b edouard fulde	Edouard B Fulde	1	unmatched	no_name_match							USA	United States of America	nationality	joconde_school	low							
 apoline	APOLINE	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 beauvarlet catherine marie	Beauvarlet Marie-Catherine	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-peters	PETERS	1	ambiguous	homonyms:8							FRA	France	nationality	joconde_school	low						500018298 500015663 500412104 500019814 500409964 500446466 500045894 500409405	
+peters	PETERS	1	ambiguous	homonyms:8							FRA	France	nationality	joconde_school	low						500018298 500015663 500412104 500019814 500409964 500045894 500446466 500409405	
 d dubois hault jehan marchant	Jehan Marchant Dubois D'hault	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 minge raphael	Raphaël Minge	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 simier	SIMIER	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -7774,7 +7774,7 @@ shigenobu utagawa	Utagawa Shigenobu	1	unmatched	no_name_match							JPN	Japan	na
 sekimyosai zenka	Zenka Sekimyosai	1	unmatched	no_name_match							JPN	Japan	nationality	joconde_school	low							
 hokuga katsushika	Katsushika Hokuga	1	unmatched	no_name_match							JPN	Japan	nationality	joconde_school	low							
 alexandre bigot	Alexandre Bigot	1	matched	unique_name	high	500099040	Bigot, Alexandre	1862	1927	Q2833468	FRA	France	birthplace	wikidata	high	Mer	47.698611111	1.507777777	French			6
-boucher	BOUCHER	1	ambiguous	homonyms:7							FRA	France	nationality	joconde_school	low						500251629 500022408 500106304 500032143 500028922 500438471 500447844	
+boucher	BOUCHER	1	ambiguous	homonyms:7							FRA	France	nationality	joconde_school	low						500251629 500022408 500106304 500032143 500028922 500447844 500438471	
 georges rose	Georges Rose	1	unmatched	no_name_match																		
 gabrielle seguin	Séguin Gabrielle	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 e l	E L	1	ambiguous	homonyms:2							DEU	Germany	nationality	joconde_school	low						500047110 500423415	
@@ -8076,7 +8076,7 @@ edouard willmann	Edouard Willmann	1	matched	fuzzy_name:0.94+dates	low	500406958	
 cavaroc honore	Cavaroc Honoré	1	matched	unique_name	high	500129989	Cavaroc, Honoré	1846	1931	Q52155348	FRA	France	birthplace	wikidata	high	Lyon	45.7675	4.835	French			1
 beauce pierre	Pierre Beauce	1	unmatched	no_name_match																		
 hildebrand oakes	Oakes Hildebrand	1	unmatched	no_name_match																		
-simpson	SIMPSON	1	ambiguous	homonyms:3																	500434703 500418222 500442348	
+simpson	SIMPSON	1	ambiguous	homonyms:3																	500434703 500442348 500418222	
 andre portier	André Portier	1	ambiguous	homonyms:2																	500233502 500452152	
 boisselier	BOISSELIER	1	ambiguous	homonyms:2																	500019777 500353882	
 le maurice scouezec	Maurice le Scouezec	1	matched	unique_name+life_dates	high	500342025	Le Scouëzec, Maurice	1881	1940	Q3301018	FRA	France	birthplace	wikidata+ulan	high	Le Mans	48.004166666	0.196944444	French			3
@@ -8122,7 +8122,7 @@ franz moormans	Franz Moormans	1	matched	unique_name+life_dates	high	500003241	Mo
 antoine gabriel willermet	Antoine Gabriel Willermet	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 courblon	COURBLON	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 ernest porcherot	Ernest Porcherot	1	unmatched	no_name_match																		
-barre	BARRE	1	ambiguous	homonyms:3							NLD	Netherlands	nationality	joconde_school	low						500074531 500415979 500442889	
+barre	BARRE	1	ambiguous	homonyms:3							NLD	Netherlands	nationality	joconde_school	low						500074531 500442889 500415979	
 bourra h	H Bourra	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 barthe brulfert	& BRULFERT Barthe	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 marc verat	Marc Verat	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -8250,7 +8250,7 @@ griboval roger	Roger Griboval	1	unmatched	no_name_match							FRA	France	nationa
 gluck	GLUCK	1	matched	unique_name	medium	500512824	Gluck+				FRA	France	nationality	joconde_school	low				undetermined	nationality 'undetermined' has no single present-day country		
 coustain pierre	Pierre Coustain	1	matched	unique_name	high	500183940	Coustain, Pierre	1410	1520	Q2608638	BEL	Belgium	nationality	joconde_school	low				Franco-Flemish	nationality 'Franco-Flemish' has no single present-day country		4
 charles ficquenet	Charles Ficquenet	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-richard	RICHARD	1	ambiguous	homonyms:8							FRA	France	nationality	joconde_school	low						500012424 500008290 500166115 500116871 500103562 500438499 500429792 500045144	
+richard	RICHARD	1	ambiguous	homonyms:8							FRA	France	nationality	joconde_school	low						500012424 500008290 500166115 500116871 500438499 500429792 500103562 500045144	
 achille bonnuit louis	Achille Louis Bonnuit	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 andre charles hippolyte	Charles Hippolyte Andre	1	matched	unique_name	high	500400411	André, Charles Hyppolite	1854	1923		FRA	France	birthplace	ulan	high	Paris			French			
 alphonse isambert	Alphonse Isambert	1	matched	unique_name	high	500298168	Isambert, Alphonse	1818	1918	Q131437078	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222	French			2
@@ -8313,7 +8313,7 @@ aime ecalard francois	François Aimé Ecalard	1	unmatched	no_name_match							FR
 charles lesaint louis	Charles Louis Lesaint	1	matched	unique_name	high	500009179	Lesaint, Charles Louis	1795	1850	Q18508045	FRA	France	birthplace	wikidata	high	Paris	48.856666666	2.352222222	French			1
 johann zainer	Zainer Johann	1	unmatched	no_name_match							DEU	Germany	nationality	joconde_school	low							
 jayler	JAYLER	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
-dick fils	Fils Dick	1	ambiguous	homonyms:3																	500443015 500368158 500052602	
+dick fils	Fils Dick	1	ambiguous	homonyms:3																	500368158 500443015 500052602	
 frederico rossano	Frederico Rossano	1	matched	unique_name	high	500048193	Rossano, Federico	1835	1912	Q3741885	ITA	Italy	birthplace	wikidata+ulan	high	Naples	40.835833333	14.248611111	Italian			5
 avec bordures de eglise l les maitre pere quatre	MAITRE DE BORDURES AVEC LES QUATRE PERE DE L'EGLISE	1	unmatched	no_name_match							DEU	Germany	nationality	joconde_school	low							
 berlin de la maitre passion	MAITRE DE LA PASSION DE BERLIN	1	unmatched	no_name_match							DEU	Germany	nationality	joconde_school	low							
@@ -8581,7 +8581,7 @@ bridgens richard	Richard Bridgens	1	matched	unique_name	high	500108924	Bridgens,
 cooper s t	T S Cooper	1	matched	unique_name	high	500024232	Cooper, Thomas Sidney	1803	1902	Q1333386	GBR	United Kingdom	birthplace	wikidata	high	Canterbury	51.278333333	1.0775	British (modern)			13
 johann rugendas	Johann Rugendas	1	unmatched	no_name_match																		
 descault	DESCAULT	1	unmatched	no_name_match																		
-de metz	Metz de	1	ambiguous	homonyms:2							FRA	France	nationality	joconde_school	low						500361745 500256219	
+de metz	Metz de	1	ambiguous	homonyms:2							FRA	France	nationality	joconde_school	low						500256219 500361745	
 bredael jean pierre van	Van Bredael Jean Pierre	1	unmatched	candidates_rejected_by_dates							BEL	Belgium	nationality	joconde_school	low						500018753 500020633	
 maire philippe	Maire Philippe	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 lardeur raymond	Lardeur Raymond	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
@@ -9106,7 +9106,7 @@ frans i le vieux	Frans I Le Vieux	1	unmatched	no_name_match							BEL	Belgium	na
 iii pierre poiret	Pierre III Poiret	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 bout de melchior	Melchior de Bout	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 noel quillerier	Noël Quillerier	1	matched	unique_name	high	500054459	Quillerier, Noël	1594	1669	Q3345877	FRA	France	birthplace	wikidata	high	Orléans	47.902222222	1.904166666	French			3
-roussel	ROUSSEL	1	ambiguous	homonyms:5							FRA	France	nationality	joconde_school	low						500199859 500390467 500296327 500368934 500368933	
+roussel	ROUSSEL	1	ambiguous	homonyms:5							FRA	France	nationality	joconde_school	low						500390467 500199859 500296327 500368934 500368933	
 guillaume renard	Guillaume Renard	1	unmatched	no_name_match																		
 frans millet	Frans Millet	1	unmatched	candidates_rejected_by_dates																	500007163	
 joseph louis rossignon toussaint	Louis Joseph Toussaint Rossignon	1	matched	unique_name	high	500110514	Rossignon, Louis Joseph Toussaint	1781	1881		FRA	France	birthplace	ulan	high	Avesnes-sur-Helpe			French			
@@ -9177,7 +9177,7 @@ georg haas jakob johann	Johann-Jakob-Georg Haas	1	matched	unique_name	high	50008
 achille appolin girod	Girod Achille Appolin	1	unmatched	no_name_match																		
 flavie	FLAVIE	1	unmatched	no_name_match																		
 f girard	F. Girard	1	unmatched	candidates_rejected_by_dates																	500004084	
-richomme	RICHOMME	1	ambiguous	homonyms:2																	500409261 500398929	
+richomme	RICHOMME	1	ambiguous	homonyms:2																	500398929 500409261	
 verdier	VERDIER	1	ambiguous	homonyms:2																	500442352 500017985	
 baptiste jean poilly	Jean-Baptiste Poilly	1	matched	unique_name	high	500534390	Poilly, Jean Baptiste	1669	1728		FRA	France	nationality	ulan	medium				French			
 preifler	PREIFLER	1	matched	generation_stripped+unique_name	medium	500092458	Preifler, J. J.				DEU	Germany	nationality	joconde_school	low				undetermined	nationality 'undetermined' has no single present-day country		
@@ -9497,7 +9497,7 @@ crepin guy	Crépin Guy	1	unmatched	no_name_match							FRA	France	nationality	jo
 allabre louis	Allabre Louis	1	unmatched	no_name_match																		
 bazin charles louis	Bazin Charles Louis	1	matched	unique_name	high	500090731	Bazin, Charles Louis	1802	1859	Q3920077	FRA	France	birthplace	wikidata+ulan	high	Paris	48.856666666	2.352222222	French			5
 gaston trilleau	Trilleau Gaston	1	unmatched	no_name_match																		
-a guy	Guy A.	1	ambiguous	homonyms:3																	500691608 500426099 500399899	
+a guy	Guy A.	1	ambiguous	homonyms:3																	500691608 500399899 500426099	
 madre	Madre	1	unmatched	no_name_match																		
 et fils lemaine	Lemaine et fils	1	unmatched	no_name_match																		
 gabriel liquier	Liquier Gabriel	1	matched	unique_name	high	500094106	Liquier, Gabriel	1843	1887	Q47925802	FRA	France	birthplace	wikidata+ulan	high	Anduze	44.053475	3.986572222	French			2
@@ -10053,7 +10053,7 @@ desbarres francois parent pierre	Parent-Desbarres François-Pierre	1	unmatched	n
 narcisse remond	Rémond Narcisse	1	unmatched	no_name_match																		
 beaufils roger	Beaufils Roger	1	unmatched	no_name_match							FRA	France	nationality	joconde_school	low							
 chabas paul	Chabas Paul	1	matched	unique_name+life_dates	high	500010763	Chabas, Paul	1869	1937	Q964791	FRA	France	birthplace	wikidata+ulan	high	Nantes	47.217222222	-1.553888888	French			21
-brunet	Brunet	1	ambiguous	homonyms:4																	500416016 500038416 500438384 500299632	
+brunet	Brunet	1	ambiguous	homonyms:4																	500438384 500416016 500038416 500299632	
 crete	Crété	1	matched	unique_name	medium	500408298	Crétey				FRA	France	nationality	ulan	medium				French			
 alcide robaudi theophile	Robaudi Alcide Théophile	1	unmatched	candidates_rejected_by_dates							FRA	France	nationality	joconde_school	low						500103708	
 goyo hashiguchi	Hashiguchi Goyō	1	matched	unique_name	high	500335092	Hashiguchi, Goyō	1880	1921	Q2346122	JPN	Japan	birthplace	wikidata	high	Kagoshima	31.596805555	130.557138888	Japanese			16
@@ -10147,7 +10147,7 @@ christophe conan	Conan Christophe	1	unmatched	no_name_match
 andre hogommat	Hogommat André	1	matched	unique_name	low	500617946	Hogommat, André	1925	2015		FRA	France	nationality	ulan	medium				French			
 alphonse georges poulain	Poulain Alphonse Georges	1	unmatched	no_name_match																		
 jacques nam	Nam Jacques	1	matched	unique_name	high	500057258	Nam, Jacques	1881	1974	Q3159638	FRA	France	birthplace	wikidata+ulan	high	16th arrondissement of Paris	48.863611111	2.276488888	French			2
-john kelly	Kelly John	1	ambiguous	homonyms:4																	500351245 500475904 500204721 500194158	
+john kelly	Kelly John	1	ambiguous	homonyms:4																	500475904 500194158 500204721 500351245	
 antonio francesco franzoni	Franzoni Francesco Antonio	1	matched	unique_name+life_dates	high	500115029	Franzoni, Francesco Antonio	1734	1818	Q5479176	ITA	Italy	birthplace	wikidata+ulan	high	Carrara	44.083333333	10.1	Italian			5
 ary bitter	Bitter Ary	1	matched	unique_name	low	500192369	Bitter, Ary	1883	1973	Q17150566	FRA	France	birthplace	wikidata+ulan	high	Marseille	43.296666666	5.376388888	French			3
 debarre jean	Debarre Jean	1	matched	unique_name	medium	500519900	Debarre, Jean												undetermined	nationality 'undetermined' has no single present-day country		
