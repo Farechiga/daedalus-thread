@@ -242,28 +242,24 @@ function base(basemap, selected) {
   return svg;
 }
 
-/** Classed log scale for country counts: decade classes (1–9, 10–99, …) so a 60:1 spread still reads.
- *  Half-decades (1–2, 3–9, 10–29, …) when the range is narrow.
- *  Returns { classes: [{lo, hi, color}], color(n) }. */
+/** Continuous country scale that separates the leaders and compresses the long tail.
+ *  t = 0.55 x log share + 0.45 x linear share of the maximum: the log part keeps small countries visible and ordered,
+ *  the linear part pulls the top few apart (2,715 vs 1,598 artworks is a third of the ramp, not one shared class).
+ *  Colours run through six CSS stops (--ramp-1..6). Returns { color(n), t(n), ticks, max }. */
 export function countryScale(values) {
   const max = Math.max(1, ...values);
-  // decades (1, 10, 100, ...); half-decades (3, 30, ...) only when the range is too narrow for 4 classes
-  const decades = [];
-  for (let p = 1; p <= max; p *= 10) decades.push(p);
-  let edges = decades;
-  if (decades.length < 4) {
-    edges = [];
-    for (const p of decades) edges.push(p, p * 3);
-    edges = edges.filter((b) => b <= max);
-  }
-  // at most five classes (the lowest merge), coloured from the top of the five-step ramp down, so the
-  // highest class is always the darkest teal and a narrow range still starts visibly above the land colour
-  edges = edges.length > 5 ? [1, ...edges.slice(-4)] : edges;
-  const classes = edges.map((lo, i) => {
-    const hi = i + 1 < edges.length ? edges[i + 1] : Infinity;
-    return { lo, hi, color: `var(--ramp-${5 - edges.length + i + 1})` };
-  });
-  return { classes, color: (n) => (n > 0 ? classes.findLast((c) => n >= c.lo).color : null) };
+  const lmax = Math.log(max) || 1;
+  const t = (n) => (n > 0 ? 0.55 * (max > 1 ? Math.log(n) / lmax : 1) + 0.45 * (n / max) : 0);
+  const color = (n) => {
+    if (!(n > 0)) return null;
+    const p = (0.06 + 0.94 * t(n)) * 5;  // position along stops 1..6
+    const k = Math.min(4, Math.floor(p));
+    return `color-mix(in oklab, var(--ramp-${k + 2}) ${Math.round((p - k) * 100)}%, var(--ramp-${k + 1}))`;
+  };
+  const ticks = [];
+  for (let v = 1; v < max; v *= 10) if (t(v) < 0.86) ticks.push(v);
+  ticks.push(max);
+  return { color, t, ticks, max };
 }
 
 let uid = 0;

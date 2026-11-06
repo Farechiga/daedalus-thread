@@ -329,9 +329,16 @@ function renderMap() {
   const opts = { selected: state.country, showProxy: g.include_nationality, scale, onPick: (c) => pick(c.code) };
   const svg = mapMode === "centres" ? artCentres(basemap, g.places, { selected: state.country, onPick: (p) => pick(p.country) })
     : mapMode === "raised" ? prism(basemap, g.countries, opts) : choropleth(basemap, g.countries, opts);
-  const range = (c) => c.hi === Infinity ? `${fmt.format(c.lo)}+` : `${fmt.format(c.lo)}–${fmt.format(c.hi - 1)}`;
-  const swatches = h("div", { class: "swatches", role: "list", "aria-label": "Artworks per country" },
-    scale.classes.map((c) => h("span", { role: "listitem" }, h("i", { style: `background:${c.color}` }), range(c))));
+  // gradient legend: the same stops as the map, ticks placed where those counts fall on the (log + linear) scale
+  const stops = [1, 2, 3, 4, 5, 6].map((k, i) => `var(--ramp-${k}) ${Math.round(6 + 94 * i / 5)}%`).join(", ");
+  const short = (v) => v >= 10000 ? `${Math.round(v / 1000)}k` : fmt.format(v);
+  const swatches = h("div", { class: "gradient", role: "img",
+      "aria-label": `Artworks per country, shaded from 1 to ${fmt.format(scale.max)}` },
+    h("div", { class: "bar", style: `background: linear-gradient(90deg, var(--ramp-1) 0%, ${stops})` }),
+    h("div", { class: "ticks" }, scale.ticks.map((v, i) => h("span", {
+      class: i === 0 ? "first" : i === scale.ticks.length - 1 ? "last" : null,
+      style: `left:${(100 * (0.06 + 0.94 * scale.t(v))).toFixed(1)}%` }, short(v)))),
+    h("p", {}, "The darkest shades separate the leading countries; small counts share the pale end."));
   const inView = g.countries.filter((c) => c.in_view);
   const beyond = g.countries.filter((c) => !c.in_view);
   const list = (rows) => h("ol", {}, rows.map((c) => h("li", {}, h("button", { "aria-pressed": String(c.code === state.country), onclick: () => pick(c.code) },
