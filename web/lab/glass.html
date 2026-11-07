@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Daedalus Thread · Glass</title>
+  <meta name="description" content="Explore 477,569 artworks through their subjects: Christian art, classical myth, animals, allegory and landscape.">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <meta name="theme-color" content="#022e3a">
+  <script>try { var p = localStorage.getItem("dt.palette"); if (p && p !== "teal") document.documentElement.dataset.palette = p; } catch (e) {}</script>
+  <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/lab/glass.css">
+  <script type="module" src="/js/app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="top">
+    <a class="brand" href="/" aria-label="Daedalus Thread home">
+      <img class="logo" src="/assets/logo-96.png" srcset="/assets/logo-96.png 1x, /assets/logo-192.png 2x" width="44" height="44" alt="">
+      <img class="wordmark" src="/assets/wordmark.png" width="213" height="11" alt="Daedalus Thread">
+    </a>
+    <div class="search" role="search">
+      <label for="q" class="sr-only">Search themes, subjects and artists</label>
+      <input id="q" type="search" autocomplete="off" spellcheck="false"
+             placeholder="Search: Annunciation, St George, Dürer, lion, Verkündigung…"
+             role="combobox" aria-expanded="false" aria-controls="suggest" aria-autocomplete="list">
+      <div id="suggest" class="suggest" role="listbox" hidden></div>
+    </div>
+    <button class="ghost" id="info-btn" aria-haspopup="dialog">About the data</button>
+  </header>
+
+  <div class="aurora" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+  <div class="plane">
+  <div class="toprow">
+    <nav class="segments" id="segments" aria-label="Segments"></nav>
+  </div>
+
+  <main id="main" class="layout">
+    <aside class="themes card" aria-labelledby="themes-h">
+      <div class="chain" id="chain" role="group" aria-label="Active filters">
+        <div class="chain-top"><span class="seg-label">Filters</span><span class="chain-n" id="chain-n" aria-live="polite"></span></div>
+        <div class="chips" id="chips" aria-live="polite"></div>
+        <div class="chain-actions">
+          <button class="ghost small" id="back-btn" title="Previous view">← Back</button>
+          <button class="ghost small" id="reset-btn" title="Clear all filters">Reset filters</button>
+        </div>
+      </div>
+      <nav class="crumbs" id="crumbs" aria-label="Breadcrumb"></nav>
+      <h2 id="themes-h" class="focus-title">Themes</h2>
+      <p class="focus-desc" id="focus-desc"></p>
+      <ol class="theme-list" id="theme-list"></ol>
+      <div class="palette-switch" id="palette-switch" role="radiogroup" aria-label="Colour palette">
+        <span class="seg-label">Palette</span>
+        <button type="button" role="radio" data-palette="teal" aria-checked="true" title="Teal: one calm hue">
+          <span class="sw" aria-hidden="true"><b style="background:#bfdcd7"></b><b style="background:#3e9c8d"></b><b style="background:#006d67"></b></span>Teal</button>
+        <button type="button" role="radio" data-palette="fresco" aria-checked="false" title="Fresco: muted pigments (lapis, sinopia, terre verte)">
+          <span class="sw" aria-hidden="true"><b style="background:#75598c"></b><b style="background:#a0533d"></b><b style="background:#6e8460"></b></span>Fresco</button>
+        <button type="button" role="radio" data-palette="enamel" aria-checked="false" title="Enamel: jewel tones (ultramarine, carmine, emerald)">
+          <span class="sw" aria-hidden="true"><b style="background:#2747c9"></b><b style="background:#c2253f"></b><b style="background:#0c8a5b"></b></span>Enamel</button>
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="grid">
+        <article class="card chart wide" id="c-timeline">
+          <header>
+            <h3 id="when-h">When</h3>
+            <div class="seg" id="heat-sort" role="group" aria-label="Sort themes" hidden>
+              <button type="button" data-sort="size" aria-pressed="true">By size</button>
+              <button type="button" data-sort="peak" aria-pressed="false">By peak century</button>
+            </div>
+            <p class="n"></p>
+          </header>
+          <div class="body"></div>
+        </article>
+        <article class="card chart wide" id="c-map">
+          <header>
+            <h3>Where the artists were born</h3>
+            <div class="map-controls">
+              <div class="seg" role="group" aria-label="Map view">
+                <button type="button" data-mode="countries" aria-pressed="true">Countries</button>
+                <button type="button" data-mode="raised" aria-pressed="false">Raised</button>
+                <button type="button" data-mode="centres" aria-pressed="false">Art centres</button>
+              </div>
+              <label class="toggle"><input type="checkbox" id="nat-toggle"> Use nationality where birthplace is unknown</label>
+            </div>
+            <p class="n"></p>
+          </header>
+          <div class="body"></div>
+        </article>
+        <article class="card chart" id="c-treemap"><header><h3>Theme detail</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-subjects"><header><h3>Most frequent Iconclass subjects</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-types"><header><h3>Kinds of object</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-sources"><header><h3>Source collections</h3><p class="n"></p></header><div class="body"></div></article>
+        <article class="card chart" id="c-artists"><header><h3>Most frequent artists</h3><p class="n"></p></header><div class="body"></div></article>
+      </div>
+
+      <section class="card results" aria-labelledby="results-h">
+        <header><div><span class="kicker">The catalogue</span><h3 id="results-h">The Works</h3></div>
+          <label>Sort <select id="sort"><option value="fame">iconic first</option><option value="date">by date</option><option value="title">by title</option><option value="random">shuffled</option></select></label>
+        </header>
+        <div class="media-filter" id="media-filter" role="group" aria-label="Filter the catalogue by medium"></div>
+        <ol class="result-list" id="results"></ol>
+        <button class="ghost" id="more-btn" hidden>Show more</button>
+      </section>
+    </section>
+  </main>
+
+  </div><!-- /plane -->
+
+  <aside class="works-dock away" id="works-dock" aria-label="Artworks in this selection" hidden>
+    <button class="dock-label" id="dock-label" type="button"><span class="dock-k">The works</span><span class="dock-n" id="dock-n"></span></button>
+    <div class="dock-thumbs" id="dock-thumbs"></div>
+    <button class="dock-go" id="dock-go" type="button" aria-label="Browse all works">↓</button>
+  </aside>
+
+  <aside class="drawer" id="drawer" aria-labelledby="drawer-title" hidden>
+    <button class="ghost close" id="drawer-close" aria-label="Close details">×</button>
+    <div id="drawer-body"></div>
+  </aside>
+
+  <dialog id="info">
+    <form method="dialog"><button class="ghost close" aria-label="Close">×</button></form>
+    <h2>About the data</h2>
+    <div class="info-options">
+      <label class="toggle"><input type="checkbox" id="repro-toggle"> Include documentary photographs (PAUart) in date, artist and map charts</label>
+    </div>
+    <div id="info-body"></div>
+  </dialog>
+
+  <footer class="foot">
+    Data: <a href="https://zenodo.org/records/18980670">ICARUS</a> (CC BY 4.0) ·
+    <a href="https://iconclass.org/">Iconclass</a> (CC0) · Getty Vocabularies (ODC-By) · Natural Earth.
+    Counts describe the ICARUS collection, not art history as a whole.
+  </footer>
+</body>
+</html>

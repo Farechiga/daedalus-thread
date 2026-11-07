@@ -29,7 +29,7 @@ function fromQuery(qs) {
 function navigate(change, { replace = false } = {}) {
   Object.assign(state, change);
   const qs = toQuery();
-  const url = qs ? `/?${qs}` : "/";
+  const url = qs ? `${location.pathname}?${qs}` : location.pathname;  // the page keeps its own address (lab pages too)
   if (replace) history.replaceState(null, "", url); else history.pushState(null, "", url);
   load();
 }
