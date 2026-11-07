@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daedalus Thread · Atlas</title>
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Mnemosyne Atlas mockup: one subject per panel, pinned on gold threads (one per region) across the centuries. */
+:root {
+  --linen: #e7e1d3; --linen-2: #ddd5c3; --ink: #2b2620; --muted: #6f6556; --rule: rgb(80 64 40 / .16);
+  --thread: #b8841c; --thread-hi: #e3b04b; --pin: #8e2a20; --paper: #fbf8f1;
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--linen); color: var(--ink); font: 15px/1.45 var(--serif);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32  0 0 0 0 .26  0 0 0 0 .18  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    repeating-linear-gradient(0deg, rgb(120 100 70 / .035) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgb(120 100 70 / .03) 0 1px, transparent 1px 4px); }
+a { color: inherit; }
+.top { display: flex; justify-content: space-between; align-items: center; padding: 18px 40px 0; }
+.top img { height: 11px; opacity: .8; }
+.top a { font: 12px var(--mono); color: var(--muted); text-decoration: none; letter-spacing: .04em; }
+.top a:hover { color: var(--ink); }
+header.panel { padding: 34px 40px 10px; display: grid; grid-template-columns: 1fr auto; align-items: end; gap: 24px; }
+.kicker { font: 500 11.5px var(--mono); letter-spacing: .28em; text-transform: uppercase; color: var(--pin); }
+h1 { font: 500 clamp(44px, 6vw, 86px)/.95 var(--serif); margin: 8px 0 10px; letter-spacing: -.01em; }
+h1 em { font-style: italic; }
+.desc { font: italic 19px/1.35 var(--serif); color: var(--muted); max-width: 640px; margin: 0; }
+.tally { font: 12px/1.6 var(--mono); color: var(--muted); text-align: right; white-space: nowrap; }
+.tally b { display: block; font: 600 34px/1 var(--serif); color: var(--ink); }
+nav.panels { display: flex; flex-wrap: wrap; gap: 8px; padding: 18px 40px 6px; }
+nav.panels button { font: 12px var(--mono); letter-spacing: .03em; background: var(--paper); color: var(--ink); border: 0; cursor: pointer;
+  padding: 7px 12px 6px; box-shadow: 0 1px 0 rgb(0 0 0 / .08), 0 3px 8px rgb(60 40 10 / .08); transform: rotate(var(--r, 0deg)); transition: transform .2s; }
+nav.panels button span { color: var(--pin); margin-right: 6px; }
+nav.panels button:hover { transform: rotate(0) translateY(-2px); }
+nav.panels button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+nav.panels button[aria-pressed="true"] span { color: var(--thread-hi); }
+.board-wrap { overflow-x: auto; padding: 8px 0 60px; }
+.board { position: relative; min-width: 1180px; margin: 0 40px; }
+.cols { display: grid; grid-template-columns: 150px repeat(8, 1fr); font: 11px var(--mono); color: var(--muted); letter-spacing: .12em;
+  border-bottom: 1px solid var(--rule); padding: 18px 0 8px; }
+.cols span:not(:first-child) { padding-left: 6px; border-left: 1px solid var(--rule); }
+.row { position: relative; height: 250px; transition: height .3s; border-bottom: 1px dashed var(--rule); }
+.row .tag { position: absolute; left: 0; top: 18px; width: 126px; background: var(--paper); padding: 8px 10px 7px; font: 500 11.5px var(--mono);
+  letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 2px 6px rgb(60 40 10 / .12); transform: rotate(-1.2deg); z-index: 3; }
+.row .tag small { display: block; font: 10.5px var(--mono); color: var(--muted); text-transform: none; letter-spacing: 0; margin-top: 2px; }
+.row .grid { position: absolute; inset: 0 0 0 150px; display: grid; grid-template-columns: repeat(8, 1fr); pointer-events: none; }
+.row .grid i { border-left: 1px solid var(--rule); }
+.row svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
+.thread { fill: none; stroke: var(--thread); stroke-width: 1.6; filter: drop-shadow(0 1.5px 1px rgb(60 40 10 / .25));
+  stroke-dasharray: 3000; stroke-dashoffset: 3000; animation: draw 2.2s cubic-bezier(.3, .6, .2, 1) forwards; }
+.drop { stroke: var(--thread); stroke-width: 1; opacity: .75; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+.card { position: absolute; z-index: 2; background: var(--paper); padding: 5px 5px 7px; border: 0; cursor: zoom-in; display: block;
+  box-shadow: 0 1px 1px rgb(0 0 0 / .08), 0 8px 18px -6px rgb(60 40 10 / .35); transform-origin: 50% 0;
+  transform: rotate(var(--r)); opacity: 0; animation: hang .7s cubic-bezier(.2, .9, .3, 1.3) forwards; animation-delay: var(--d);
+  transition: transform .25s, box-shadow .25s; text-decoration: none; color: var(--ink); }
+.card img { display: block; width: 100%; height: auto; max-height: var(--mh); object-fit: cover; background: var(--linen-2); }
+.card::before { content: ""; position: absolute; left: 50%; top: -5px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d9675b, var(--pin) 60%, #4c120c); box-shadow: 0 2px 2px rgb(0 0 0 / .3); }
+.card .cap { position: absolute; left: 50%; top: calc(100% + 6px); width: max(180px, 100%); transform: translateX(-50%); background: var(--paper);
+  padding: 6px 8px; font: 11px/1.35 var(--mono); box-shadow: 0 4px 12px rgb(60 40 10 / .2); opacity: 0; pointer-events: none; transition: opacity .2s; z-index: 5; }
+.card .cap b { display: block; font: italic 600 14px/1.2 var(--serif); margin-bottom: 2px; }
+.card:hover, .card:focus-visible { z-index: 6; transform: rotate(0) scale(1.9); box-shadow: 0 18px 40px -8px rgb(40 25 5 / .45); outline: none; }
+.card:hover .cap, .card:focus-visible .cap { opacity: 1; transform: translateX(-50%) scale(.53); transform-origin: 50% 0; }
+@keyframes hang { 0% { opacity: 0; transform: translateY(-26px) rotate(calc(var(--r) * -3)); } 100% { opacity: 1; transform: rotate(var(--r)); } }
+.foot { margin: 0 40px; display: flex; justify-content: space-between; gap: 24px; font: 11.5px/1.6 var(--mono); color: var(--muted); }
+.foot em { font: italic 15px var(--serif); color: var(--ink); }
+@media (max-width: 720px) { .top, header.panel, nav.panels { padding-left: 16px; padding-right: 16px; } header.panel { grid-template-columns: 1fr; }
+  .tally { text-align: left; } .board { margin: 0 16px; } .foot { margin: 0 16px; flex-direction: column; } }
+</style>
+</head>
+<body>
+<div class="top"><img src="/assets/wordmark.png" alt="Daedalus Thread"><a href="/">← back to the explorer</a></div>
+<header class="panel">
+  <div><div class="kicker" id="kicker"></div><h1 id="title"></h1><p class="desc" id="desc"></p></div>
+  <div class="tally" id="tally"></div>
+</header>
+<nav class="panels" id="panels" aria-label="Panels"></nav>
+<div class="board-wrap"><div class="board" id="board"></div></div>
+<div class="foot"><span><em>After Aby Warburg's Mnemosyne Atlas.</em> One gold thread per region; each work hangs at its year, sized by renown.</span>
+  <span>Mockup · data snapshot · images Wikimedia Commons, The Met, Art Institute of Chicago</span></div>
+<script>
+const ROMAN = ["I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X"];
+const REGIONS = ["Italy", "Low Countries", "German lands", "France", "Iberia", "Elsewhere"];
+const Y0 = 1200, Y1 = 2000, LABEL_W = 150, THREAD_Y = 34, ROW_H = 250;
+const $ = (s) => document.querySelector(s);
+let data;
+
+function seeded(s) { let h = 2166136261; for (const c of s) h = Math.imul(h ^ c.charCodeAt(0), 16777619); return ((h >>> 0) % 1000) / 1000; }
+
+function render(i) {
+  const p = data.panels[i];
+  history.replaceState(null, "", `#${p.id}`);
+  for (const b of document.querySelectorAll("#panels button")) b.setAttribute("aria-pressed", String(+b.dataset.i === i));
+  $("#kicker").textContent = `Panel ${ROMAN[i]}`;
+  $("#title").innerHTML = p.label.replace(/^(The |Saint )/, (m) => `<em>${m.trim()}</em> `);
+  $("#desc").textContent = p.description || "";
+  $("#tally").innerHTML = `<b>${p.n.toLocaleString("en")}</b>works in this subject<br>${p.works.length} pinned`;
+  const board = $("#board");
+  board.innerHTML = `<div class="cols"><span></span>${[1200, 1300, 1400, 1500, 1600, 1700, 1800, 1900].map((c) => `<span>${c}s</span>`).join("")}</div>`;
+  const W = board.clientWidth - LABEL_W, maxFame = Math.max(...p.works.map((w) => w.fame), 0.01);
+  const xOf = (y) => LABEL_W + ((Math.min(Math.max(y, Y0), Y1 - 1) - Y0) / (Y1 - Y0)) * W;
+  let delay = 0;
+  for (const region of REGIONS) {
+    const works = p.works.filter((w) => w.region === region).sort((a, b) => b.fame - a.fame).slice(0, 9)
+      .sort((a, b) => (a.year || a.century + 50) - (b.year || b.century + 50));
+    if (!works.length) continue;
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `<div class="grid">${"<i></i>".repeat(8)}</div><div class="tag">${region}<small>${works.length} on the thread</small></div>`;
+    board.appendChild(row);
+    // two tiers: a card hangs on the thread at its year if there is room, else on a lower tier (its own drop line)
+    // below the tallest card of the first; when both are taken it slides right to the nearest free place
+    const tiers = [{ right: LABEL_W }, { right: LABEL_W }], placed = [];
+    for (const w of works) {
+      const size = 70 + 58 * Math.sqrt(w.fame / maxFame);
+      const ideal = xOf(w.year || w.century + 50) - size / 2;
+      const push = (t) => Math.max(ideal, tiers[t].right + 12);
+      const t = push(0) - ideal <= push(1) - ideal + 40 ? 0 : 1;  // prefer the thread itself unless it costs a big shift
+      let x = push(t);
+      if (x + size > LABEL_W + W) x = LABEL_W + W - size;
+      tiers[t].right = x + size;
+      placed.push({ w, x, size, tier: t });
+    }
+    const top0 = Math.max(0, ...placed.filter((c) => !c.tier).map((c) => c.size * 1.35));
+    const drop = top0 + 22;
+    const used1 = placed.some((c) => c.tier);
+    row.style.height = `${THREAD_Y + (used1 ? drop + Math.max(...placed.filter((c) => c.tier).map((c) => c.size * 1.35)) : top0) + 34}px`;
+    const pins = placed.map((c) => c.x + c.size / 2).sort((a, b) => a - b);
+    let d = `M${LABEL_W - 20},${THREAD_Y - 6}`, px = LABEL_W - 20, py = THREAD_Y - 6;
+    for (const x of [...pins, LABEL_W + W + 10]) {
+      const y = x > LABEL_W + W ? THREAD_Y - 6 : THREAD_Y, sag = Math.min(26, (x - px) * 0.12);
+      d += `Q${((px + x) / 2).toFixed(1)},${(Math.max(py, y) + sag).toFixed(1)} ${x.toFixed(1)},${y}`;
+      px = x; py = y;
+    }
+    const drops = placed.filter((c) => c.tier).map((c) => `<line class="drop" x1="${c.x + c.size / 2}" y1="${THREAD_Y}" x2="${c.x + c.size / 2}" y2="${THREAD_Y + drop}"/>`).join("");
+    row.insertAdjacentHTML("beforeend", `<svg aria-hidden="true"><path class="thread" d="${d}"/>${drops}</svg>`);
+    for (const c of placed) {
+      const a = document.createElement("a");
+      a.className = "card";
+      a.href = c.w.view || "#";
+      a.target = "_blank"; a.rel = "noopener noreferrer";
+      a.style.cssText = `left:${c.x}px;top:${THREAD_Y + (c.tier ? drop : 0)}px;width:${c.size}px;--mh:${c.size * 1.35}px;` +
+        `--r:${((seeded(c.w.id) - 0.5) * 5).toFixed(2)}deg;--d:${(0.5 + delay).toFixed(2)}s`;
+      delay += 0.035;
+      a.innerHTML = `<img src="${c.w.img}" alt="" loading="lazy" decoding="async"><span class="cap"><b>${c.w.title || "Untitled"}</b>` +
+        `${c.w.artist || "Artist unknown"} · ${c.w.date || c.w.year || ""}<br>${c.w.holding || ""}</span>`;
+      a.querySelector("img").addEventListener("error", () => a.remove());
+      row.appendChild(a);
+    }
+  }
+}
+
+fetch("/lab/atlas-data.json").then((r) => r.json()).then((j) => {
+  data = j;
+  $("#panels").innerHTML = data.panels.map((p, i) =>
+    `<button data-i="${i}" style="--r:${((seeded(p.id) - 0.5) * 3).toFixed(2)}deg"><span>${ROMAN[i]}</span>${p.label}</button>`).join("");
+  for (const b of document.querySelectorAll("#panels button")) b.addEventListener("click", () => render(+b.dataset.i));
+  const start = Math.max(0, data.panels.findIndex((p) => `#${p.id}` === location.hash));
+  render(start);
+  let t; addEventListener("resize", () => { clearTimeout(t); t = setTimeout(() => render(data.panels.findIndex((p) => `#${p.id}` === location.hash)), 250); });
+});
+</script>
+</body>
+</html>
