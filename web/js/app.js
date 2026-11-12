@@ -375,6 +375,7 @@ function commonsViewer(imageUrl) {
   return `https://commons.wikimedia.org/wiki/File:${f}#/media/File:${f}`;
 }
 
+window.dtOpenArtwork = (id) => openArtwork(id);  // hook for the lab pages' extra views
 async function openArtwork(id) {
   const a = await api("artwork", `id=${encodeURIComponent(id)}`);
   const d = $("#drawer");

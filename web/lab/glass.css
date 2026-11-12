@@ -10,32 +10,34 @@
   color-scheme: light; --bg: #f4f8fb; --surface: #ffffff; --ink: #12242c; --muted: #5d6f78; --line: rgb(18 60 80 / .1);
   --navy: #0d3442; --accent: #0b6b78; --gold-soft: #f7ebcc; --gold-ink: #6e4e00; --bar-muted: #d2ebe6; --heat-0: #eef6f4; } }
 
-/* the sky behind the ice: dawn warmth top-left, cold blue below, slow drifting colour */
-html { background: #eef4f8; }
-body { min-height: 100vh; background: transparent; }  /* let the dawn light behind the glass show */
+/* the sky behind the ice: pale light from every part of the spectrum, drifting slowly, barely tinting the frost */
+html { background: #f1f5f8; }
+body { min-height: 100vh; background: transparent; }  /* let the light behind the glass show */
 .aurora { position: fixed; inset: 0; z-index: -2; overflow: hidden; pointer-events: none;
-  background: linear-gradient(160deg, #ffe9dc 0%, #fdf3e6 22%, #eef5fb 48%, #dcecf8 72%, #e4f4ef 100%); }
-.aurora i { position: absolute; width: 62vmax; height: 62vmax; border-radius: 50%; filter: blur(60px); opacity: .85;
-  animation: drift 38s ease-in-out infinite alternate; }
-.aurora i:nth-child(1) { left: -18vmax; top: -26vmax; background: radial-gradient(circle, #ffb397, rgb(255 179 151 / .35) 40%, transparent 66%); }
-.aurora i:nth-child(2) { right: -22vmax; top: -18vmax; background: radial-gradient(circle, #ffdc7e, rgb(255 220 126 / .3) 42%, transparent 64%); animation-duration: 46s; }
-.aurora i:nth-child(3) { left: 10vmax; bottom: -34vmax; background: radial-gradient(circle, #93cdf0, rgb(147 205 240 / .35) 40%, transparent 66%); animation-duration: 52s; }
-.aurora i:nth-child(4) { right: -10vmax; bottom: -30vmax; background: radial-gradient(circle, #c2adf6, rgb(194 173 246 / .3) 40%, transparent 64%); animation-duration: 60s; opacity: .7; }
+  background: linear-gradient(160deg, #f6f1f3 0%, #f3f4ef 25%, #eef4f6 50%, #eef1f8 75%, #f1f6f3 100%); }
+.aurora i { position: absolute; width: 54vmax; height: 54vmax; border-radius: 50%; filter: blur(70px); opacity: .5;
+  background: radial-gradient(circle, var(--c), transparent 66%); animation: drift 44s ease-in-out infinite alternate; }
+.aurora i:nth-child(1) { --c: #f3c9cf; left: -16vmax; top: -24vmax; }                                  /* rose */
+.aurora i:nth-child(2) { --c: #efe0b8; left: 28vmax; top: -30vmax; animation-duration: 50s; }          /* straw */
+.aurora i:nth-child(3) { --c: #c8e7cf; right: -20vmax; top: -8vmax; animation-duration: 56s; }        /* sage */
+.aurora i:nth-child(4) { --c: #bfe3ea; right: 6vmax; bottom: -32vmax; animation-duration: 48s; }      /* glacier */
+.aurora i:nth-child(5) { --c: #c9d3f2; left: -6vmax; bottom: -30vmax; animation-duration: 62s; }      /* periwinkle */
+.aurora i:nth-child(6) { --c: #e2cdee; left: -24vmax; top: 22vmax; animation-duration: 58s; }         /* lilac */
 @keyframes drift { to { transform: translate(6vmax, 4vmax) scale(1.08); } }
 
 /* the plane: a single sheet of frosted glass with a prismatic rim and a sunrise sheen */
 .plane { position: relative; margin: 14px 18px 28px; border-radius: 30px; background: var(--glass);
-  -webkit-backdrop-filter: blur(26px) saturate(1.5); backdrop-filter: blur(26px) saturate(1.5);
-  box-shadow: 0 40px 90px -40px rgb(40 90 130 / .35), inset 0 1px 0 var(--rim), inset 0 -1px 0 rgb(255 255 255 / .4); }
+  -webkit-backdrop-filter: blur(26px) saturate(1.15); backdrop-filter: blur(26px) saturate(1.15);
+  box-shadow: 0 40px 90px -40px rgb(60 80 110 / .28), inset 0 1px 0 var(--rim), inset 0 -1px 0 rgb(255 255 255 / .4); }
 .plane::before { content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 2px; pointer-events: none;
-  background: conic-gradient(from 210deg, #ffb8a0, #ffe08e, #a9ecd3, #9fd2f5, #c9b5fa, #ffb6d9, #ffb8a0);
-  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: .9; }
+  background: conic-gradient(from 210deg, #f2c4c9, #eedfb4, #c3e6cb, #b9e0ea, #c6d0f2, #dfc9ee, #f2c4c9);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; opacity: .75; }
 .plane::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; mix-blend-mode: soft-light;
-  background: linear-gradient(115deg, rgb(255 255 255 / .85) 0%, transparent 16%, transparent 46%, rgb(255 255 255 / .55) 52%, transparent 58%, transparent 74%, rgb(255 226 200 / .45) 82%, transparent 92%),
+  background: linear-gradient(115deg, rgb(255 255 255 / .85) 0%, transparent 16%, transparent 46%, rgb(255 255 255 / .55) 52%, transparent 58%, transparent 74%, rgb(236 236 255 / .4) 82%, transparent 92%),
     url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); }
 
 /* header floats above the plane as a thin band of clearer ice */
-.top { background: rgb(255 255 255 / .38); -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+.top { background: rgb(255 255 255 / .38); -webkit-backdrop-filter: blur(22px) saturate(1.15); backdrop-filter: blur(22px) saturate(1.15);
   border-bottom: 1px solid rgb(255 255 255 / .7); box-shadow: 0 10px 30px -24px rgb(40 90 130 / .4); }
 .search input { background: rgb(255 255 255 / .55); border-color: rgb(255 255 255 / .9); box-shadow: inset 0 1px 2px rgb(20 60 80 / .06); }
 .ghost { border-color: rgb(13 52 66 / .14); background: rgb(255 255 255 / .35); }
@@ -71,9 +73,9 @@ svg .tm rect { stroke: rgb(255 255 255 / .9); }
 svg.donut .slice path { stroke: rgb(255 255 255 / .9); }
 
 /* overlays are panes of the same glass */
-.drawer, dialog { background: var(--glass-strong); -webkit-backdrop-filter: blur(30px) saturate(1.5); backdrop-filter: blur(30px) saturate(1.5);
+.drawer, dialog { background: var(--glass-strong); -webkit-backdrop-filter: blur(30px) saturate(1.15); backdrop-filter: blur(30px) saturate(1.15);
   border-color: rgb(255 255 255 / .8); }
-.works-dock { background: rgb(255 255 255 / .55); -webkit-backdrop-filter: blur(22px) saturate(1.6); backdrop-filter: blur(22px) saturate(1.6);
+.works-dock { background: rgb(255 255 255 / .55); -webkit-backdrop-filter: blur(22px) saturate(1.15); backdrop-filter: blur(22px) saturate(1.15);
   border-color: rgb(255 255 255 / .9); }
 .suggest { background: rgb(255 255 255 / .82); -webkit-backdrop-filter: blur(24px); backdrop-filter: blur(24px); }
 .foot { padding: 0 34px 96px; }
@@ -86,7 +88,7 @@ svg.donut .slice path { stroke: rgb(255 255 255 / .9); }
 
 /* low sun moving over the ice: a soft diagonal sheen drifts across the plane */
 .plane > .toprow::before { content: ""; position: absolute; inset: 0; border-radius: 30px; pointer-events: none; z-index: 0;
-  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / .35) 45%, rgb(255 240 225 / .25) 50%, transparent 62%);
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / .35) 45%, rgb(245 245 255 / .25) 50%, transparent 62%);
   background-size: 260% 100%; animation: sheen 14s ease-in-out infinite alternate; mix-blend-mode: soft-light; }
 @keyframes sheen { from { background-position: 100% 0; } to { background-position: 0 0; } }
 @media (prefers-reduced-motion: reduce) { .aurora i, .plane > .toprow::before { animation: none; } }

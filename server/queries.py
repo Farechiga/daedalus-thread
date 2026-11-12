@@ -237,6 +237,37 @@ class Queries:
         small = lambda u: re.sub(r"\?width=\d+$", "?width=160", u).replace("/full/640,/", "/full/!200,200/")  # noqa: E731
         return [{"id": r[0], "title": r[1], "image": small(r[2])} for r in rows]
 
+    ATLAS_REGION = {"ITA": "Italy", "NLD": "Low Countries", "BEL": "Low Countries", "DEU": "German lands",
+                    "AUT": "German lands", "CHE": "German lands", "FRA": "France", "ESP": "Iberia", "PRT": "Iberia"}
+
+    def atlas(self, f, limit=60, per_artist=2):
+        """The selection's best-known dated works with an image, at most two per artist, each with its artist's region
+        of birth (for the atlas view: one thread per region across the years)."""
+        where, args = f.where("a")
+        prox = f.proxies()
+        rows = self.db.execute(
+            f"WITH w AS (SELECT a.id, a.title, a.date_text, a.date_start, a.date_end, a.century, a.image_url, a.fame_score,"
+            f" a.holding, a.primary_creator, ROW_NUMBER() OVER (PARTITION BY COALESCE(a.primary_creator, -a.rid)"
+            f" ORDER BY a.fame_score DESC, a.rid) rn FROM artwork a WHERE {where} AND a.image_url IS NOT NULL"
+            f" AND a.century BETWEEN 1000 AND 1900 AND COALESCE(a.date_semantics, '') <> 'reproduction')"
+            f" SELECT w.id, w.title, w.date_text, w.date_start, w.date_end, w.century, w.image_url, w.fame_score, w.holding,"
+            f" c.display_name, (SELECT g.country_code FROM creator_geo g WHERE g.creator_id = w.primary_creator"
+            f" AND g.proxy IN ({','.join('?' * len(prox))}) ORDER BY g.proxy = 'birthplace' DESC LIMIT 1)"
+            f" FROM w LEFT JOIN creator c ON c.id = w.primary_creator WHERE rn <= ? ORDER BY w.fame_score DESC, w.id LIMIT ?",
+            args + list(prox) + [per_artist, limit * 2]).fetchall()
+        mid = lambda u: re.sub(r"\?width=\d+$", "?width=360", u).replace("/full/640,/", "/full/!400,400/")  # noqa: E731
+        works = []
+        for aid, title, dtext, ds, de, cent, img, fame, holding, artist, cc in rows:
+            if not cc:
+                continue
+            works.append({"id": aid, "title": title, "date": dtext, "year": ds or de or cent + 50, "artist": artist,
+                          "region": self.ATLAS_REGION.get(cc, "Elsewhere"), "fame": round(fame or 0, 3),
+                          "holding": holding, "img": mid(img)})
+        focus = self._node_json(f.nodes[0]) if f.nodes else None
+        n = self.db.execute(f"SELECT count(*) FROM artwork a WHERE {where}", args).fetchone()[0]
+        return {"works": works[:limit], "n": n, "label": focus["label"] if focus else None,
+                "description": focus["description"] if focus else None, "filters": f.as_dict()}
+
     def subject_countries(self, f, where, args, out, n_subjects=10, n_countries=5):
         """For the most frequent Iconclass subjects: where their artists were born. The selection's top countries
         (the same for every subject) plus Other; an artwork counts once per country of its artists (decision D3).

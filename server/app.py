@@ -9,6 +9,7 @@ Endpoints (GET, all JSON):
   /api/artworks?<filters>&offset&limit&sort
   /api/artwork?id=<icarus id>    drill-down detail
   /api/suggest?q=<text>          grouped autocomplete
+  /api/atlas?<filters>           best-known dated works with images and artist region (lab atlas view)
 Filters: node (repeatable, AND), century, creator, type, source, code (Iconclass, incl. descendants), q (title text), repro=1
 """
 import argparse
@@ -177,6 +178,8 @@ class App:
             if rec is None:
                 raise LookupError("artwork not found")
             return rec
+        if path == "/api/atlas":
+            return q.atlas(q.filters(params))
         if path == "/api/suggest":
             return q.suggest((params.get("q") or [""])[0])
         raise LookupError("no such endpoint")

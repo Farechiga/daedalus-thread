@@ -1,0 +1,144 @@
+/* Lab skin: the card-less explorer on paper. One sheet of laid paper on a linen board (the Atlas mockup's ground);
+   charts and words are printed straight onto it, separated by hairline rules. The view switch swaps the charts for
+   an Atlas board of the selection. Loaded after /css/app.css by /lab/paper.html; light only (data-theme="light"). */
+:root {
+  color-scheme: light;
+  --linen: #e7e1d3; --linen-2: #ddd5c3; --paper: #fbf8f1; --rule: rgb(80 64 40 / .16); --pin: #8e2a20;
+  --thread: #b8841c; --thread-hi: #e3b04b;
+  --bg: var(--linen); --surface: var(--paper); --ink: #2b2620; --muted: #6f6556; --line: rgb(80 64 40 / .14);
+  --navy: #2b2620; --gold: #b8841c; --gold-soft: #f1e4c4; --gold-ink: #7a5408;
+  --serif: "Cormorant Garamond", "Iowan Old Style", Georgia, serif; --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
+html { background: var(--linen); }
+body { min-height: 100vh; background: var(--linen);
+  background-image:
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32  0 0 0 0 .26  0 0 0 0 .18  0 0 0 .09 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"),
+    repeating-linear-gradient(0deg, rgb(120 100 70 / .035) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(90deg, rgb(120 100 70 / .03) 0 1px, transparent 1px 4px); }
+
+/* header: a strip of the linen board */
+.top { background: rgb(231 225 211 / .9); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule); box-shadow: none; }
+.wordmark { opacity: .78; }
+.search input { background: var(--paper); border-color: var(--rule); border-radius: 2px; box-shadow: inset 0 1px 2px rgb(60 40 10 / .06); }
+.ghost { border-color: var(--rule); background: rgb(251 248 241 / .6); border-radius: 2px; }
+
+/* the sheet: laid paper with a faint warm vignette, lifted off the board */
+.plane { position: relative; margin: 18px 28px 36px; border-radius: 2px; background-color: var(--paper);
+  background-image:
+    radial-gradient(ellipse 120% 90% at 50% 40%, transparent 60%, rgb(170 140 90 / .09) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.6 .02' numOctaves='3' seed='4'/><feColorMatrix values='0 0 0 0 .45  0 0 0 0 .36  0 0 0 0 .22  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23f)'/></svg>"),
+    repeating-linear-gradient(90deg, rgb(140 115 70 / .025) 0 1px, transparent 1px 7px);
+  box-shadow: 0 1px 1px rgb(0 0 0 / .06), 0 2px 4px rgb(60 40 10 / .06), 0 28px 60px -34px rgb(60 40 10 / .5); }
+
+/* no cards: printed straight onto the sheet; hairline rules carry the structure */
+.card { background: none; border: 0; border-radius: 0; box-shadow: none; }
+.toprow { padding: 22px 40px 0; align-items: flex-end; border-bottom: 1px solid var(--rule); }
+.segments button { font: 600 19px var(--serif); padding: 10px 16px 10px; }
+.segments button small { font: 10.5px var(--mono); letter-spacing: .02em; }
+.segments button[aria-current="true"] { border-bottom-color: var(--thread); }
+.layout { padding: 26px 40px 44px; gap: 48px; grid-template-columns: minmax(250px, 300px) minmax(0, 1fr); }
+.content { gap: 44px; }
+.grid { column-gap: 56px; row-gap: 44px; }
+.chart { padding: 14px 0 0; border-top: 1px solid var(--rule); }
+.chart header { margin-bottom: 14px; }
+.chart h3 { font: 500 24px/1.15 var(--serif); letter-spacing: .003em; }
+.chart .n, .seg-label, .results > header .kicker { font-family: var(--mono); }
+.chart .n { font-size: 11px; letter-spacing: .02em; }
+.seg-label { font-size: 10px; font-weight: 500; letter-spacing: .16em; }
+.themes { padding: 2px 0 0; top: 96px; }
+.focus-title { font: 500 30px/1.05 var(--serif); }
+.focus-desc { font: italic 16px/1.35 var(--serif); }
+.theme-list li button { font-family: var(--serif); font-size: 16.5px; }
+.theme-list li button:hover { background: rgb(184 132 28 / .07); }
+.themes .chain { border-bottom-color: var(--rule); }
+.chips button, .chips .chip { border-radius: 2px; }
+.results { padding: 14px 0 0; border-top: 1px solid var(--rule); }
+.results > header .kicker { color: var(--pin); letter-spacing: .24em; font-weight: 500; }
+.results > header h3 { font: 500 30px var(--serif); }
+.result-list li, .donut-legend .row, .map-side li button { border-bottom-color: var(--rule); }
+.media-filter button { background: rgb(251 248 241 / .6); border-color: var(--rule); border-radius: 2px; }
+.seg button { border-radius: 2px; }
+
+/* maps and charts in ink on paper */
+svg.map .sea { fill: rgb(210 198 172 / .22); }
+svg.map .land path { fill: rgb(251 248 241 / .85); stroke: rgb(80 64 40 / .28); }
+svg.map .choro path { stroke: var(--paper); }
+.chart svg.map, .map-wrap svg.map { border-radius: 2px; }
+.map-wrap svg.map { -webkit-mask-image: radial-gradient(ellipse 74% 72% at 50% 50%, #000 64%, transparent 100%);
+  mask-image: radial-gradient(ellipse 74% 72% at 50% 50%, #000 64%, transparent 100%); }
+svg .heat rect, svg .tm rect, svg.donut .slice path { stroke: var(--paper); }
+
+/* overlays are loose sheets */
+.drawer, dialog, .suggest { background: var(--paper); border-color: var(--rule); border-radius: 2px; }
+.drawer { box-shadow: -18px 0 40px -10px rgb(60 40 10 / .3); }
+.drawer .eyebrow, .drawer dt, .drawer h3 { font-family: var(--mono); font-weight: 500; }
+.drawer h2 { font-size: 34px; }
+.works-dock { background: var(--paper); border-color: var(--rule); border-radius: 3px; box-shadow: 0 14px 30px -12px rgb(60 40 10 / .4); }
+.dock-k { font-family: var(--mono); }
+.foot { padding: 0 40px 96px; color: var(--muted); }
+
+/* view switch: Charts | Atlas, two index tabs */
+.view-switch { display: flex; gap: 6px; padding-bottom: 10px; flex: 0 0 auto; }
+.view-switch button { font: 500 11.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; border: 0; cursor: pointer;
+  background: var(--paper); color: var(--ink); padding: 7px 12px 6px; box-shadow: 0 1px 0 rgb(0 0 0 / .07), 0 3px 8px rgb(60 40 10 / .1);
+  transition: transform .2s; }
+.view-switch button:nth-child(1) { transform: rotate(-1deg); }
+.view-switch button:nth-child(2) { transform: rotate(1.2deg); }
+.view-switch button:hover { transform: translateY(-2px); }
+.view-switch button[aria-checked="true"] { background: var(--ink); color: var(--paper); }
+.view-switch button:focus-visible { outline: 2px solid var(--thread); outline-offset: 2px; }
+
+/* ---------- the Atlas view ---------- */
+.atlas { display: none; }
+:root[data-view="atlas"] .atlas { display: block; }
+.content { position: relative; }
+/* hidden charts keep their width (they still render on every filter change, ready for the switch back) */
+:root[data-view="atlas"] .content > .grid { position: absolute; left: 0; right: 0; top: 0; height: 0; overflow: hidden; visibility: hidden; }
+:root[data-view="atlas"] .works-dock { display: none; }
+.atlas-head { display: grid; grid-template-columns: 1fr auto; gap: 24px; align-items: end; padding-bottom: 8px; }
+.atlas .kicker { font: 500 11px var(--mono); letter-spacing: .26em; text-transform: uppercase; color: var(--pin); }
+.atlas h2 { font: 500 clamp(38px, 4.6vw, 68px)/.98 var(--serif); margin: 6px 0 8px; letter-spacing: -.01em; color: var(--ink); }
+.atlas h2 em { font-style: italic; }
+.atlas-desc { font: italic 18px/1.35 var(--serif); color: var(--muted); max-width: 620px; margin: 0; }
+.atlas .tally { font: 11.5px/1.6 var(--mono); color: var(--muted); text-align: right; white-space: nowrap; }
+.atlas .tally b { display: block; font: 600 32px/1 var(--serif); color: var(--ink); }
+.atlas-board { position: relative; overflow: hidden; padding-bottom: 6px; }
+.atlas-board.loading { opacity: .45; transition: opacity .2s; }
+.atlas .cols { position: relative; height: 34px; font: 10.5px var(--mono); color: var(--muted); letter-spacing: .1em; border-bottom: 1px solid var(--rule); }
+.atlas .cols span { position: absolute; bottom: 7px; padding-left: 6px; }
+.atlas .row { position: relative; border-bottom: 1px dashed var(--rule); transition: height .3s; }
+.atlas .row .tick { position: absolute; top: 0; bottom: 0; border-left: 1px solid var(--rule); pointer-events: none; }
+.atlas .row .tag { position: absolute; left: 0; top: 16px; width: var(--lw); background: var(--paper); padding: 7px 9px 6px; font: 500 10.5px var(--mono);
+  letter-spacing: .06em; text-transform: uppercase; box-shadow: 0 2px 6px rgb(60 40 10 / .14); transform: rotate(-1.2deg); z-index: 3; }
+.atlas .row .tag small { display: block; font: 10px var(--mono); color: var(--muted); text-transform: none; letter-spacing: 0; margin-top: 2px; }
+.atlas .row svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 1; }
+.atlas .wire { fill: none; stroke: var(--thread); stroke-width: 1.6; filter: drop-shadow(0 1.5px 1px rgb(60 40 10 / .25));
+  stroke-dasharray: 3000; stroke-dashoffset: 3000; animation: atlas-draw 2s cubic-bezier(.3, .6, .2, 1) forwards; }
+.atlas .drop { stroke: var(--thread); stroke-width: 1; opacity: .75; }
+@keyframes atlas-draw { to { stroke-dashoffset: 0; } }
+.atlas .pin { position: absolute; z-index: 2; background: var(--paper); padding: 4px 4px 6px; border: 0; cursor: zoom-in; display: block;
+  box-shadow: 0 1px 1px rgb(0 0 0 / .08), 0 8px 18px -6px rgb(60 40 10 / .35); transform-origin: var(--o, 50% 0);
+  transform: rotate(var(--r)); opacity: 0; animation: atlas-hang .7s cubic-bezier(.2, .9, .3, 1.3) forwards; animation-delay: var(--d);
+  transition: transform .25s, box-shadow .25s, top .3s; color: var(--ink); font: inherit; text-align: left; }
+.atlas .pin img { display: block; width: 100%; height: auto; max-height: var(--mh); object-fit: cover; background: var(--linen-2); }
+.atlas .pin::before { content: ""; position: absolute; left: 50%; top: -5px; width: 9px; height: 9px; margin-left: -4.5px; border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #d9675b, var(--pin) 60%, #4c120c); box-shadow: 0 2px 2px rgb(0 0 0 / .3); }
+.atlas .pin .cap { position: absolute; left: 0; right: 0; top: calc(100% + 4px); background: var(--paper); padding: 5px 6px;
+  font: 7px/1.35 var(--mono); box-shadow: 0 4px 12px rgb(60 40 10 / .2); opacity: 0; pointer-events: none; transition: opacity .2s; }
+.atlas .pin .cap b { display: block; font: italic 600 9px/1.2 var(--serif); margin-bottom: 1px; }
+.atlas .pin:hover, .atlas .pin:focus-visible { z-index: 6; transform: rotate(0) scale(1.8); box-shadow: 0 18px 40px -8px rgb(40 25 5 / .45); outline: none; }
+.atlas .pin:hover .cap, .atlas .pin:focus-visible .cap { opacity: 1; }
+@keyframes atlas-hang { 0% { opacity: 0; transform: translateY(-24px) rotate(calc(var(--r) * -3)); } 100% { opacity: 1; transform: rotate(var(--r)); } }
+.atlas .empty { font: italic 18px var(--serif); color: var(--muted); padding: 40px 0; }
+.atlas-foot { font: 11px/1.6 var(--mono); color: var(--muted); margin: 14px 0 0; max-width: 760px; }
+.atlas-foot em { font: italic 14.5px var(--serif); color: var(--ink); }
+@media (prefers-reduced-motion: reduce) { .atlas .wire { animation: none; stroke-dashoffset: 0; } .atlas .pin { animation: none; opacity: 1; } }
+
+@media (max-width: 960px) {
+  .plane { margin: 8px 8px 20px; }
+  .layout { padding: 14px 16px 24px; gap: 28px; }
+  .toprow { padding: 12px 16px 0; flex-wrap: wrap; }
+  .grid { row-gap: 32px; }
+  .atlas-head { grid-template-columns: 1fr; } .atlas .tally { text-align: left; }
+}
