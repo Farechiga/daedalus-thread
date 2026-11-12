@@ -1,0 +1,4 @@
+# Daedalus Thread: pages welcome; the data API and lab mockups are not for crawling.
+User-agent: *
+Disallow: /api/
+Disallow: /lab/

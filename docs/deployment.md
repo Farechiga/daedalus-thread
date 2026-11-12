@@ -22,10 +22,12 @@ monthly price means traffic can never run up per-query costs, which is why Fly.i
   `daedalus` user, source data and the database build.
 - `deploy/daedalus-thread.service` runs the app on 127.0.0.1:8000. Caddy (`deploy/Caddyfile`) serves HTTPS with a Let's
   Encrypt certificate, renewed automatically.
-- The site is password-protected: `SITE_PASSWORD` in `/etc/daedalus-thread.env` on the server, never in git. Visitors see
-  a password-only sign-in page that sets a signed, HttpOnly session cookie for 30 days. Changing the password signs everyone
-  out. Scripts can still use `curl -u :PASSWORD`. Sign-in attempts are limited to 10 per minute per client, and
-  `RATE_PER_MIN` limits API requests.
+- The site is public (since 2026-11-11). Password protection is still built in: setting `SITE_PASSWORD` in
+  `/etc/daedalus-thread.env` (never in git) and restarting brings back a password-only sign-in page with a signed,
+  HttpOnly 30-day session cookie; scripts can then use `curl -u :PASSWORD`. Sign-in attempts are limited to 10 per minute
+  per client. `RATE_PER_MIN` limits API requests per visitor either way. `web/robots.txt` keeps crawlers off `/api/` and `/lab/`.
+- Costs: the server is flat-price; only outbound traffic over the included 1 TB a month (Ashburn) is billed, at about €1 per TB.
+  Artwork images load straight from Wikimedia Commons and the museums, so they do not count.
 - Ship changes by pushing to `main` and then running `deploy/update.sh` on the server. It pulls, rebuilds the database and
   restarts the app, in about 2 minutes.
 
