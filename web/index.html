@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -7,10 +7,16 @@
   <meta name="description" content="Explore 477,569 artworks through their subjects: Christian art, classical myth, animals, allegory and landscape.">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
-  <meta name="theme-color" content="#022e3a">
-  <script>try { var p = localStorage.getItem("dt.palette"); if (p && p !== "teal") document.documentElement.dataset.palette = p; } catch (e) {}</script>
+  <meta name="theme-color" content="#e7e1d3">
+  <script>try { var p = localStorage.getItem("dt.palette") || "fresco"; if (p !== "teal") document.documentElement.dataset.palette = p;
+    var v = location.hash === "#atlas" ? "atlas" : location.hash === "#charts" ? "charts" : localStorage.getItem("dt.view");
+    if (v === "atlas") document.documentElement.dataset.view = "atlas"; } catch (e) {}</script>
+  <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/app.css">
+  <link rel="stylesheet" href="/css/paper.css">
   <script type="module" src="/js/app.js"></script>
+  <script type="module" src="/js/atlas.js"></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
@@ -29,8 +35,13 @@
     <button class="ghost" id="info-btn" aria-haspopup="dialog">About the data</button>
   </header>
 
+  <div class="plane">
   <div class="toprow">
     <nav class="segments" id="segments" aria-label="Segments"></nav>
+    <div class="view-switch" id="view-switch" role="radiogroup" aria-label="View">
+      <button type="button" role="radio" data-view="charts" aria-checked="true">Charts</button>
+      <button type="button" role="radio" data-view="atlas" aria-checked="false">Atlas</button>
+    </div>
   </div>
 
   <main id="main" class="layout">
@@ -59,6 +70,15 @@
     </aside>
 
     <section class="content">
+      <section class="atlas" id="atlas-view" aria-labelledby="atlas-h" aria-live="polite">
+        <header class="atlas-head">
+          <div><div class="kicker">Atlas · one thread per region</div><h2 id="atlas-h"></h2><p class="atlas-desc" id="atlas-desc"></p></div>
+          <div class="tally" id="atlas-tally"></div>
+        </header>
+        <div class="atlas-board" id="atlas-board"></div>
+        <p class="atlas-foot"><em>After Aby Warburg's Mnemosyne Atlas.</em> The selection's best-known works with an image, at most two per artist,
+          each pinned at its year on the thread of the region where its artist was born; larger cards are better known.</p>
+      </section>
       <div class="grid">
         <article class="card chart wide" id="c-timeline">
           <header>
@@ -103,6 +123,8 @@
       </section>
     </section>
   </main>
+
+  </div><!-- /plane -->
 
   <aside class="works-dock away" id="works-dock" aria-label="Artworks in this selection" hidden>
     <button class="dock-label" id="dock-label" type="button"><span class="dock-k">The works</span><span class="dock-n" id="dock-n"></span></button>

@@ -1,4 +1,4 @@
-// Lab: the Atlas view for /lab/paper.html. Charts | Atlas switch; the atlas follows the explorer's filters (it reads
+// The Atlas view of the explorer (index.html). Charts | Atlas switch; the atlas follows the explorer's filters (it reads
 // the same query string) and pins the selection's best-known works at their year, one gold thread per birth region.
 const $ = (s) => document.querySelector(s);
 const root = document.documentElement;
