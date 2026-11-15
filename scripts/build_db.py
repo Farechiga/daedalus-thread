@@ -30,17 +30,18 @@ LANGS = ("en", "de", "nl", "fr", "it", "pl")
 REPRODUCTION_SOURCES = {"pauart"}
 EXTRA_SOURCES = [("wikidata_paintings.jsonl.gz", "wikidata"), ("met_objects.jsonl.gz", "met"),
                  ("aic_objects.jsonl.gz", "aic"), ("zeri_objects.jsonl.gz", "zeri"),
-                 ("joconde_objects.jsonl.gz", "joconde")]
+                 ("joconde_objects.jsonl.gz", "joconde"), ("nga_objects.jsonl.gz", "nga")]
 EXTRA_SOURCE_ROWS = [("wikidata", "Wikidata (paintings)", None, "www.wikidata.org"),
                      ("met", "The Metropolitan Museum of Art", "US", "www.metmuseum.org"),
                      ("aic", "Art Institute of Chicago", "US", "www.artic.edu"),
                      ("zeri", "Fondazione Federico Zeri (photo archive)", "IT", "catalogo.fondazionezeri.unibo.it"),
-                     ("joconde", "Joconde (Musées de France)", "FR", "pop.culture.gouv.fr")]
+                     ("joconde", "Joconde (Musées de France)", "FR", "pop.culture.gouv.fr"),
+                     ("nga", "National Gallery of Art, Washington", "US", "www.nga.gov")]
 # Hosts whose http:// record links also work over https (tested 2026-11-05: same record page, status 200).
 # The others either have no https (VKK, Emblematica, PAUart) or no longer serve the records at all.
 HTTPS_HOSTS = {"www.rijksmuseum.nl", "www.museen.thueringen.de"}
 CREATOR_FILES = ("creator_geo.tsv", "wikidata_creators.tsv", "met_creators.tsv", "aic_creators.tsv", "zeri_creators.tsv",
-                 "joconde_creators.tsv")  # dates/creators describe a documentary photograph (decision log, open item)
+                 "joconde_creators.tsv", "nga_creators.tsv")  # dates/creators describe a documentary photograph (decision log, open item)
 
 def secure(url):
     """Upgrade a plain-http link to https where the host is known to serve the same page securely."""
@@ -70,7 +71,7 @@ CREATE TABLE artwork (
   date_semantics TEXT,               -- 'object' | 'reproduction'
   n_creators INTEGER, n_named_creators INTEGER, n_codes INTEGER,
   split TEXT,
-  dataset TEXT,                      -- 'icarus' | 'wikidata'
+  dataset TEXT,                      -- 'icarus' | 'wikidata' | 'met' | 'aic' | 'zeri' | 'joconde' | 'nga'
   image_url TEXT,                    -- https thumbnail source where the record provides one (Wikimedia Commons)
   fame INTEGER,                      -- Wikipedia sitelinks of the work (Wikidata); NULL when unknown
   highlight INTEGER,                 -- museum highlight flag (The Met)
@@ -383,7 +384,8 @@ def main():
 
     db.executemany("INSERT INTO source VALUES (?,?,?,?,?)",
                    [(sid, name, country, host, src_count[sid]) for host, (sid, name, country) in SOURCES.items()]
-                   + [(sid, name, country, host, src_count[sid]) for sid, name, country, host in EXTRA_SOURCE_ROWS if src_count[sid]])
+                   + [(sid, name, country, host, src_count[sid]) for sid, name, country, host in EXTRA_SOURCE_ROWS
+                      if src_count[sid] and sid not in {s for s, _, _ in SOURCES.values()}])  # NGA is also an ICARUS source
     db.executemany("INSERT INTO object_type VALUES (?,?,?,?)",
                    [(t["id"], t["label"], i, type_count[t["id"]]) for i, t in enumerate(typer.types)])
     log("taxonomy, sources, object types")
